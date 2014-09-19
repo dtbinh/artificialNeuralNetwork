@@ -4,14 +4,14 @@
 /************************************************************************************************
 * class Neuron:
 * up to 32 inputs possible
-* calculates the output by the weights and the set inputs
+* sets the output true or false if the weights of the set inputs are higher than the threshold
 ************************************************************************************************/
 class Neuron
 {
 private
 	int inputs;
 	int nrInputs;
-	int output;
+	int result;
 	int weights[];
 	int threshold;
 	
@@ -23,7 +23,7 @@ public
 		
 		// Initialize inputs, output and weights to 0, threshold to max
 		inputs = 0;
-		output = 0;
+		result = 0;
 		threshold = 0x7fffffff;
 		
 		for (int i = 0; i < nrInputs; i++)
@@ -64,21 +64,21 @@ public
 		this.threshold = threshold;
 	}
 	
-	int getOutput(){
+	Boolean getOutput(){
 		// Reset output
-		output = 0;
+		result = 0;
 		
 		// Activation function f_act
 		for (int i = 0; i < nrInputs; i++){
 			if((inputs & (1 << i)) == (1 << i))
-				output += weights[i];
+				result += weights[i];
 		}
 		
 		// Output function f_out
-		if (output >= threshold)
-			return output;
+		if (result >= threshold)
+			return true;
 		else
-			return 0;
+			return false;
 	}
 }
 
@@ -99,10 +99,10 @@ class Connection
 public
 	//Constructors
 	// 1 to 1
-	Connection(Neuron neuronFrom, Neuron neuronTo){
-		if (neuronFrom.getOutput() != 0){
+	Connection(Neuron neuronFrom, Neuron neuronTo, int weight){
+		if (neuronFrom.getOutput()){
 			neuronTo.setInput(1);
-			neuronTo.setWeight(1, neuronFrom.getOutput());
+			neuronTo.setWeight(1, weight);
 			}
 		else
 			neuronTo.unsetInput(1);
@@ -122,8 +122,8 @@ public
 * 	Neuronen:	001 | 010 | 100
 * 	-> Namen müssen hinterlegt werden
 **********************************************/
-class Attribute
-{
-private
-	Neuron value;
-} 
+//class Attribute
+//{
+//private
+//	Neuron value;
+//} 
