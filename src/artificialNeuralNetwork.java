@@ -5,7 +5,6 @@ class Neuron
 private
 	Boolean inputs[];
 	Boolean output;
-	int nrInputs;
 	int weights[];
 	int threshold;
 	
@@ -55,8 +54,20 @@ public
 		threshold = iThreshold;
 	}
 	
+	// Output function f_out
 	Boolean getResult(){
-	  // TODO: Calculation
-	  return output;
+		int out = 0;
+				
+		for (int i = 0; i < inputs.length; i++){
+			if(inputs[i])
+				out += weights[i];
+		}
+		
+		if (out >= threshold)
+			output = true;
+		else
+		output = false;
+	
+		return output;
 	}
 };
