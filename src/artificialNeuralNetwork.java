@@ -1,31 +1,38 @@
 /********************************** Artificial neural network ***********************************
+* TODO:	Description, Header, Comments
 ************************************************************************************************/
-/**********************************************
+/************************************************************************************************
 * class Neuron:
-**********************************************/
+* up to 32 inputs possible
+* calculates the output by the weights and the set inputs
+************************************************************************************************/
 class Neuron
 {
 private
-	Boolean inputs[];
-	Boolean output;
+	int inputs;
+	int nrInputs;
+	int output;
 	int weights[];
 	int threshold;
 	
 public
 	// Constructor
 	Neuron(int nrInputs){
-		inputs = new Boolean[nrInputs];
+		this.nrInputs = nrInputs;
 		weights = new int[nrInputs];
 		
-		for (int i = 0; i < nrInputs; i++){
-			inputs[i] = false;
-			weights[i] = -1;
-		}
+		// Initialize inputs, output and weights to 0, threshold to max
+		inputs = 0;
+		output = 0;
+		threshold = 0x7fffffff;
+		
+		for (int i = 0; i < nrInputs; i++)
+			weights[i] = 0;
 	}
 	
 	Boolean setInput(int nrInput){
-		if(nrInput < inputs.length){
-			inputs[nrInput] = true;
+		if(nrInput < nrInputs){
+			inputs |= 1 << nrInput;
 			
 			return true;
 		}
@@ -34,8 +41,8 @@ public
 	}
 	
 	Boolean unsetInput(int nrInput){
-		if(nrInput < inputs.length){
-			inputs[nrInput] = false;
+		if(nrInput < nrInputs){
+			inputs &= ~(1 << nrInput);
 			
 			return true;
 		}
@@ -53,43 +60,70 @@ public
 		return false;
 	}
 	
-	void setThreshold(int iThreshold){
-		threshold = iThreshold;
+	void setThreshold(int threshold){
+		this.threshold = threshold;
 	}
 	
-	// Output function f_out
-	Boolean getResult(){
-		int out = 0;
-				
-		for (int i = 0; i < inputs.length; i++){
-			if(inputs[i])
-				out += weights[i];
+	int getOutput(){
+		// Reset output
+		output = 0;
+		
+		// Activation function f_act
+		for (int i = 0; i < nrInputs; i++){
+			if((inputs & (1 << i)) == (1 << i))
+				output += weights[i];
 		}
 		
-		if (out >= threshold)
-			output = true;
+		// Output function f_out
+		if (output >= threshold)
+			return output;
 		else
-		output = false;
-	
-		return output;
+			return 0;
 	}
 }
+
 /**********************************************
 * class Connection:
 * connects neurons -> routing input to outputs,
 * setting weights
+* 
+* TODO:	Reicht Connection als Funktion?
+* 		Woher kommt die Information für nrInput?
 **********************************************/
-/* class Connection
- {
-  	
- }
- */
+class Connection
+{
+//private
+//	Neuron neuronFrom;
+//	Neuron neuronTo;
+	
+public
+	//Constructors
+	// 1 to 1
+	Connection(Neuron neuronFrom, Neuron neuronTo){
+		if (neuronFrom.getOutput() != 0){
+			neuronTo.setInput(1);
+			neuronTo.setWeight(1, neuronFrom.getOutput());
+			}
+		else
+			neuronTo.unsetInput(1);
+	}
+
+	// 1 to x
+}
+
 /**********************************************
 * class Attribute:
 * for symbolic attributes, each attribute contains
 * as many neurons as values
+* 
+* Bsp:
+* Attribute Farbe
+* 	values:		Rot | Gelb| Blau
+* 	Neuronen:	001 | 010 | 100
+* 	-> Namen müssen hinterlegt werden
 **********************************************/
-/*class Attribute
+class Attribute
 {
-	
-}*/
+private
+	Neuron value;
+} 
