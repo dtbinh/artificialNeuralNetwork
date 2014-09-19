@@ -1,5 +1,8 @@
 /********************************** Artificial neural network ***********************************
 ************************************************************************************************/
+/**********************************************
+* class Neuron:
+**********************************************/
 class Neuron
 {
 private
@@ -70,4 +73,23 @@ public
 	
 		return output;
 	}
-};
+}
+/**********************************************
+* class Connection:
+* connects neurons -> routing input to outputs,
+* setting weights
+**********************************************/
+/* class Connection
+ {
+  	
+ }
+ */
+/**********************************************
+* class Attribute:
+* for symbolic attributes, each attribute contains
+* as many neurons as values
+**********************************************/
+/*class Attribute
+{
+	
+}*/
