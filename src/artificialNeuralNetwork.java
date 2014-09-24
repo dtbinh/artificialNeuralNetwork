@@ -9,7 +9,7 @@
 * Spikes können, wie Buchstaben, als Grundelement der Sprache gesehen werden
 * Spike-Kombinationen bilden neuronalen Code
 * Nicht nur Anzahl der Spikes, sondern auch das zeitliche Muster könnte Informationen in sich bergen
-* Ein Neuron der Gehirnrinde empfängt die Aktivitäten einer ganzen Population vorgeschalteter Neuronen.
+* Ein Neuron der Gehirnrinde empfängt die Aktivitäten einer ganzen Population vorgeschalteter Neuronen
 * Sie berechen durch Mittelwertbildung über die von den einzelnen Neuronen bevorzugten Augenpositionen, jeweils gewichtet mit deren Aktivität, einen so genannten Populationsvektor
 * ->
 * Attribute Farbe:	enthält 3 Neuronen Rot, Gelb, Blau
@@ -107,6 +107,7 @@ public
 	}
 	
 	float getOutput(){
+	
 		// Reset net input
 		netInput = 0;
 		
@@ -119,6 +120,7 @@ public
 		// Activation function f_act: step function
 		if (netInput >= threshold){
 			activated = true;
+			
 			// Output function f_out: Identity
 			return netInput;
 		}
@@ -130,6 +132,15 @@ public
 	
 	Boolean getActivation(){
 		return activated;
+	}
+	
+	void connection(Neuron neuronTo, int input){
+		neuronTo.setWeight(getOutput());
+		
+		if (getActivation())
+			neuronTo.setInput(input);
+		else
+			neuronTo.unsetInput(input);
 	}
 }
 
