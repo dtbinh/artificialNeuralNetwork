@@ -21,9 +21,10 @@
 *          		   /
 *			 --o--o
 ************************************************************************************************/
+
 /**********************************************
 * class Neuron:
-* up to 32 inputs possible
+* up to 32 inputs possible: 1 - 32
 * inputs are just 0 or 1
 * output = input.1*weights[0] + ... + input.32*weights[31]
 * So far, output = netInput
@@ -135,7 +136,7 @@ public
 	}
 	
 	void connection(Neuron neuronTo, int input){
-		neuronTo.setWeight(getOutput());
+		neuronTo.setWeight(input, getOutput());
 		
 		if (getActivation())
 			neuronTo.setInput(input);
