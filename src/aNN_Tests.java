@@ -5,7 +5,7 @@
 public class aNN_Tests {
 	/**********************************************
 	* main function:
-	* test loops
+	* just contains the test objects
 	**********************************************/
 	public static void main(String[] args){
 		
@@ -24,122 +24,142 @@ public class aNN_Tests {
 }
 
 /************************************ Test for whole network ************************************
-* TODO:	In a loop:
+* In a loop:
 *	-> inputs are set and unset
 *	-> output of input neurons is calculated -> in connection
 *	------------------------------------------
 *	-> input of hidden neurons is set or unset -> in connection
-*	-> weight of hidden neuron is set (either just output value or output value * connection weight)
-*		(Is really neuron output = weight of connection) -> in connection
+*	-> weight of hidden neuron is set (output value * connection weight) -> in connection
 *	-> output of hidden neurons is calculated
 *	------------------------------------------
 *	-> input of output neuron is set or unset
 *	-> weight of output neuron is set 
 *	-> output of output neurons is calculated
+*
+*	-> Online-learning: Calculate weights and threshold for first result, than second etc
+*	-> Batch-learning: Calculate all results, then weights and thresholds
 ************************************************************************************************/
 class testNetwork {
 private
-	Neuron inputA;
-	Neuron inputB;
-	Neuron inputC;
-	Neuron inputD;
-	Neuron hiddenA;
-	Neuron hiddenB;
+	Neuron input[];
+	Neuron hidden[];
 	Neuron output;
+	float connWeight[];
+	float outputVector;
+	// float wantedVector[]; // 100 für 16 usw.
+	Boolean keepGoing;
 	
+public	
 	// Constructor
 	testNetwork(){
-		inputA = new Neuron(1);
-		inputB = new Neuron(1);
-		inputC = new Neuron(1);
-		inputD = new Neuron(1);
-		hiddenA = new Neuron(2);
-		hiddenB = new Neuron(2);
-		output = new Neuron(2);
+		// 3-layered perceptron with 4 input, 2 hidden and 1 output neuron
+		input = new Neuron[4];
+		for (int i = 0; i < input.length; i++)
+			input[i] = new Neuron(1);
 		
+		hidden = new Neuron[2];
+		for (int i = 0; i < hidden.length; i++)
+			hidden[i] = new Neuron(2);
+		output = new Neuron(2);
+		connWeight = new float[6];
+		
+		// Initial values: all weights and thresholds = 1
+		for (int i = 0; i < connWeight.length; i++){
+			if (i < input.length){
+				input[i].setWeight(1, 1);
+				input[i].setThreshold(1);
+			}
+			
+			if ((i/2) < hidden.length){
+				hidden[i/2].setWeight(1, 1);
+				hidden[i/2].setWeight(2, 1);
+				hidden[i/2].setThreshold(1);
+			}
+			
+			connWeight[i] = 1;
+		}
+		
+		output.setWeight(1, 1);
+		output.setThreshold(1);
+		
+		outputVector = 0;
+		keepGoing  = false;
 	}
 	
-public
 	/***************************************************************************************
 	* Test function:
 	***************************************************************************************/
 	void runTest(){
-		// Simple network with 4 input, 2 hidden and 1 output neuron
+		// Switch the inputs on and off (all possibilities)
+		//for (int inputVector = 0; inputVector < 16; inputVector++){
+		//	setUnsetInputs(inputValues);
 		
-		// Initial values: wheights = 1, threshold = 1
-		
-		
-		//TODO: Training: Backpropagation
-		//while(result != 100){
+			// Erstmal nur für alle Inputs = 1 und outputVector soll = 100 sein
+			setUnsetInputs(16);
 			
-			// Connect input neurons to hidden neurons
-			// A -> A1, B -> A2, C -> B1, D -> B2
-			inputA.connection(hiddenA, 1);
-			inputB.connection(hiddenA, 2);
-			inputC.connection(hiddenB, 1);
-			inputD.connection(hiddenB, 2);
+			//TODO: Training: Backpropagation
+			keepGoing = true;
+			while(keepGoing){
 			
-			// Connect hidden neurons to output neuron
-			hiddenA.connection(output, 1);
-			hiddenB.connection(output, 2);
-			
-			// if (result != 100){
-			// weights and thresholds
-			//}
+				// Connect each 2 input neurons to 1 hidden neuron
+				/*input[0].connection(hidden[0], 1, connWeight[0]);
+				input[1].connection(hidden[0], 2, connWeight[1]);
+				input[2].connection(hidden[1], 1, connWeight[2]);
+				input[3].connection(hidden[1], 2, connWeight[3]);
+				*/
+				for (int i = 0; i < input.length; i++){
+					input[i].connection(hidden[i/2], ((i/2)+1), connWeight[i]);
+				}
+				
+				// Connect hidden neurons to output neuron
+				/*hidden[0].connection(output, 1, connWeight[4]);
+				hidden[1].connection(output, 2, connWeight[5]);
+				*/
+				for (int i = 0; i < hidden.length; i++){
+					hidden[i].connection(output, ((i/2)+1), connWeight[i+(input.length - 1)]);
+				}
+				
+				// outputVector = output.getOutput();
+				// if (outputVector != 100){
+				// weights and thresholds
+				// }
+				// else
+				// 	keepGoing = false;
+			}
 		//}
-			
-		// Just switch the inputs on and off (all possibilities)
-		// to see the final results
-		for (int i = 0; i < 16; i++){
-			if ((i & 0x1) == 0x1){
-				inputA.setInput(1);
-				System.out.print("InputA = 1");
-			}
-			else {
-				inputA.unsetInput(1);
-				System.out.print("InputA = 0");
-			}
-				
-			if ((i & 0x2) == 0x2){
-				inputB.setInput(1);
-				System.out.print("InputB = 1");
-			}
-			else {
-				inputB.unsetInput(1);
-				System.out.print("InputB = 0");
-			}
-			
-			if ((i & 0x4) == 0x4){
-				inputC.setInput(1);
-				System.out.print("InputC = 1");
-			}
-			else {
-				inputC.unsetInput(1);
-				System.out.print("InputC = 0");
-			}
-				
-			if ((i & 0x8) == 0x8){
-				inputD.setInput(1);
-				System.out.print("InputD = 1");
-			}
-			else {
-				inputD.unsetInput(1);
-				System.out.print("InputD = 0");
-			}
-			System.out.print("\n");
-			
-		}
 	}// runTest()
+	
+	/***************************************************************************************
+	* setUnsetInputs:
+	* sets inputs corresponding to bit, e.g. bit 1 -> input 1
+	***************************************************************************************/
+	void setUnsetInputs(int inputValues){
+		
+		for (int i = 0; i < input.length; i++){
+			
+			if ((inputValues & (1 << i)) == (1 << i)){
+				input[i].setInput(1);
+				System.out.print("Input" + i + " : 1");
+			}
+			else {
+				input[i].unsetInput(1);
+				System.out.print("Input" + i + " : 0");
+			}
+		}
+		
+		System.out.print("\n");
+	}
 }
 
 /*************************************** Unit Test Neuron ***************************************
 * neuron with 1,2 and 4 inputs - every input gets toggled
 * weights -1 and 1 - every possible combination
-* treshold -2, -1, 1 and 2
+* threshold -2, -1, 1 and 2
 ************************************************************************************************/
 class unitTestNeuron {
 private
 	Neuron testNeuron;
+	int nrInputs;
 	int maxNrInputs;
 	int setInputs;
 	int weights[];
@@ -149,6 +169,7 @@ public
 	// Constructor
 	unitTestNeuron(){
 	testNeuron = new Neuron(0);
+	nrInputs = 1;
 	maxNrInputs = 4;
 	setInputs = 0b0000;
 	weights = new int[4];
@@ -162,7 +183,7 @@ public
 	**********************************************/
 	void runTest(){
 		// Number of inputs: 1, 2 & 4
-		for (int nrInputs = 1; nrInputs <= maxNrInputs; nrInputs *= 2){
+		for (; nrInputs <= maxNrInputs; nrInputs *= 2){
 			testNeuron = new Neuron(nrInputs);
 				
 			System.out.println("Testing constructor");
@@ -178,25 +199,7 @@ public
 						break;
 				}
 					
-				if ((setInputs & 0x1) == 0x1)
-					testNeuron.setInput(0);
-				else
-					testNeuron.unsetInput(0);
-				
-				if ((nrInputs >= 2) && ((setInputs & 0x2) == 0x2))
-					testNeuron.setInput(1);
-				else if (nrInputs >= 2)
-					testNeuron.unsetInput(1);
-				
-				if ((nrInputs >= 3) && ((setInputs & 0x4) == 0x4))
-					testNeuron.setInput(2);
-				else if (nrInputs >= 3)
-					testNeuron.unsetInput(2);
-				
-				if ((nrInputs >= 4) && ((setInputs & 0x8) == 0x8))
-					testNeuron.setInput(3);
-				else if (nrInputs >= 4)
-					testNeuron.unsetInput(3);
+				setUnsetInputs(setInputs);
 				
 				System.out.print("Inputs: " + Integer.toBinaryString(setInputs));
 				
@@ -270,25 +273,7 @@ public
 								break;
 						}
 					
-						if ((setInputs & 0x1) == 0x1)
-							testNeuron.setInput(0);
-						else
-							testNeuron.unsetInput(0);
-						
-						if ((nrInputs >= 2) && ((setInputs & 0x2) == 0x2))
-							testNeuron.setInput(1);
-						else if (nrInputs >= 2)
-							testNeuron.unsetInput(1);
-						
-						if ((nrInputs >= 3) && ((setInputs & 0x4) == 0x4))
-							testNeuron.setInput(2);
-						else if (nrInputs >= 3)
-							testNeuron.unsetInput(2);
-						
-						if ((nrInputs >= 4) && ((setInputs & 0x8) == 0x8))
-							testNeuron.setInput(3);
-						else if (nrInputs >= 4)
-							testNeuron.unsetInput(3);
+						setUnsetInputs(setInputs);
 						
 						System.out.print("Inputs: " + Integer.toBinaryString(setInputs));
 						
@@ -309,7 +294,7 @@ public
 		System.out.print(", w3: " + weights[3]);
 		System.out.print("\n\n");
 		
-		// Change treshold and get output
+		// Change threshold and get output
 		testNeuron.setThreshold(thresholds[2]);
 		System.out.println("treshold: " + thresholds[2]);
 		System.out.print("Inputs: " + Integer.toBinaryString(setInputs));
@@ -357,4 +342,25 @@ public
 		System.out.println(", Output: " + testNeuron.getOutput());
 		System.out.print("\n");
 	}// runTest()
+	
+	/***************************************************************************************
+	* setUnsetInputs:
+	* sets inputs corresponding to bit, e.g. bit 1 -> input 1
+	***************************************************************************************/
+	void setUnsetInputs(int inputValues){
+		
+		for (int i = 0; i < nrInputs; i++){
+			
+			if ((inputValues & (1 << i)) == (1 << i)){
+				testNeuron.setInput(i);
+				System.out.print("Input" + i + " : 1");
+			}
+			else {
+				testNeuron.unsetInput(i);
+				System.out.print("Input" + i + " : 0");
+			}
+		}
+		
+		System.out.print("\n");
+	}
 }
