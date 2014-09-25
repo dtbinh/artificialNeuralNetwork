@@ -1,6 +1,12 @@
 /********************************** Artificial neural network ***********************************
 * TODO:	Description, Header, Comments
-*
+*	Network-Constructor: aNNetwork(int i){
+*		// Simple network with i input, i/2 hidden and i/4 output neurons
+*		input = new Neuron[i](1);
+*		hidden = new Neuron[i/2](2);
+*		output = new Neuron[i/4](2);
+*		//TODO: Berechnung für [6]: connWeight = new float[6]
+*	}
 *
 * Beispiel für Aufbau:
 * (aus NeuronaleKodierung.pdf)
@@ -108,7 +114,6 @@ public
 	}
 	
 	float getOutput(){
-	
 		// Reset net input
 		netInput = 0;
 		
@@ -135,8 +140,15 @@ public
 		return activated;
 	}
 	
-	void connection(Neuron neuronTo, int input){
-		neuronTo.setWeight(input, getOutput());
+	/***************************************************************************************
+	* connection:
+	* Connects the output of this neuron to an input of another neuron
+	* The weight of the following input is the output value times the weight of the connection
+	***************************************************************************************/
+	void connection(Neuron neuronTo, int input, float connWeight){
+		float weightToSet = getOutput();
+		weightToSet *= connWeight;
+		neuronTo.setWeight(input, weightToSet);
 		
 		if (getActivation())
 			neuronTo.setInput(input);
