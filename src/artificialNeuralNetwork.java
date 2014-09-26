@@ -145,53 +145,6 @@ public
 	}
 }
 
-// TODO: Erstmal raus damit, git commit -m "deleted class Connection and Attribute"
-/************************************************************************************************
-* class Connection:
-* connects neurons -> routing input to outputs,
-* setting weights
-* 
-* TODO:	Reicht Connection als Funktion?
-* 		Woher kommt die Information für nrInput?
-************************************************************************************************/
-/*class Connection
-{
-//private
-//	Neuron neuronFrom;
-//	Neuron neuronTo;
-	
-public
-	//Constructors
-	// 1 to 1
-	Connection(Neuron neuronFrom, Neuron neuronTo, int weight){
-		if (neuronFrom.getOutput() != 0){
-			neuronTo.setInput(1);
-			neuronTo.setWeight(1, weight);
-			}
-		else
-			neuronTo.unsetInput(1);
-	}
-
-	// 1 to x
-}*/
-
-/************************************************************************************************
-* class Attribute:
-* for symbolic attributes, each attribute contains
-* as many neurons as values
-* 
-* Bsp:
-* Attribute Farbe
-* 	values:		Rot | Gelb| Blau
-* 	Neuronen:	001 | 010 | 100
-* 	-> Namen müssen hinterlegt werden
-************************************************************************************************/
-//class Attribute
-//{
-//private
-//	Neuron value;
-//} 
-
 /************************************************************************************************
 * class MultiLayerPerceptron:
 * automatically builds a multi-layer perceptron
