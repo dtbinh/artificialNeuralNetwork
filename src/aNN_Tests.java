@@ -11,15 +11,14 @@ public class aNN_Tests {
 		
 		// Unit test for class Neuron
 		// TODO: Check test result:
-		/*unitTestNeuron uTNeuron = new unitTestNeuron();
+		unitTestNeuron uTNeuron = new unitTestNeuron();
 		
 		uTNeuron.runTest();
-		*/
 		
 		// Test for whole network
-		testNetwork testNetwork = new testNetwork();
+		//testNetwork testNetwork = new testNetwork();
 		
-		testNetwork.runTest();
+		//testNetwork.runTest();
 	}
 }
 
@@ -38,21 +37,25 @@ public class aNN_Tests {
 *
 *	-> Online-learning: Calculate weights and threshold for first result, than second etc
 *	-> Batch-learning: Calculate all results, then weights and thresholds
+* TODO:	class MultiLayerPerceptron verwenden
 ************************************************************************************************/
 class testNetwork {
 private
 	Neuron input[];
 	Neuron hidden[];
 	Neuron output;
-	float connWeight[];
+	float connWeights[];
 	float outputVector;
-	// float wantedVector[]; // 100 für 16 usw.
+	// float trainingVector[]; // 100 für 16 usw.
 	Boolean keepGoing;
 	
 public	
 	// Constructor
 	testNetwork(){
-		// 3-layered perceptron with 4 input, 2 hidden and 1 output neuron
+		// 3-layered perceptron with 4 input, 2 hidden and 1 output neuron,
+		// 1 connection (neuron output)
+		// MultiLayerPerceptron mLPTest = MultiLayerPerceptron(4, 2, 1, 1, 1);
+		
 		input = new Neuron[4];
 		for (int i = 0; i < input.length; i++)
 			input[i] = new Neuron(1);
@@ -60,11 +63,13 @@ public
 		hidden = new Neuron[2];
 		for (int i = 0; i < hidden.length; i++)
 			hidden[i] = new Neuron(2);
+			
 		output = new Neuron(2);
-		connWeight = new float[6];
+		
+		connWeights = new float[6];
 		
 		// Initial values: all weights and thresholds = 1
-		for (int i = 0; i < connWeight.length; i++){
+		for (int i = 0; i < connWeights.length; i++){
 			if (i < input.length){
 				input[i].setWeight(1, 1);
 				input[i].setThreshold(1);
@@ -76,7 +81,7 @@ public
 				hidden[i/2].setThreshold(1);
 			}
 			
-			connWeight[i] = 1;
+			connWeights[i] = 1;
 		}
 		
 		output.setWeight(1, 1);
@@ -102,21 +107,21 @@ public
 			while(keepGoing){
 			
 				// Connect each 2 input neurons to 1 hidden neuron
-				/*input[0].connection(hidden[0], 1, connWeight[0]);
-				input[1].connection(hidden[0], 2, connWeight[1]);
-				input[2].connection(hidden[1], 1, connWeight[2]);
-				input[3].connection(hidden[1], 2, connWeight[3]);
+				/*input[0].connection(hidden[0], 1, connWeights[0]);
+				input[1].connection(hidden[0], 2, connWeights[1]);
+				input[2].connection(hidden[1], 1, connWeights[2]);
+				input[3].connection(hidden[1], 2, connWeights[3]);
 				*/
 				for (int i = 0; i < input.length; i++){
-					input[i].connection(hidden[i/2], ((i/2)+1), connWeight[i]);
+					input[i].connection(hidden[i/2], ((i/2)+1), connWeights[i]);
 				}
 				
 				// Connect hidden neurons to output neuron
-				/*hidden[0].connection(output, 1, connWeight[4]);
-				hidden[1].connection(output, 2, connWeight[5]);
+				/*hidden[0].connection(output, 1, connWeights[4]);
+				hidden[1].connection(output, 2, connWeights[5]);
 				*/
 				for (int i = 0; i < hidden.length; i++){
-					hidden[i].connection(output, ((i/2)+1), connWeight[i+(input.length - 1)]);
+					hidden[i].connection(output, ((i/2)+1), connWeights[i+(input.length - 1)]);
 				}
 				
 				// outputVector = output.getOutput();
