@@ -18,7 +18,7 @@
 
 /************************************************************************************************
 * class Neuron:
-* up to 32 inputs possible: 1 - 32
+* up to 32 inputs possible
 * inputs are just 0 or 1
 * output = input.1*weights[0] + ... + input.32*weights[31]
 * So far, output = netInput
@@ -45,6 +45,115 @@ private
 	int inputs;
 	int nrInputs;
 	// So far also used as output
+	int netInput;
+	int weights[];
+	int threshold;
+	// Used as output
+	Boolean activated;
+	
+public
+	// Constructor
+	Neuron(int nrInputs){
+		this.nrInputs = nrInputs;
+		weights = new int[nrInputs];
+		
+		// Initialize inputs, output and weights to 0, threshold to max
+		inputs = 0;
+		netInput = 0;
+		activated = false;
+		threshold = 0x7fffffff;
+		
+		for (int i = 0; i < nrInputs; i++)
+			weights[i] = 0;
+	}
+	
+	Boolean setInput(int nrInput){
+		if(nrInput < nrInputs){
+			inputs |= 1 << nrInput;
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	Boolean unsetInput(int nrInput){
+		if(nrInput < nrInputs){
+			inputs &= ~(1 << nrInput);
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	Boolean setWeight(int nrInput, int weight){
+		if(nrInput < weights.length){
+			weights[nrInput] = weight;
+			return true;
+		}
+		
+		return false;
+	}
+	
+	void setThreshold(int threshold){
+		this.threshold = threshold;
+	}
+	
+	int getOutput(){
+		// Reset net input
+		netInput = 0;
+		
+		// Input function f_net
+		for (int i = 0; i < nrInputs; i++){
+			if((inputs & (1 << i)) == (1 << i))
+				netInput += weights[i];
+		}
+		
+		// Activation function f_act: step function
+		if (netInput >= threshold){
+			activated = true;
+			
+			// Output function f_out: Identity
+			return netInput;
+		}
+		else {
+			activated = false;
+			return 0;
+		}
+	}
+	
+	Boolean getActivation(){
+		return activated;
+	}
+	
+	/*****************************************************************************************
+	* connection:
+	* Connects the output of this neuron to an input of another neuron
+	* The weight of the following input is the output value times the weight of the connection
+	*****************************************************************************************/
+	void connection(Neuron neuronTo, int input, int connWeight){
+		int weightToSet = getOutput();
+		weightToSet *= connWeight;
+		neuronTo.setWeight(input, weightToSet);
+		
+		if (getActivation())
+			neuronTo.setInput(input);
+		else
+			neuronTo.unsetInput(input);
+	}
+}
+
+/************************************************************************************************
+ * class NeuronFloat
+ * Same as class Neuron, just using floats for weights, threshold and output
+************************************************************************************************/
+class NeuronFloat
+{
+private
+	int inputs;
+	int nrInputs;
+	// So far also used as output
 	float netInput;
 	float weights[];
 	float threshold;
@@ -53,7 +162,7 @@ private
 	
 public
 	// Constructor
-	Neuron(int nrInputs){
+	NeuronFloat(int nrInputs){
 		this.nrInputs = nrInputs;
 		weights = new float[nrInputs];
 		
@@ -90,7 +199,6 @@ public
 	Boolean setWeight(int nrInput, float weight){
 		if(nrInput < weights.length){
 			weights[nrInput] = weight;
-			
 			return true;
 		}
 		
@@ -133,7 +241,7 @@ public
 	* Connects the output of this neuron to an input of another neuron
 	* The weight of the following input is the output value times the weight of the connection
 	*****************************************************************************************/
-	void connection(Neuron neuronTo, int input, float connWeight){
+	void connection(NeuronFloat neuronTo, int input, float connWeight){
 		float weightToSet = getOutput();
 		weightToSet *= connWeight;
 		neuronTo.setWeight(input, weightToSet);
@@ -157,8 +265,8 @@ private
 	Neuron outputNeuron[];
 	int hiddenLayers;
 	int connectionsPerNeuron;
-	float[][] connWeights;
-	float outputVector[];
+	int[][] connWeights;
+	int outputVector[];
 	// float trainingVector[]; // 100 für 16 usw.
 	// Boolean keepGoing;	// For training loop
 
@@ -174,11 +282,13 @@ public
 	* It's not possible to have more output neurons than hidden neurons
 	* (or input neurons if there aren't hidden layers)
 	****************************************************************************************/
-	MultiLayerPerceptron(int inputNeurons, int hiddenNeuronsPerLayer, int hiddenLayers, int connectionsPerNeuron, int outputNeurons){
+	MultiLayerPerceptron(int inputNeurons, int hiddenNeuronsPerLayer, int hiddenLayers,
+							int connectionsPerNeuron, int outputNeurons){
+		
 		// Just to prevent wrong usage
 		if (inputNeurons < 1)
 			inputNeurons = 1;
-			
+		
 		inputNeuron = new Neuron[inputNeurons];
 		
 		// Each input neuron has just 1 input
@@ -186,8 +296,8 @@ public
 			inputNeuron[i] = new Neuron(1);
 			
 			// Initial values: all weights and thresholds = 1
-				inputNeuron[i].setWeight(1, 1);
-				inputNeuron[i].setThreshold(1);			
+			inputNeuron[i].setWeight(0, 1);
+			inputNeuron[i].setThreshold(1);
 		}
 		
 		// Just to prevent wrong usage
@@ -214,7 +324,6 @@ public
 			this.hiddenLayers = hiddenLayers;
 		
 			hiddenNeuron = new Neuron[hiddenLayers][hiddenNeuronsPerLayer];
-			// Im Notfall: hiddenNeuron = new Neuron[hiddenLayers * hiddenNeuronsPerLayer];
 			
 			// Set number of inputs; resp. number of connections
 			// to the previous layer
@@ -229,7 +338,7 @@ public
 					hiddenNeuron[i][j] = new Neuron(neededInputs);
 						
 					// Initial values: all weights and thresholds = 1
-					for (int k = 1; k <= neededInputs; k++)
+					for (int k = 0; k < neededInputs; k++)
 						hiddenNeuron[i][j].setWeight(k, 1);
 					
 					hiddenNeuron[i][j].setThreshold(1);
@@ -251,17 +360,19 @@ public
 			
 		outputNeuron = new Neuron[outputNeurons];
 		
-		outputVector = new float[outputNeurons];
+		outputVector = new int[outputNeurons];
 		
 		// TODO: if (hiddenLayers < 1) {hiddenLayers = 0; // als Sicherheit}
+
 		for (int i = 0; i < outputNeuron.length; i++){
+			
 			// Set number of inputs; resp. number of connections
 			// to the previous layer
 			// TODO: Check, wenn Rest bleibt
 			outputNeuron[i] = new Neuron(hiddenNeuronsPerLayer/outputNeurons);
 			
 			// Initial values: all weights and thresholds = 1
-			for (int j = 1; j <= (hiddenNeuronsPerLayer/outputNeurons); j++)
+			for (int j = 0; j < (hiddenNeuronsPerLayer/outputNeurons); j++)
 				outputNeuron[i].setWeight(j, 1);
 			
 			outputNeuron[i].setThreshold(1);
@@ -281,7 +392,7 @@ public
 		else
 			maxNumberOfConnections = inputNeurons * connectionsPerNeuron;
 		
-		connWeights = new float[hiddenLayers + 2][maxNumberOfConnections];
+		connWeights = new int[hiddenLayers + 2][maxNumberOfConnections];
 		
 		// Initial values: all weights = 1
 		for (int i = 0; i < hiddenLayers + 1; i++){
@@ -309,52 +420,100 @@ public
 	* Execute the built multi-layer perceptron with given input vector
 	* Returns the output vector
 	****************************************************************************************/
-	float[] run(int inputVector){
+	int[] run(int inputVector){
+		// DEBUG
+		System.out.println("inputNeurons: " + inputNeuron.length +
+				", hiddenNeuronsPerLayer: " + hiddenNeuron[0].length +
+				", hiddenLayers: " + hiddenLayers +
+				", connectionsPerNeuron:" + connectionsPerNeuron +
+				", outputNeurons: " + outputNeuron.length);
 		
-		//TODO: Set/Unset inputs
+		//Set input if corresponding bit is high, unset if low
+		for (int i = 0; i < inputNeuron.length; i++){
+			
+			if ((inputVector & (1 << i)) == (1 << i))
+				inputNeuron[i].setInput(0);
+			else
+				inputNeuron[i].unsetInput(0);
+		}
+		
 		//TODO: if (hiddenLayers > 0){ wenn fall für outputNeurons in Constructor erledigt
 		
 		// Connections between input layer and 1st hidden layer
+		int weight = 0;
 		// From each input neuron...
 		for (int inp = 0; inp < inputNeuron.length; inp++){
 		
+			// DEBUG
+			System.out.print("inputNeuron[" + inp + "]: " + inputNeuron[inp].getOutput());
+			
 			// ...'connectionsPerNeuron'-connections to the 1st hidden layer
-			for (int conn = 0; conn < connectionsPerNeuron; conn++)
-				inputNeuron[inp].connection(hiddenNeuron[0][conn], (conn+1), connWeights[0][conn]);
+			for (int conn = 0; conn < connectionsPerNeuron; conn++){
+				inputNeuron[inp].connection(hiddenNeuron[0][conn], inp, connWeights[0][weight]);
+				
+				// DEBUG
+				System.out.println(", connection(hiddenNeuron[0][" + conn + 
+						"], input: " + inp + ", connWeights[0]["+weight+"] |");
+				
+				weight++;
+			}
 		}
 		
+		// DEBUG
+		System.out.print("\n");
+		
 		// Connections between hidden layers
-		for (int layer = 0; layer < hiddenLayers-1; layer++){
+		for (int layer = 0; layer < (hiddenLayers-1); layer++){
+			weight = 0;
 			
 			// From each hidden neuron...
 			for (int neur = 0; neur < hiddenNeuron[layer].length; neur++){
 			
+				// DEBUG
+				System.out.print("hiddenNeuron["+layer+"]["+neur+"]: " +
+									hiddenNeuron[layer][neur].getOutput() + " | ");
+				
 				// ...'connectionsPerNeuron'-connections to the next hidden layer
-				for (int conn = 0; conn < connectionsPerNeuron; conn++)
+				for (int conn = 0; conn < connectionsPerNeuron; conn++){
 					hiddenNeuron[layer][neur].connection(hiddenNeuron[layer+1][conn],
-														(conn+1), connWeights[layer+1][conn]);
+														neur, connWeights[layer+1][weight]);
+					
+					// DEBUG
+					System.out.println(", connection(hiddenNeuron["+(layer+1)+"][" + conn + 
+										"], input: "+ neur +", connWeights["+(layer+1)+"]["+weight+"] |");
+					
+					weight++;
+				}
 			}
+			
+			// DEBUG
+			System.out.print("\n");
 		}
 		
 		// Connections between last hidden layer and output
 		int inp = 0;
-		int outNeur = 0;
+		int outNeur = -1;
 		
 		// From each hidden neuron...
-		for (int hidNeur = 0; hidNeur < hiddenNeuron[hiddenLayers-1].length; hidNeur++){
+		for (int hidNeur = 0; hidNeur < hiddenNeuron[hiddenLayers-1].length; hidNeur++, inp++){
 			
 			// Go to next output neuron if all inputs are connected
-			if (hidNeur >= ((hiddenNeuron[hiddenLayers-1].length/outputNeuron.length)-1)){
+			if ((hidNeur % (hiddenNeuron[hiddenLayers-1].length/outputNeuron.length)) == 0){
 				outNeur++;
 				inp = 0;
 			}
 			
+			// DEBUG
+			System.out.print("hiddenNeuron["+(hiddenLayers-1)+"]["+hidNeur+"]: " +
+					hiddenNeuron[hiddenLayers-1][hidNeur].getOutput() + " | ");
+			
 			// ...to the "nearest" output neuron (if several are available)
 			hiddenNeuron[hiddenLayers-1][hidNeur].connection(outputNeuron[outNeur], inp,
 													connWeights[hiddenLayers][hidNeur]);
-			
-			inp++;
 		}
+		
+		// DEBUG
+		System.out.print("\n");
 		
 		// Now get the result(s)
 		for (int i = 0; i < outputNeuron.length; i++)
@@ -363,5 +522,5 @@ public
 		return outputVector;
 	}
 	
-	//TODO: void training(float[] trainingVector) -> run() in while(keepGoing){if (outputVector != trainingVector)}
+	//TODO: void training(int[] trainingVector) -> run() in while(keepGoing){if (outputVector != trainingVector)}
 }
