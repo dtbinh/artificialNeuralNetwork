@@ -10,20 +10,23 @@ public class aNN_Tests {
 	public static void main(String[] args){
 		
 		// Unit test for class Neuron
-		unitTestNeuron uTNeuron = new unitTestNeuron();
+		// Passed with floats, 28.Sep.14
+		//unitTestNeuron uTNeuron = new unitTestNeuron();
 		
-		uTNeuron.runTest();
+		//uTNeuron.runTest();
 		
-		// Test for whole network, needs debug prints in class to test
-		//testsBuildingNetworks testsBuildingNetworks = new testsBuildingNetworks();
+		// Test for whole network, needs debug prints, look at commit when passed,
+		// in class otherwise you'll just see the output vector
+		multilayerPerceptronTest multilayerPerceptronTest = new multilayerPerceptronTest();
 		
-		//testsBuildingNetworks.runTest();
+		multilayerPerceptronTest.runTest();
 		
 		//TODO: Test mit Training: Backpropagation
+		//		-> Vergleich von verschiedenen Topologien, welche erreicht am schnellsten die lösung
 	}
 }
 
-/************************************ Test for whole network ************************************
+/******************************** Test for multilayer perceptron ********************************
 * In a loop:
 *	-> inputs are set and unset
 *	-> output of input neurons is calculated -> in connection
@@ -40,20 +43,25 @@ public class aNN_Tests {
 *	-> Batch-learning: Calculate all results, then weights and thresholds
 * TODO:	class MultiLayerPerceptron verwenden
 ************************************************************************************************/
-class testsBuildingNetworks {
+class multilayerPerceptronTest {
 private
-	MultiLayerPerceptron mLPTest[];
+	MultiLayerPerceptron MultiLayerPerceptron[];
 	
 public	
 	// Constructor
-	testsBuildingNetworks(){
-		//MultiLayerPerceptron(inputNeurons, hiddenNeuronsPerLayer, hiddenLayers,
-		//						connectionsPerNeuron, outputNeurons)
-		mLPTest = new MultiLayerPerceptron[3];
-		mLPTest[0] = new MultiLayerPerceptron(2, 1, 1, 1, 1);
-		mLPTest[1] = new MultiLayerPerceptron(4, 2, 2, 2, 2);
-		mLPTest[2] = new MultiLayerPerceptron(8, 12, 6, 4, 4);
-		// TODO: Test für Teilerreste
+	multilayerPerceptronTest(){
+		//MultiLayerPerceptron(inputNeurons, hiddenNeuronsPerLayer, hiddenLayers, outputNeurons)
+		// TODO: Needed Tests:	// From each neuron to each neuron
+								// Split input neurons in 2 groups
+								// Split hidden neurons in 2 groups
+								// From each neuron to each neuron (between hidden layers)
+								// connectionsPerNeuron < hiddenNeuron.length
+								// Test für Teilerreste
+	
+		MultiLayerPerceptron = new MultiLayerPerceptron[3];
+		MultiLayerPerceptron[0] = new MultiLayerPerceptron(2, 1, 1, 1);
+		MultiLayerPerceptron[1] = new MultiLayerPerceptron(4, 2, 2, 2);
+		MultiLayerPerceptron[2] = new MultiLayerPerceptron(8, 12, 6, 4);
 	}
 	
 	/***************************************************************************************
@@ -64,12 +72,17 @@ public
 		//for (int inputVector = 0; inputVector < 16; inputVector++){
 		//	float[] testResult = mLPTest.run(inputValues);
 		
-		for (int i = 0; i < mLPTest.length; i++){
-			// Run with all inputs high
-			int[] outputVector = mLPTest[i].run(0b11111111);
+		for (int i = 0; i < MultiLayerPerceptron.length; i++){
 			
-			for (int nrVec = 0; nrVec < outputVector.length; nrVec++)
-				System.out.print("outputVector: " + outputVector[nrVec] + " | ");
+			// Run with all inputs high
+			int[] outputVector = MultiLayerPerceptron[i].run(0b11111111);
+			
+			for (int nrVec = 0; nrVec < outputVector.length; nrVec++){
+				if (nrVec > 0)
+					System.out.print(", ");
+					
+				System.out.print("outputVector[" + nrVec + "]: " + outputVector[nrVec]);
+			}
 			
 			System.out.print("\n--------------------------------------------------------\n");
 		}
