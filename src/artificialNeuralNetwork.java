@@ -105,7 +105,7 @@ public
 		// Reset net input
 		netInput = 0;
 		
-		// Input function f_net
+		// Net input function f_net
 		for (int i = 0; i < nrInputs; i++){
 			if((inputs & (1 << i)) == (1 << i))
 				netInput += weights[i];
@@ -262,8 +262,6 @@ public
 * class MultiLayerPerceptron:
 * automatically builds a multi-layer perceptron, see description of constructors for more details
 * Max. number of neurons per layer: 32
-* TODO:	Erstellen der Topologie in Constructor mit class Connection, in run() nur noch for-loop
-* 		der die connections runter rattert? 
 ************************************************************************************************/
 class MultiLayerPerceptron
 {
