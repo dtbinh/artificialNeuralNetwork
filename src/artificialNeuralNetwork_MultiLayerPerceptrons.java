@@ -32,235 +32,9 @@
 ************************************************************************************************/
 
 /************************************************************************************************
-* class Neuron:
-* up to 32 inputs possible
-* inputs are just 0 or 1
-* output = input.1*weights[0] + ... + input.32*weights[31]
-* So far, output = netInput
-* activated just returns true if output >= threshold
-* Note! So far, activated can just be called if getOutput was called before
-************************************************************************************************/
-class Neuron
-{
-private
-	int inputs;
-	int nrInputs;
-	// So far also used as output
-	int netInput;
-	int weights[];
-	int threshold;
-	// Used as output
-	Boolean activated;
-	
-public
-	// Constructor
-	Neuron(int nrInputs){
-		this.nrInputs = nrInputs;
-		weights = new int[nrInputs];
-		
-		// Initialize inputs, output and weights to 0, threshold to max
-		inputs = 0;
-		netInput = 0;
-		activated = false;
-		threshold = 0x7fffffff;
-		
-		for (int i = 0; i < nrInputs; i++)
-			weights[i] = 0;
-	}
-	
-	Boolean setInput(int nrInput){
-		if(nrInput < nrInputs){
-			inputs |= 1 << nrInput;
-			
-			return true;
-		}
-		
-		return false;
-	}
-	
-	Boolean unsetInput(int nrInput){
-		if(nrInput < nrInputs){
-			inputs &= ~(1 << nrInput);
-			
-			return true;
-		}
-		
-		return false;
-	}
-	
-	Boolean setWeight(int nrInput, int weight){
-		if(nrInput < weights.length){
-			weights[nrInput] = weight;
-			return true;
-		}
-		
-		return false;
-	}
-	
-	void setThreshold(int threshold){
-		this.threshold = threshold;
-	}
-	
-	int getOutput(){
-		// Reset net input
-		netInput = 0;
-		
-		// Net input function f_net
-		for (int i = 0; i < nrInputs; i++){
-			if((inputs & (1 << i)) == (1 << i))
-				netInput += weights[i];
-		}
-		
-		// Activation function f_act: step function
-		if (netInput >= threshold){
-			activated = true;
-			
-			// Output function f_out: Identity
-			return netInput;
-		}
-		else {
-			activated = false;
-			return 0;
-		}
-	}
-	
-	Boolean getActivation(){
-		return activated;
-	}
-}// class Neuron
-
-/************************************************************************************************
- * class NeuronFloat
- * Same as class Neuron, just using floats for weights, threshold and output
-************************************************************************************************/
-class NeuronFloat
-{
-private
-	int inputs;
-	int nrInputs;
-	// So far also used as output
-	float netInput;
-	float weights[];
-	float threshold;
-	// Used as output
-	Boolean activated;
-	
-public
-	// Constructor
-	NeuronFloat(int nrInputs){
-		this.nrInputs = nrInputs;
-		weights = new float[nrInputs];
-		
-		// Initialize inputs, output and weights to 0, threshold to max
-		inputs = 0;
-		netInput = 0;
-		activated = false;
-		threshold = 0x7fffffff;
-		
-		for (int i = 0; i < nrInputs; i++)
-			weights[i] = 0;
-	}
-	
-	Boolean setInput(int nrInput){
-		if(nrInput < nrInputs){
-			inputs |= 1 << nrInput;
-			
-			return true;
-		}
-		
-		return false;
-	}
-	
-	Boolean unsetInput(int nrInput){
-		if(nrInput < nrInputs){
-			inputs &= ~(1 << nrInput);
-			
-			return true;
-		}
-		
-		return false;
-	}
-	
-	Boolean setWeight(int nrInput, float weight){
-		if(nrInput < weights.length){
-			weights[nrInput] = weight;
-			return true;
-		}
-		
-		return false;
-	}
-	
-	void setThreshold(float threshold){
-		this.threshold = threshold;
-	}
-	
-	float getOutput(){
-		// Reset net input
-		netInput = 0;
-		
-		// Input function f_net
-		for (int i = 0; i < nrInputs; i++){
-			if((inputs & (1 << i)) == (1 << i))
-				netInput += weights[i];
-		}
-		
-		// Activation function f_act: step function
-		if (netInput >= threshold){
-			activated = true;
-			
-			// Output function f_out: Identity
-			return netInput;
-		}
-		else {
-			activated = false;
-			return 0;
-		}
-	}
-	
-	Boolean getActivation(){
-		return activated;
-	}
-}// class NeuronFloat
-
-/************************************************************************************************
-* class Connection:
-* Connects the output of a neuron to an input of another neuron
-* The weight of the following input is the output value times the weight of the connection
-************************************************************************************************/
-class Connection
-{
-private
-	Neuron neuronFrom;
-	Neuron neuronTo;
-	int input;
-	int connWeight;
-	int weightToSet;
-	
-public
-	//Constructor
-	Connection(Neuron neuronFrom, Neuron neuronTo, int input, int connWeight){
-		this.neuronFrom = neuronFrom;
-		this.neuronTo = neuronTo;
-		this.input = input;
-		this.connWeight = connWeight;
-	}// Connection()
-
-	void run(){
-		weightToSet = neuronFrom.getOutput();
-		weightToSet *= connWeight;
-		
-		neuronTo.setWeight(input, weightToSet);
-	
-		if (neuronFrom.getActivation())
-			neuronTo.setInput(input);
-		else
-			neuronTo.unsetInput(input);
-	}// run()
-}// class Connection
-
-/************************************************************************************************
 * class MultiLayerPerceptron:
-* automatically builds a multi-layer perceptron, see description of constructors for more details
+* automatically builds a multi-layer perceptron, using neurons with logistic function, see
+* description of constructors for more details
 * Max. number of neurons per layer: 32
 ************************************************************************************************/
 class MultiLayerPerceptron
@@ -271,15 +45,14 @@ private
 	Neuron outputNeuron[];
 	int hiddenLayers;
 	//int connectionsPerNeuron;
-	int inputConnWeights[];
-	int hiddenConnWeights[][];
-	int outputConnWeights[];
-	int outputVector[];
+	float inputConnWeights[];
+	float hiddenConnWeights[][];
+	float outputConnWeights[];
+	float outputVector[];
 	Connection inputConnection[];
 	Connection hiddenConnection[][];
 	Connection outputConnection[];
-	// float trainingVector[]; // 100 für 16 usw.
-	// Boolean keepGoing;	// For training loop
+	Boolean keepGoing;	// For training loop
 
 public
 	// Constructors
@@ -299,6 +72,7 @@ public
 	
 		int neededNeuronInputs;
 		
+		/*** Input layer ***/
 		// Just to prevent wrong usage
 		if (inputNeurons < 1)
 			inputNeurons = 1;
@@ -314,6 +88,7 @@ public
 			inputNeuron[i].setThreshold(1);
 		}
 		
+		/*** Hidden layer ***/
 		// Just to prevent wrong usage
 		if (hiddenNeuronsPerLayer < 1)
 			hiddenNeuronsPerLayer = 1;
@@ -350,6 +125,7 @@ public
 			}
 		}
 		
+		/*** Output layer ***/
 		// Just to prevent wrong usage
 		if (outputNeurons < 1)
 			outputNeurons = 1;
@@ -359,7 +135,7 @@ public
 			
 		outputNeuron = new Neuron[outputNeurons];
 		
-		outputVector = new int[outputNeurons];
+		outputVector = new float[outputNeurons];
 		
 		for (int i = 0; i < outputNeuron.length; i++){
 			
@@ -383,13 +159,14 @@ public
 			outputVector[i] = 0;
 		}
 		
+		/*** Connection weights ***/
 		// Initialize weights, all weights = 1
-		inputConnWeights = new int[inputNeurons * hiddenNeuronsPerLayer];
+		inputConnWeights = new float[inputNeurons * hiddenNeuronsPerLayer];
 		
 		for (int i = 0; i < (inputNeurons * hiddenNeuronsPerLayer); i++)
 			inputConnWeights[i] = 1;
 		
-		hiddenConnWeights = new int[hiddenLayers][hiddenNeuronsPerLayer * hiddenNeuronsPerLayer];
+		hiddenConnWeights = new float[hiddenLayers][hiddenNeuronsPerLayer * hiddenNeuronsPerLayer];
 
 		for (int i = 0; i < hiddenLayers; i++){
 			
@@ -397,7 +174,7 @@ public
 				hiddenConnWeights[i][j] = 1;
 		}
 		
-		outputConnWeights = new int[hiddenNeuronsPerLayer];
+		outputConnWeights = new float[hiddenNeuronsPerLayer];
 		
 		for (int i = 0; i < (hiddenNeuronsPerLayer); i++)
 			outputConnWeights[i] = 1;
@@ -460,34 +237,38 @@ public
 					outputNeuron[outNeur], inp, outputConnWeights[hidNeur]);
 		}
 		
-		//keepGoing  = false;
+		keepGoing  = false;
 	}// MultiLayerPerceptron()
 
 	/****************************************************************************************
-	* Multi-layer perceptron where:
-	*	output[i] = new Neuron((hiddenNeuronsPerLayer*connectionsPerNeuron)/outputNeurons);
-	*	 /* Number of total weights:
-	*	 *	inputNeurons *  connections	<- input - hidden layer 1
-	*	 *	+ hiddenLayers * connections	<- hiddenLayer 1 - n
-	*	 *	+ hiddenNeuronsPerLayer		<- hiddenLayer n - output <- Anders bei diesem Perzeptron
-	*	 */
+	* Multi-layer perceptron where number of input neurons, number of hidden neurons per
+	* layer, number of layers and number of output neurons can be defined.
+	* Also it is possible to define the type of connection between input layer and 1st hidden
+	* layer and between the hidden layers.
 	/****************************************************************************************/
+	MultiLayerPerceptron(int inputNeurons, int hiddenNeuronsPerLayer, int hiddenLayers,
+				int outputNeurons, String inputConnections, String hiddenConnections){
+		// Connections for input layer:	each: NrConnections = hidden, twoGroups: NrConnections = hidden/2, one: NrConnections = inputNeur\\
+		// Connections forr hidden Layer: each, cross and zigzag\\
+	}// MultiLayerPerceptron()
+	
 	/****************************************************************************************
-	* Multi-layer perceptron with crossed connections
+	* Multi-layer perceptron with output topologies each und groups
 	****************************************************************************************/
 	/****************************************************************************************
 	* Multi-layer perceptron with different numbers of hidden neurons per layer
+	* int[] hiddenNeuronsPerLayer, - int hiddenLayers,
+	* hiddenLayers = hiddenNeuronsPerLayer.length;
 	****************************************************************************************/
 	/****************************************************************************************
-	* Multi-layer perceptron with different numbers of connections between input layer and
-	* hidden layer and hidden layers
+	* Multi-layer perceptron with hidden neurons rising from inputs to variable / layer
 	****************************************************************************************/
 	
 	/****************************************************************************************
 	* Execute the built multi-layer perceptron with given input vector
 	* Returns the output vector
 	****************************************************************************************/
-	int[] run(int inputVector){
+	float[] run(int inputVector){
 		// DEBUG
 		System.out.println("inputNeurons: " + inputNeuron.length +
 				", hiddenNeuronsPerLayer: " + hiddenNeuron[0].length +
@@ -542,7 +323,55 @@ public
 		return outputVector;
 	}// run()
 	
-	//TODO: void training(int[] trainingVector) -> run() in while(keepGoing){if (outputVector != trainingVector)}
+	/****************************************************************************************
+	* Trains the multi layer perceptron
+	* Executes the perceptron with given input vector, compares with the given output vector,
+	* and calculates (if necessary) new connection weights and neuron thresholds
+	* Returns true if the output vector is correct, false is given output vector is too long
+	* or too short
+	****************************************************************************************/
+	Boolean training(int trainigInVector, float[] trainingOutVector){
+		float outVector[] = new float[outputVector.length];
+		
+		if (outVector.length != trainingOutVector.length)
+			return false;
+		
+		int debugStopTraining = 0;
+		
+		while(keepGoing){
+			outVector = run(trainigInVector);
+			
+			for (int i = 0; i < outVector.length; i++){
+			
+				// For debug purposes, print output vector
+				System.out.println("Trial " + debugStopTraining + ":");
+				
+				for (int deb = 0; deb < outVector.length; deb++){
+					System.out.print("trainingOutVector[" + deb + "]: " + trainingOutVector[deb]);
+					System.out.println(", outVector[" + deb + "]: " + outVector[deb]);
+				}
+			
+				// Wrong result, use backpropagation to find a better one
+				if (outVector[i] != trainingOutVector[i]){
+					//TODO: Backpropagation
+				}
+				
+				// All results are like we want them, stop training
+				else if (i == (outVector.length - 1))
+					keepGoing = false;
+			}
+			
+			// For debug purposes cancel training after 100 trials
+			debugStopTraining++;
+			
+			if (debugStopTraining >= 100)
+				return false;
+		}
+		
+		return true;
+	}// training()
+	
+	//Boolean training(int[] trainingVector, float errorTolerance) // in percentage terms
 }// class MultiLayerPerceptron
 
 /************************************************************************************************
