@@ -3,19 +3,21 @@
 Description, Header (File-Header too), Comments
 
 \section{class Neuron}
-class NeuronFloat implements class Neuron?
+class NeuronInt implements class Neuron?, if NeuronInt needed
 
 \section{class Connection}
-connectionFloat
+connectionInt, if NeuronInt needed
 
 \section{class MultiLayerPerceptron}
 Constructor mit Connections fuer input layer: each: NrConnections = hidden, twoGroups: NrConnections = hidden/2, one: NrConnections = inputNeur\\
 Constructor mit + Connections fuer hidden Layer: each, cross und zigzag\\
 Constructor mit + Output topologies each und groups\\
 Constructor mit hidden neurons rising from inputs to variable / layer\\
-Constructor mit Float\\
+Constructor mit int, if NeuronInt needed
 
 \chapter{class Neuron}
+Uses step function for calculating the output.
+
 \section{Attributes}
 \paragraph{int inputs}
 For all inputs one integer variable is used. So the neuron can handle up to 32 inputs, which can just be 0 or 1.
@@ -23,19 +25,19 @@ For all inputs one integer variable is used. So the neuron can handle up to 32 i
 \paragraph{int nrInputs}
 Specifies how many inputs (respectively bits of the variable \texttt{inputs}) shall be used.
 
-\paragraph{int netInput}
+\paragraph{float netInput}
 The result of the net input function:\\
 $netInput = input.1*weights[0] + ... + input.32*weights[31]$\\
 So far also used as output.
 
-\paragraph{int weights[]}
+\paragraph{float weights[]}
 The weights of the inputs. Array size depends on the number of inputs.
 
-\paragraph{int threshold}
+\paragraph{float threshold}
 The threshold when output is activated.
 
-\paragraph{Boolean activated}
-Boolean output, true if the calculated output is $>=$ the threshold.
+%\paragraph{Boolean activated}
+%Boolean output, true if the calculated output is $>=$ the threshold.
 
 \section{Constructors}
 \paragraph{Neuron(int nrInputs)}
@@ -50,39 +52,17 @@ Returns true if input was set, returns false if input number is to high.
 Sets given input to 0 by shifting a 1 to the corresponding bit in \texttt{inputs} and bitwise inverting it.\\
 Returns true if input was unset, returns false if input number is to high.
 
-\paragraph{Boolean setWeight(int nrInput, int weight)}
+\paragraph{Boolean setWeight(int nrInput, float weight)}
 Puts the given weight into the for the given input corresponding field in the weights array.\\
 Returns true if weight was set, returns false if input number is to high.
 
-\paragraph{void setThreshold(int threshold)}
+\paragraph{void setThreshold(float threshold)}
 Sets threshold for the neuron.
 
-\paragraph{int getOutput()}
+\paragraph{float getOutput()}
 Calculates the \texttt{netInput}, the result of the net input function, and uses the activation function for returning the output.\\
 So far, there is no extra output variable in the class, since the output function is just the identity. So the method returns the variable \texttt{netInput}.\\
 So far, the activation function is just a step function, which is implemented as a simple if-else.
-
-\paragraph{Boolean getActivation()}
-Returns \texttt{activated}, which is true if the calculated output is $>=$ the threshold.\\
-Note! So far, activated can just be called if \texttt{getOutput} was called before\\
-
-\chapter{class NeuronFloat}
-Same as class Neuron, just using floats for weights, threshold and output.
-
-\section{Attributes}
-\paragraph{int inputs}
-\paragraph{int nrInputs}
-\paragraph{float netInput}
-\paragraph{float weights[]}
-\paragraph{float threshold}
-\paragraph{Boolean activated}
-
-\section{Constructors}
-\paragraph{NeuronFloat(int nrInputs)}
-Same as \texttt{Neuron(int nrInputs)}.
-
-\paragraph{Methods}
-Same as in \texttt{class Neuron}.
 
 \chapter{class Connection}
 Connects the output of a neuron to an input of another neuron. The weight of the following input is the output value times the weight of the connection.
@@ -97,14 +77,14 @@ Neuron the input is set.
 \paragraph{int input}
 Input of \texttt{neuronTo} which is set.
 
-\paragraph{int connWeight}
+\paragraph{float connWeight}
 Weight of the connection.
 
-\paragraph{int weightToSet}
+\paragraph{float weightToSet}
 Weight set in \texttt{neuronTo}. Output of \texttt{neuronFrom} $*$ weight of connection.
 
 \section{Constructors}
-\paragraph{Connection(Neuron neuronFrom, Neuron neuronTo, int input, int connWeight)}
+\paragraph{Connection(Neuron neuronFrom, Neuron neuronTo, int input, float connWeight)}
 Just sets \texttt{neuronFrom}, \texttt{neuronTo}, \texttt{input}, and \texttt{connWeight}.
 
 \section{Methods}
@@ -129,16 +109,16 @@ Output layer, size depends on definition.
 \paragraph{int hiddenLayers}
 Size of 1st dimension of array \texttt{hiddenNeuron}. Depending on the constructor this value may be settable or be calculated in the constructor.
 
-\paragraph{int inputConnWeights[]}
+\paragraph{float inputConnWeights[]}
 Weights of the connections between input layer and 1st hidden layer.
 
-\paragraph{int hiddenConnWeights[][]}
+\paragraph{float hiddenConnWeights[][]}
 Weights of the connections between the hidden layers (if more than 1 is defined or calculated). The size of the 1st dimension of this array is set by \texttt{hiddenLayers}.
 
-\paragraph{int outputConnWeights[]}
+\paragraph{float outputConnWeights[]}
 Weights of the connections between the last hidden layer and the output layer.
 
-\paragraph{int outputVector[]}
+\paragraph{float outputVector[]}
 The result of the multi layer perceptron, is returned by the method \texttt{run()}. The size of the array depends on the number of output neurons.
 
 \paragraph{Connection inputConnection[]}
@@ -159,7 +139,7 @@ The constructor calculates the amount of weights for each layer, stored in the c
 The output vector is set to 0.
 
 \section{Methods}
-\paragraph{int[] run(int inputVector)}
+\paragraph{float[] run(int inputVector)}
 The method just executes the built multi-layer perceptron. The inputs of the input neurons are set with the given input vector. Than the connections of the different layers are executed one after another, starting with the first connection of the input layer, by calling the \texttt{run()}-methods of the connections. Finally, the \texttt{getOutput()}-methods of the output-neurons are called and the output vector returned.
 
 \chapter{Prospective Enhancements}
@@ -168,10 +148,9 @@ Using type long instead of int so neuron can handle up to 64 inputs.
 
 \section{Activation function and Output function settable}
 (Into extra classes so class Neuron remains as small as possible)\\
-So far neuron just uses step function.\\
 (siehe ComputaionalIntelligence S.52)\\
 % \begin{tabbing}
-Sprungfunktion:	if (netInput >= threshold) return netInput; else return 0;\\
+Step function:	if (netInput >= threshold) return netInput; else return 0;\\
 semi-lineare Funktion: if (netInput > threshold + 1/2) return netInput;\\
 else if ((netInput < threshold + 1/2) \&\& (netInput > threshold - 1/2)) output = (netInput - threshold) + 1/2;\\
 else return 0;\\

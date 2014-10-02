@@ -10,16 +10,17 @@ public class aNN_Tests {
 	public static void main(String[] args){
 		
 		// Unit test for class Neuron
+		// TODO: Neu ausführen und diff mit result von 28., danach class Neuron umbennen in ThresholdItem
 		// Passed with floats, 28.Sep.14
-		//unitTestNeuron uTNeuron = new unitTestNeuron();
+		unitTestNeuron uTNeuron = new unitTestNeuron();
 		
-		//uTNeuron.runTest();
+		uTNeuron.runTest();
 		
 		// Test for whole network, needs debug prints, look at commit when passed,
 		// in class otherwise you'll just see the output vector
-		multilayerPerceptronTest multilayerPerceptronTest = new multilayerPerceptronTest();
+		//multilayerPerceptronTest multilayerPerceptronTest = new multilayerPerceptronTest();
 		
-		multilayerPerceptronTest.runTest();
+		//multilayerPerceptronTest.runTest();
 		
 		//TODO: Test mit Training: Backpropagation
 		//		-> Vergleich von verschiedenen Topologien, welche erreicht am schnellsten die lösung
@@ -41,7 +42,6 @@ public class aNN_Tests {
 *
 *	-> Online-learning: Calculate weights and threshold for first result, than second etc
 *	-> Batch-learning: Calculate all results, then weights and thresholds
-* TODO:	class MultiLayerPerceptron verwenden
 ************************************************************************************************/
 class multilayerPerceptronTest {
 private
@@ -75,7 +75,7 @@ public
 		for (int i = 0; i < MultiLayerPerceptron.length; i++){
 			
 			// Run with all inputs high
-			int[] outputVector = MultiLayerPerceptron[i].run(0b11111111);
+			float[] outputVector = MultiLayerPerceptron[i].run(0b11111111);
 			
 			for (int nrVec = 0; nrVec < outputVector.length; nrVec++){
 				if (nrVec > 0)
@@ -92,12 +92,18 @@ public
 
 /*************************************** Unit Test Neuron ***************************************
 * neuron with 1,2 and 4 inputs - every input gets toggled
-* weights -1 and 1 - every possible combination
-* threshold -2, -1, 1 and 2
+* weights:	case 0: All weights = -1.9f;
+		case 1: All weights = 2.3f;
+		case 2: Weight 1 & 2 = -1, weight 3 & 4 =  1;
+		case 3: Weight 1 & 3 = 1.5f, weight 2 & 4 = 3.4f;
+		case 4: Weight 1 = 3.4f, weight 2 = 2.3f, weight 3 = 1, weight 4 = -1;
+* threshold -2.1f, 1.3f, 2.5f and 4
+* Simulation of training at the end: Changing threshold and get result again and changing
+* weights and get result again
 ************************************************************************************************/
 class unitTestNeuron {
 private
-	NeuronFloat testNeuron;
+	Neuron testNeuron;
 	int nrInputs;
 	int maxNrInputs;
 	int setInputs;
@@ -107,7 +113,7 @@ private
 public
 	// Constructor
 	unitTestNeuron(){
-	testNeuron = new NeuronFloat(0);
+	testNeuron = new Neuron(0);
 	nrInputs = 1;
 	maxNrInputs = 4;
 	setInputs = 0b0000;
@@ -126,7 +132,7 @@ public
 		System.out.println("// Number of inputs: 1, 2 & 4");
 		
 		for (; nrInputs <= maxNrInputs; nrInputs *= 2){
-			testNeuron = new NeuronFloat(nrInputs);
+			testNeuron = new Neuron(nrInputs);
 				
 			System.out.println("Testing constructor");
 			System.out.print("nrInputs: " + nrInputs + "\n\n");

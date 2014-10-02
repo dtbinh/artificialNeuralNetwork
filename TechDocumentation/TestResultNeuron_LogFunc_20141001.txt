@@ -1,0 +1,746 @@
+// Number of inputs: 1, 2 & 4
+Testing constructor
+nrInputs: 1
+
+// Set/unset inputs just with constructor, cases: 1010, 1111
+
+Inputs: 1010, Output: 0.0
+
+
+Inputs: 1111, Output: 0.0
+
+
+// Set threshold
+treshold: -2.1
+
+// Set weights
+w0: -1.9
+
+// Set/unset inputs
+Inputs: 0, Output: 0.8909032
+Inputs: 11, Output: 0.54983395
+Inputs: 101, Output: 0.54983395
+Inputs: 1010, Output: 0.8909032
+Inputs: 1100, Output: 0.8909032
+Inputs: 1111, Output: 0.54983395
+
+// Set weights
+w0: 2.3
+
+// Set/unset inputs
+Inputs: 0, Output: 0.8909032
+Inputs: 11, Output: 0.9878716
+Inputs: 101, Output: 0.9878716
+Inputs: 1010, Output: 0.8909032
+Inputs: 1100, Output: 0.8909032
+Inputs: 1111, Output: 0.9878716
+
+// Set weights
+w0: -1.0
+
+// Set/unset inputs
+Inputs: 0, Output: 0.8909032
+Inputs: 11, Output: 0.7502601
+Inputs: 101, Output: 0.7502601
+Inputs: 1010, Output: 0.8909032
+Inputs: 1100, Output: 0.8909032
+Inputs: 1111, Output: 0.7502601
+
+// Set weights
+w0: 1.5
+
+// Set/unset inputs
+Inputs: 0, Output: 0.8909032
+Inputs: 11, Output: 0.973403
+Inputs: 101, Output: 0.973403
+Inputs: 1010, Output: 0.8909032
+Inputs: 1100, Output: 0.8909032
+Inputs: 1111, Output: 0.973403
+
+// Set weights
+w0: 3.4
+
+// Set/unset inputs
+Inputs: 0, Output: 0.8909032
+Inputs: 11, Output: 0.99592984
+Inputs: 101, Output: 0.99592984
+Inputs: 1010, Output: 0.8909032
+Inputs: 1100, Output: 0.8909032
+Inputs: 1111, Output: 0.99592984
+
+// Set threshold
+treshold: 1.3
+
+// Set weights
+w0: -1.9
+
+// Set/unset inputs
+Inputs: 0, Output: 0.21416503
+Inputs: 11, Output: 0.03916573
+Inputs: 101, Output: 0.03916573
+Inputs: 1010, Output: 0.21416503
+Inputs: 1100, Output: 0.21416503
+Inputs: 1111, Output: 0.03916573
+
+// Set weights
+w0: 2.3
+
+// Set/unset inputs
+Inputs: 0, Output: 0.21416503
+Inputs: 11, Output: 0.7310586
+Inputs: 101, Output: 0.7310586
+Inputs: 1010, Output: 0.21416503
+Inputs: 1100, Output: 0.21416503
+Inputs: 1111, Output: 0.7310586
+
+// Set weights
+w0: -1.0
+
+// Set/unset inputs
+Inputs: 0, Output: 0.21416503
+Inputs: 11, Output: 0.09112296
+Inputs: 101, Output: 0.09112296
+Inputs: 1010, Output: 0.21416503
+Inputs: 1100, Output: 0.21416503
+Inputs: 1111, Output: 0.09112296
+
+// Set weights
+w0: 1.5
+
+// Set/unset inputs
+Inputs: 0, Output: 0.21416503
+Inputs: 11, Output: 0.549834
+Inputs: 101, Output: 0.549834
+Inputs: 1010, Output: 0.21416503
+Inputs: 1100, Output: 0.21416503
+Inputs: 1111, Output: 0.549834
+
+// Set weights
+w0: 3.4
+
+// Set/unset inputs
+Inputs: 0, Output: 0.21416503
+Inputs: 11, Output: 0.8909032
+Inputs: 101, Output: 0.8909032
+Inputs: 1010, Output: 0.21416503
+Inputs: 1100, Output: 0.21416503
+Inputs: 1111, Output: 0.8909032
+
+// Set threshold
+treshold: 2.5
+
+// Set weights
+w0: -1.9
+
+// Set/unset inputs
+Inputs: 0, Output: 0.07585818
+Inputs: 11, Output: 0.012128434
+Inputs: 101, Output: 0.012128434
+Inputs: 1010, Output: 0.07585818
+Inputs: 1100, Output: 0.07585818
+Inputs: 1111, Output: 0.012128434
+
+// Set weights
+w0: 2.3
+
+// Set/unset inputs
+Inputs: 0, Output: 0.07585818
+Inputs: 11, Output: 0.450166
+Inputs: 101, Output: 0.450166
+Inputs: 1010, Output: 0.07585818
+Inputs: 1100, Output: 0.07585818
+Inputs: 1111, Output: 0.450166
+
+// Set weights
+w0: -1.0
+
+// Set/unset inputs
+Inputs: 0, Output: 0.07585818
+Inputs: 11, Output: 0.02931223
+Inputs: 101, Output: 0.02931223
+Inputs: 1010, Output: 0.07585818
+Inputs: 1100, Output: 0.07585818
+Inputs: 1111, Output: 0.02931223
+
+// Set weights
+w0: 1.5
+
+// Set/unset inputs
+Inputs: 0, Output: 0.07585818
+Inputs: 11, Output: 0.26894143
+Inputs: 101, Output: 0.26894143
+Inputs: 1010, Output: 0.07585818
+Inputs: 1100, Output: 0.07585818
+Inputs: 1111, Output: 0.26894143
+
+// Set weights
+w0: 3.4
+
+// Set/unset inputs
+Inputs: 0, Output: 0.07585818
+Inputs: 11, Output: 0.71094954
+Inputs: 101, Output: 0.71094954
+Inputs: 1010, Output: 0.07585818
+Inputs: 1100, Output: 0.07585818
+Inputs: 1111, Output: 0.71094954
+
+// Set threshold
+treshold: 4.0
+
+// Set weights
+w0: -1.9
+
+// Set/unset inputs
+Inputs: 0, Output: 0.01798621
+Inputs: 11, Output: 0.0027319605
+Inputs: 101, Output: 0.0027319605
+Inputs: 1010, Output: 0.01798621
+Inputs: 1100, Output: 0.01798621
+Inputs: 1111, Output: 0.0027319605
+
+// Set weights
+w0: 2.3
+
+// Set/unset inputs
+Inputs: 0, Output: 0.01798621
+Inputs: 11, Output: 0.15446526
+Inputs: 101, Output: 0.15446526
+Inputs: 1010, Output: 0.01798621
+Inputs: 1100, Output: 0.01798621
+Inputs: 1111, Output: 0.15446526
+
+// Set weights
+w0: -1.0
+
+// Set/unset inputs
+Inputs: 0, Output: 0.01798621
+Inputs: 11, Output: 0.006692851
+Inputs: 101, Output: 0.006692851
+Inputs: 1010, Output: 0.01798621
+Inputs: 1100, Output: 0.01798621
+Inputs: 1111, Output: 0.006692851
+
+// Set weights
+w0: 1.5
+
+// Set/unset inputs
+Inputs: 0, Output: 0.01798621
+Inputs: 11, Output: 0.07585818
+Inputs: 101, Output: 0.07585818
+Inputs: 1010, Output: 0.01798621
+Inputs: 1100, Output: 0.01798621
+Inputs: 1111, Output: 0.07585818
+
+// Set weights
+w0: 3.4
+
+// Set/unset inputs
+Inputs: 0, Output: 0.01798621
+Inputs: 11, Output: 0.3543437
+Inputs: 101, Output: 0.3543437
+Inputs: 1010, Output: 0.01798621
+Inputs: 1100, Output: 0.01798621
+Inputs: 1111, Output: 0.3543437
+Testing constructor
+nrInputs: 2
+
+// Set/unset inputs just with constructor, cases: 1010, 1111
+
+Inputs: 1010, Output: 0.0
+
+
+Inputs: 1111, Output: 0.0
+
+
+// Set threshold
+treshold: -2.1
+
+// Set weights
+w0: -1.9, w1: -1.9
+
+// Set/unset inputs
+Inputs: 0, Output: 0.8909032
+Inputs: 11, Output: 0.15446526
+Inputs: 101, Output: 0.54983395
+Inputs: 1010, Output: 0.54983395
+Inputs: 1100, Output: 0.8909032
+Inputs: 1111, Output: 0.15446526
+
+// Set weights
+w0: 2.3, w1: 2.3
+
+// Set/unset inputs
+Inputs: 0, Output: 0.8909032
+Inputs: 11, Output: 0.9987706
+Inputs: 101, Output: 0.9878716
+Inputs: 1010, Output: 0.9878716
+Inputs: 1100, Output: 0.8909032
+Inputs: 1111, Output: 0.9987706
+
+// Set weights
+w0: -1.0, w1: -1.0
+
+// Set/unset inputs
+Inputs: 0, Output: 0.8909032
+Inputs: 11, Output: 0.5249792
+Inputs: 101, Output: 0.7502601
+Inputs: 1010, Output: 0.7502601
+Inputs: 1100, Output: 0.8909032
+Inputs: 1111, Output: 0.5249792
+
+// Set weights
+w0: 1.5, w1: 3.4
+
+// Set/unset inputs
+Inputs: 0, Output: 0.8909032
+Inputs: 11, Output: 0.99908894
+Inputs: 101, Output: 0.973403
+Inputs: 1010, Output: 0.99592984
+Inputs: 1100, Output: 0.8909032
+Inputs: 1111, Output: 0.99908894
+
+// Set weights
+w0: 3.4, w1: 2.3
+
+// Set/unset inputs
+Inputs: 0, Output: 0.8909032
+Inputs: 11, Output: 0.99959046
+Inputs: 101, Output: 0.99592984
+Inputs: 1010, Output: 0.9878716
+Inputs: 1100, Output: 0.8909032
+Inputs: 1111, Output: 0.99959046
+
+// Set threshold
+treshold: 1.3
+
+// Set weights
+w0: -1.9, w1: -1.9
+
+// Set/unset inputs
+Inputs: 0, Output: 0.21416503
+Inputs: 11, Output: 0.006059802
+Inputs: 101, Output: 0.03916573
+Inputs: 1010, Output: 0.03916573
+Inputs: 1100, Output: 0.21416503
+Inputs: 1111, Output: 0.006059802
+
+// Set weights
+w0: 2.3, w1: 2.3
+
+// Set/unset inputs
+Inputs: 0, Output: 0.21416503
+Inputs: 11, Output: 0.9644288
+Inputs: 101, Output: 0.7310586
+Inputs: 1010, Output: 0.7310586
+Inputs: 1100, Output: 0.21416503
+Inputs: 1111, Output: 0.9644288
+
+// Set weights
+w0: -1.0, w1: -1.0
+
+// Set/unset inputs
+Inputs: 0, Output: 0.21416503
+Inputs: 11, Output: 0.03557119
+Inputs: 101, Output: 0.09112296
+Inputs: 1010, Output: 0.09112296
+Inputs: 1100, Output: 0.21416503
+Inputs: 1111, Output: 0.03557119
+
+// Set weights
+w0: 1.5, w1: 3.4
+
+// Set/unset inputs
+Inputs: 0, Output: 0.21416503
+Inputs: 11, Output: 0.97340304
+Inputs: 101, Output: 0.549834
+Inputs: 1010, Output: 0.8909032
+Inputs: 1100, Output: 0.21416503
+Inputs: 1111, Output: 0.97340304
+
+// Set weights
+w0: 3.4, w1: 2.3
+
+// Set/unset inputs
+Inputs: 0, Output: 0.21416503
+Inputs: 11, Output: 0.9878716
+Inputs: 101, Output: 0.8909032
+Inputs: 1010, Output: 0.7310586
+Inputs: 1100, Output: 0.21416503
+Inputs: 1111, Output: 0.9878716
+
+// Set threshold
+treshold: 2.5
+
+// Set weights
+w0: -1.9, w1: -1.9
+
+// Set/unset inputs
+Inputs: 0, Output: 0.07585818
+Inputs: 11, Output: 0.0018329386
+Inputs: 101, Output: 0.012128434
+Inputs: 1010, Output: 0.012128434
+Inputs: 1100, Output: 0.07585818
+Inputs: 1111, Output: 0.0018329386
+
+// Set weights
+w0: 2.3, w1: 2.3
+
+// Set/unset inputs
+Inputs: 0, Output: 0.07585818
+Inputs: 11, Output: 0.8909032
+Inputs: 101, Output: 0.450166
+Inputs: 1010, Output: 0.450166
+Inputs: 1100, Output: 0.07585818
+Inputs: 1111, Output: 0.8909032
+
+// Set weights
+w0: -1.0, w1: -1.0
+
+// Set/unset inputs
+Inputs: 0, Output: 0.07585818
+Inputs: 11, Output: 0.010986943
+Inputs: 101, Output: 0.02931223
+Inputs: 1010, Output: 0.02931223
+Inputs: 1100, Output: 0.07585818
+Inputs: 1111, Output: 0.010986943
+
+// Set weights
+w0: 1.5, w1: 3.4
+
+// Set/unset inputs
+Inputs: 0, Output: 0.07585818
+Inputs: 11, Output: 0.9168273
+Inputs: 101, Output: 0.26894143
+Inputs: 1010, Output: 0.71094954
+Inputs: 1100, Output: 0.07585818
+Inputs: 1111, Output: 0.9168273
+
+// Set weights
+w0: 3.4, w1: 2.3
+
+// Set/unset inputs
+Inputs: 0, Output: 0.07585818
+Inputs: 11, Output: 0.96083426
+Inputs: 101, Output: 0.71094954
+Inputs: 1010, Output: 0.450166
+Inputs: 1100, Output: 0.07585818
+Inputs: 1111, Output: 0.96083426
+
+// Set threshold
+treshold: 4.0
+
+// Set weights
+w0: -1.9, w1: -1.9
+
+// Set/unset inputs
+Inputs: 0, Output: 0.01798621
+Inputs: 11, Output: 4.095671E-4
+Inputs: 101, Output: 0.0027319605
+Inputs: 1010, Output: 0.0027319605
+Inputs: 1100, Output: 0.01798621
+Inputs: 1111, Output: 4.095671E-4
+
+// Set weights
+w0: 2.3, w1: 2.3
+
+// Set/unset inputs
+Inputs: 0, Output: 0.01798621
+Inputs: 11, Output: 0.6456563
+Inputs: 101, Output: 0.15446526
+Inputs: 1010, Output: 0.15446526
+Inputs: 1100, Output: 0.01798621
+Inputs: 1111, Output: 0.6456563
+
+// Set weights
+w0: -1.0, w1: -1.0
+
+// Set/unset inputs
+Inputs: 0, Output: 0.01798621
+Inputs: 11, Output: 0.0024726233
+Inputs: 101, Output: 0.006692851
+Inputs: 1010, Output: 0.006692851
+Inputs: 1100, Output: 0.01798621
+Inputs: 1111, Output: 0.0024726233
+
+// Set weights
+w0: 1.5, w1: 3.4
+
+// Set/unset inputs
+Inputs: 0, Output: 0.01798621
+Inputs: 11, Output: 0.71094954
+Inputs: 101, Output: 0.07585818
+Inputs: 1010, Output: 0.3543437
+Inputs: 1100, Output: 0.01798621
+Inputs: 1111, Output: 0.71094954
+
+// Set weights
+w0: 3.4, w1: 2.3
+
+// Set/unset inputs
+Inputs: 0, Output: 0.01798621
+Inputs: 11, Output: 0.8455347
+Inputs: 101, Output: 0.3543437
+Inputs: 1010, Output: 0.15446526
+Inputs: 1100, Output: 0.01798621
+Inputs: 1111, Output: 0.8455347
+Testing constructor
+nrInputs: 4
+
+// Set/unset inputs just with constructor, cases: 1010, 1111
+
+Inputs: 1010, Output: 0.0
+
+
+Inputs: 1111, Output: 0.0
+
+
+// Set threshold
+treshold: -2.1
+
+// Set weights
+w0: -1.9, w1: -1.9, w2: -1.9, w3: -1.9
+
+// Set/unset inputs
+Inputs: 0, Output: 0.8909032
+Inputs: 11, Output: 0.15446526
+Inputs: 101, Output: 0.15446526
+Inputs: 1010, Output: 0.15446526
+Inputs: 1100, Output: 0.15446526
+Inputs: 1111, Output: 0.0040701376
+
+// Set weights
+w0: 2.3, w1: 2.3, w2: 2.3, w3: 2.3
+
+// Set/unset inputs
+Inputs: 0, Output: 0.8909032
+Inputs: 11, Output: 0.9987706
+Inputs: 101, Output: 0.9987706
+Inputs: 1010, Output: 0.9987706
+Inputs: 1100, Output: 0.9987706
+Inputs: 1111, Output: 0.9999876
+
+// Set weights
+w0: -1.0, w1: -1.0, w2: 1.0, w3: 1.0
+
+// Set/unset inputs
+Inputs: 0, Output: 0.8909032
+Inputs: 11, Output: 0.5249792
+Inputs: 101, Output: 0.8909032
+Inputs: 1010, Output: 0.8909032
+Inputs: 1100, Output: 0.9836975
+Inputs: 1111, Output: 0.8909032
+
+// Set weights
+w0: 1.5, w1: 3.4, w2: 1.5, w3: 3.4
+
+// Set/unset inputs
+Inputs: 0, Output: 0.8909032
+Inputs: 11, Output: 0.99908894
+Inputs: 101, Output: 0.9939402
+Inputs: 1010, Output: 0.9998636
+Inputs: 1100, Output: 0.99908894
+Inputs: 1111, Output: 0.9999932
+
+// Set weights
+w0: 3.4, w1: 2.3, w2: 1.0, w3: -1.0
+
+// Set/unset inputs
+Inputs: 0, Output: 0.8909032
+Inputs: 11, Output: 0.99959046
+Inputs: 101, Output: 0.9984988
+Inputs: 1010, Output: 0.96770453
+Inputs: 1100, Output: 0.8909032
+Inputs: 1111, Output: 0.99959046
+
+// Set threshold
+treshold: 1.3
+
+// Set weights
+w0: -1.9, w1: -1.9, w2: -1.9, w3: -1.9
+
+// Set/unset inputs
+Inputs: 0, Output: 0.21416503
+Inputs: 11, Output: 0.006059802
+Inputs: 101, Output: 0.006059802
+Inputs: 1010, Output: 0.006059802
+Inputs: 1100, Output: 0.006059802
+Inputs: 1111, Output: 1.3637038E-4
+
+// Set weights
+w0: 2.3, w1: 2.3, w2: 2.3, w3: 2.3
+
+// Set/unset inputs
+Inputs: 0, Output: 0.21416503
+Inputs: 11, Output: 0.9644288
+Inputs: 101, Output: 0.9644288
+Inputs: 1010, Output: 0.9644288
+Inputs: 1100, Output: 0.9644288
+Inputs: 1111, Output: 0.9996294
+
+// Set weights
+w0: -1.0, w1: -1.0, w2: 1.0, w3: 1.0
+
+// Set/unset inputs
+Inputs: 0, Output: 0.21416503
+Inputs: 11, Output: 0.03557119
+Inputs: 101, Output: 0.21416503
+Inputs: 1010, Output: 0.21416503
+Inputs: 1100, Output: 0.6681878
+Inputs: 1111, Output: 0.21416503
+
+// Set weights
+w0: 1.5, w1: 3.4, w2: 1.5, w3: 3.4
+
+// Set/unset inputs
+Inputs: 0, Output: 0.21416503
+Inputs: 11, Output: 0.97340304
+Inputs: 101, Output: 0.84553474
+Inputs: 1010, Output: 0.99592984
+Inputs: 1100, Output: 0.97340304
+Inputs: 1111, Output: 0.99979657
+
+// Set weights
+w0: 3.4, w1: 2.3, w2: 1.0, w3: -1.0
+
+// Set/unset inputs
+Inputs: 0, Output: 0.21416503
+Inputs: 11, Output: 0.9878716
+Inputs: 101, Output: 0.9568927
+Inputs: 1010, Output: 0.5
+Inputs: 1100, Output: 0.21416503
+Inputs: 1111, Output: 0.9878716
+
+// Set threshold
+treshold: 2.5
+
+// Set weights
+w0: -1.9, w1: -1.9, w2: -1.9, w3: -1.9
+
+// Set/unset inputs
+Inputs: 0, Output: 0.07585818
+Inputs: 11, Output: 0.0018329386
+Inputs: 101, Output: 0.0018329386
+Inputs: 1010, Output: 0.0018329386
+Inputs: 1100, Output: 0.0018329386
+Inputs: 1111, Output: 4.1077852E-5
+
+// Set weights
+w0: 2.3, w1: 2.3, w2: 2.3, w3: 2.3
+
+// Set/unset inputs
+Inputs: 0, Output: 0.07585818
+Inputs: 11, Output: 0.8909032
+Inputs: 101, Output: 0.8909032
+Inputs: 1010, Output: 0.8909032
+Inputs: 1100, Output: 0.8909032
+Inputs: 1111, Output: 0.9987706
+
+// Set weights
+w0: -1.0, w1: -1.0, w2: 1.0, w3: 1.0
+
+// Set/unset inputs
+Inputs: 0, Output: 0.07585818
+Inputs: 11, Output: 0.010986943
+Inputs: 101, Output: 0.07585818
+Inputs: 1010, Output: 0.07585818
+Inputs: 1100, Output: 0.37754068
+Inputs: 1111, Output: 0.07585818
+
+// Set weights
+w0: 1.5, w1: 3.4, w2: 1.5, w3: 3.4
+
+// Set/unset inputs
+Inputs: 0, Output: 0.07585818
+Inputs: 11, Output: 0.9168273
+Inputs: 101, Output: 0.62245935
+Inputs: 1010, Output: 0.9866131
+Inputs: 1100, Output: 0.9168273
+Inputs: 1111, Output: 0.9993249
+
+// Set weights
+w0: 3.4, w1: 2.3, w2: 1.0, w3: -1.0
+
+// Set/unset inputs
+Inputs: 0, Output: 0.07585818
+Inputs: 11, Output: 0.96083426
+Inputs: 101, Output: 0.8698915
+Inputs: 1010, Output: 0.2314752
+Inputs: 1100, Output: 0.07585818
+Inputs: 1111, Output: 0.96083426
+
+// Set threshold
+treshold: 4.0
+
+// Set weights
+w0: -1.9, w1: -1.9, w2: -1.9, w3: -1.9
+
+// Set/unset inputs
+Inputs: 0, Output: 0.01798621
+Inputs: 11, Output: 4.095671E-4
+Inputs: 101, Output: 4.095671E-4
+Inputs: 1010, Output: 4.095671E-4
+Inputs: 1100, Output: 4.095671E-4
+Inputs: 1111, Output: 9.166E-6
+
+// Set weights
+w0: 2.3, w1: 2.3, w2: 2.3, w3: 2.3
+
+// Set/unset inputs
+Inputs: 0, Output: 0.01798621
+Inputs: 11, Output: 0.6456563
+Inputs: 101, Output: 0.6456563
+Inputs: 1010, Output: 0.6456563
+Inputs: 1100, Output: 0.6456563
+Inputs: 1111, Output: 0.9945137
+
+// Set weights
+w0: -1.0, w1: -1.0, w2: 1.0, w3: 1.0
+
+// Set/unset inputs
+Inputs: 0, Output: 0.01798621
+Inputs: 11, Output: 0.0024726233
+Inputs: 101, Output: 0.01798621
+Inputs: 1010, Output: 0.01798621
+Inputs: 1100, Output: 0.11920292
+Inputs: 1111, Output: 0.01798621
+
+// Set weights
+w0: 1.5, w1: 3.4, w2: 1.5, w3: 3.4
+
+// Set/unset inputs
+Inputs: 0, Output: 0.01798621
+Inputs: 11, Output: 0.71094954
+Inputs: 101, Output: 0.26894143
+Inputs: 1010, Output: 0.9426758
+Inputs: 1100, Output: 0.71094954
+Inputs: 1111, Output: 0.99698156
+
+// Set weights
+w0: 3.4, w1: 2.3, w2: 1.0, w3: -1.0
+
+// Set/unset inputs
+Inputs: 0, Output: 0.01798621
+Inputs: 11, Output: 0.8455347
+Inputs: 101, Output: 0.5986877
+Inputs: 1010, Output: 0.06297335
+Inputs: 1100, Output: 0.01798621
+Inputs: 1111, Output: 0.8455347
+// Simulate training: nrInputs = 4, setInputs = 0b1111
+// threshold = 4, weights = {3.4, 2.3, 1, -1}
+w0: 3.4, w1: 2.3, w2: 1.0, w3: -1.0
+
+// Change threshold and get output
+treshold: 2.5
+Inputs: 1111, Output: 0.96083426
+
+treshold: 1.3
+Inputs: 1111, Output: 0.9878716
+
+treshold: 4.0
+// Change weights and get output
+w0: 2.1, w1: 2.1, w2: 1.6, w3: 1.6
+Inputs: 1111, Output: 0.96770453
+
+w0: -1.0, w1: 2.0, w2: 2.0, w3: 3.0
+Inputs: 1111, Output: 0.8807971
+
