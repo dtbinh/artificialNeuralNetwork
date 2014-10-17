@@ -1,5 +1,5 @@
 /********************************** Artificial neural network ***********************************
-* TODO:	Description, Header, Comments
+* TODO:	Description, Header, Comments, TechDoc
 * 		class Neuron64 mit long für inputs
 * 		class NeuronFloat & class Neuron64 implements class Neuron?
 * 		connectionFloat
@@ -60,7 +60,7 @@ public
 	* Multi-layer perceptron where number of input neurons, number of hidden neurons per
 	* layer, number of layers and number of output neurons can (has to) be defined.
 	* Each neuron will be connected to each neuron of the following layer (Except output layer).
-	* TODO: Next Constructos: With connectionsPerNeuron the number of connections to the neurons of the following
+	* TODO: Next Constructors: With connectionsPerNeuron the number of connections to the neurons of the following
 	* layer are defined (-> number of outputs of neuron (excl output neurons))
 	* In case of more than 1 output neuron the outputs of the last layer are splitted to the
 	* output neurons; the lower hidden neurons to the lower output neurons etc
@@ -166,7 +166,7 @@ public
 		for (int i = 0; i < (inputNeurons * hiddenNeuronsPerLayer); i++)
 			inputConnWeights[i] = 1;
 		
-		hiddenConnWeights = new float[hiddenLayers][hiddenNeuronsPerLayer * hiddenNeuronsPerLayer];
+		hiddenConnWeights = new float[hiddenLayers-1][hiddenNeuronsPerLayer * hiddenNeuronsPerLayer];
 
 		for (int i = 0; i < hiddenLayers; i++){
 			
@@ -182,7 +182,7 @@ public
 		/*** Connections ***/
 		// We need as many connections as connection weights (obviously)
 		inputConnection = new Connection[inputConnWeights.length];
-		hiddenConnection = new Connection[hiddenLayers][hiddenConnWeights[0].length];
+		hiddenConnection = new Connection[hiddenLayers-1][hiddenConnWeights[0].length];
 		outputConnection = new Connection[outputConnWeights.length];
 		
 		// Connections between input layer and 1st hidden layer
@@ -249,7 +249,7 @@ public
 	MultiLayerPerceptron(int inputNeurons, int hiddenNeuronsPerLayer, int hiddenLayers,
 				int outputNeurons, String inputConnections, String hiddenConnections){
 		// Connections for input layer:	each: NrConnections = hidden, twoGroups: NrConnections = hidden/2, one: NrConnections = inputNeur\\
-		// Connections forr hidden Layer: each, cross and zigzag\\
+		// Connections for hidden Layer: each, cross and zigzag\\
 	}// MultiLayerPerceptron()
 	
 	/****************************************************************************************
@@ -265,7 +265,7 @@ public
 	****************************************************************************************/
 	
 	/****************************************************************************************
-	* Execute the built multi-layer perceptron with given input vector
+	* Executes the built multi-layer perceptron with given input vector
 	* Returns the output vector
 	****************************************************************************************/
 	float[] run(int inputVector){
@@ -319,8 +319,46 @@ public
 		// Now get the result(s)
 		for (int i = 0; i < outputNeuron.length; i++)
 			outputVector[i] = outputNeuron[i].getOutput();
-				
+		
 		return outputVector;
+	}// run()
+	
+	/****************************************************************************************
+	* Executes the built multi-layer perceptron with given input vector
+	* Returns the output vector as single integer
+	* Bit is set if depending output value is > 0.5
+	****************************************************************************************/
+	int run(int inputVector){
+		int output = 0;
+		float networkOutputVector[] = new float[outputVector.length];
+		
+		networkOutputVector = run(inputVector);
+		
+		for (int i = 0; i < outputVector.length || i < 32; i++){
+			if(outputVector[i] >= 0.5f)
+				output |= (1 << i);
+		}
+		
+		return output;
+	}// run()
+	
+	/****************************************************************************************
+	* Executes the built multi-layer perceptron with given input vector
+	* Returns the output vector as single integer
+	* Bit is set if depending output value is > threshold
+	****************************************************************************************/
+	int run(int inputVector, float threshold){
+		int output = 0;
+		float networkOutputVector[] = new float[outputVector.length];
+		
+		networkOutputVector = run(inputVector);
+		
+		for (int i = 0; i < outputVector.length || i < 32; i++){
+			if(outputVector[i] >= threshold)
+				output |= (1 << i);
+		}
+		
+		return output;
 	}// run()
 	
 	/****************************************************************************************
@@ -333,14 +371,20 @@ public
 	Boolean training(int trainigInVector, float[] trainingOutVector){
 		float outVector[] = new float[outputVector.length];
 		
+		// Training vector does not match number of output neurons
 		if (outVector.length != trainingOutVector.length)
 			return false;
 		
 		int debugStopTraining = 0;
 		
 		while(keepGoing){
+			// Execute perceptron with training input vector
 			outVector = run(trainigInVector);
 			
+			// For debug purposes cancel training after 100 trials
+			debugStopTraining++;
+			
+			// Check result of each output neuron
 			for (int i = 0; i < outVector.length; i++){
 			
 				// For debug purposes, print output vector
@@ -351,18 +395,16 @@ public
 					System.out.println(", outVector[" + deb + "]: " + outVector[deb]);
 				}
 			
-				// Wrong result, use backpropagation to find a better one
+				// Wrong result, use backpropagation to find a better one and try again
 				if (outVector[i] != trainingOutVector[i]){
-					//TODO: Backpropagation
+					backpropagation(int trainigInVector, outVector, trainingOutVector);
+					break;
 				}
 				
 				// All results are like we want them, stop training
 				else if (i == (outVector.length - 1))
 					keepGoing = false;
 			}
-			
-			// For debug purposes cancel training after 100 trials
-			debugStopTraining++;
 			
 			if (debugStopTraining >= 100)
 				return false;
@@ -371,10 +413,146 @@ public
 		return true;
 	}// training()
 	
-	//Boolean training(int[] trainingVector, float errorTolerance) // in percentage terms
+// TODO	Boolean training(int[] trainingVector, float errorTolerance) // in percentage terms
+
+// TODO	Boolean training(int trainigInVector, int trainingOutVector)
+	
+	/****************************************************************************************
+	* TODO: Klären ob inkl. threshold
+	*	
+	* ---------------------------------------------------------------------------------------
+	* Beispiel:	2 Input, 4 Hidden, 2 Hiddenlayer, 2 Output
+	*		Connection each, Oupuzt connection 2 Groups
+	*              ----------------------------------------------------------------
+	*		inputConnection[] | hiddenConnection[][] | outputConnection[]
+	*	0 :	0 >			0 >			0
+	*					1
+	*					2
+	*					3
+	*		1 >			0
+	*					1
+	*					2
+	*					3
+	*		2 >			0
+	*					1 >			0
+	*					2
+	*					3
+	*		3 >			0
+	*					1
+	*					2
+	*					3
+	*	1 :	0 >			0
+	*					1
+	*					2 >			1
+	*					3
+	*		1 >			0
+	*					1
+	*					2
+	*					3
+	*		2 >			0
+	*					1
+	*					2
+	*					3 >			1
+	*		3 >			0
+	*					1
+	*					2
+	*					3
+	*              ----------------------------------------------------------------
+	* ---------------------------------------------------------------------------------------
+	*
+	* Backpropagation allgemein:
+	* deltaGewichtsvektor_u = Lernfaktor (Summe über Folgeneuronen((Summe über Ausgabeneuronen(
+	* (Erwartete Ausgabe - Ausgabe) dAusgabe_Ausgabeneuron nach dNetzeingabe_Folgeneuron))*Gewicht_Neuron-FolgeNeuron)
+	* ) dAusgabe_u nach dNetzeingabe_u * Eingabevektor_u (S.71)
+	*
+	* Für Identiät als Ausgabefunktion und logistischer Aktivierungsfunktion:
+	* deltaGewichtsvektor_u = Lernfaktor (Summe über Folgeneuronen((Summe über Ausgabeneuronen(
+	* (Erwartete Ausgabe_Ausgabeneuron - Ausgabe_Ausgabeneuron)dAusgabe_Ausgabeneuron nach dNetzeingabe_Folgeneuron))*Gewicht_Neuron-FolgeNeuron)
+	* ) Ausgabe_u (1 - Ausgabe_u) * Eingabevektor_u
+	
+	* -> Summe über Ausgabeneuronen:
+	* -> Summe über Folgeneuronen: Pfad im Netz muss mathematisch nachgebildet werden
+	* -> Eingabevektor muss angepasst werden, enthält Bitmuster
+	* -> bei logistischer Funktion:
+	*	dAusgabe_Ausgabeneuron nach dNetzeingabe_Folgeneuron = Ausgabe_Ausgabeneuron (1 - Ausgabe_Ausgabeneuron)
+	*
+	* Einzelner Gradientenabstieg:
+	* delta Gewichtsvektor = Lernfaktor (Erwartete Ausgabe - Ausgabe) Ausgabe (1 - Ausgabe) * Eingabevektor
+	* -> pro inputneuron:
+	* delta Gewicht = Lernfaktor (Erwartete Ausgabe - Ausgabe) Ausgabe (1 - Ausgabe) * Eingabe
+	*
+	* Um deltaGewicht für jede verbindung zu berechnen erst mit for-loop über outputconnection.length
+	* dann for (int i = hiddenLayer-2; i>=0; i++) -> loop über hiddenLayer[i].length
+	* dann for-loop über inputConnection.length
+	*
+	* Um Folgeneuronen zu ermitteln Position in Array benötigt, dann loops über die folgende
+	* Netzstruktur (nicht einfach über die ConnectionArrays)
+	****************************************************************************************/
+	void backpropagation(int inputVector, float[] resultOut, float[] wantedOut){
+		int inputVectorAsArray[] = new int[inputNeuron.length];
+		float trainingCoefficient = 0.2f;
+		float weightDelta;
+		
+		// Um deltaGewicht für jede verbindung zu berechnen loop über alle (Verbindungs-)Layer
+		for (int layer = hiddenLayer; layer >= 0; layer--){
+			int limit;
+			
+			// Erst über outputconnection.length
+			if (layer == hiddenLayer)
+				limit = outputConnection.length;
+			
+			// Zuletzt über inputConnection.length
+			else if (layer == 0)
+				limit = inputConnection.length;
+			
+			// Sonst über in hidden Layer enthaltene Neuronen
+			else
+				limit = hiddenLayer[layer].length;
+			
+			
+			for (int lyrPos = 0; lyrPos < limit; lyrPos++){
+				// Extract values from inputVector
+				// TODO: Algo testen
+				for (int inp = 0; inp < inputNeuron.length; inp++){
+					inputVectorAsArray[inp] = (inputVector >> inp)
+					/*if ((inputVector & (1 << inp)) == (1 << inp))
+						inputVectorAsArray[inp] = 1;
+					else
+						inputVectorAsArray[inp] = 0;*/
+				}
+				
+				// pro Inputneuron:
+				// Notwendig? wie sonst inputVectorAsArray[inp] verwenden?
+				for (int inp = 0; inp < inputNeuron.length; inp++){
+				}// for() pro Inputneuron
+				
+				// deltaGewichtsvektor_u = Lernfaktor *
+				// weightDelta = trainingCoefficient * 
+				
+				// Bestimmen der Position des Neurons im Netz und der folgenden
+				// Struktur für die Summe über die Folgeneuronen
+				
+				
+				// Summe über Folgeneuronen
+				for (int = ){
+				
+				
+					// Summe über Ausgabeneuronen
+					for (int out = 0; out < resultOut.length; out++){
+						(wantedOut[out] - resultOut[out]) *
+						//dAusgabe nach dNetzeingabe
+						resultOut[out] * (1- resultOut[out]);
+					}// for() Summe über Ausgabeneuronen
+				}// for() Summe über Folgeneuronen
+				
+				// Add calculated weight difference to connection weight
+				// connection.addWeightDelta(weightDelta);
+			}// for() über layer
+		}
+	}// backpropagation()
 }// class MultiLayerPerceptron
 
 /************************************************************************************************
-* TODO: class MultiLayerPerceptronFloat:
-* copy of class MultiLayerPerceptron but with NeuronFloat
+* TODO: class MultiLayerPerceptronInt:
+* copy of class MultiLayerPerceptron but with NeuronInt
 ************************************************************************************************/
