@@ -73,13 +73,29 @@ public
 		//for (int inputVector = 0; inputVector < 16; inputVector++){
 		//	float[] testResult = mLPTest.run(inputValues);
 		
+		float[] inputVector;
+		inputVector = new float[8];
+		
+		for (int i = 0; i < inputVector.length; i++){
+			inputVector[i] = 1;
+		}
+		
 		for (int i = 0; i < MultiLayerPerceptron.length; i++){
 			
 			// Run with all inputs high
-			int outputVector = MultiLayerPerceptron[i].run(0b11111111);
+			float[] outputVector = MultiLayerPerceptron[i].run(inputVector);
 			
-			System.out.print("outputVector: " + outputVector);
+			for (int nrVec = 0; nrVec < outputVector.length; nrVec++){
+				if (nrVec > 0)
+					System.out.print(", ");
+				
+				System.out.print("outputVector[" + nrVec + "]: " + outputVector[nrVec]);
+			}
+			
 			System.out.print("\n--------------------------------------------------------\n");
+			
+			//TODO: run test again with int input vector
+			//int outputVector = MultiLayerPerceptron[i].runInt(0b11111111);
 		}
 		//}
 	}// runTest()
@@ -87,11 +103,6 @@ public
 
 /*************************************** Unit Test Neuron ***************************************
 * neuron with 1,2 and 4 inputs - every input gets toggled
-* weights:	case 0: All weights = -1.9f;
-		case 1: All weights = 2.3f;
-		case 2: Weight 1 & 2 = -1, weight 3 & 4 =  1;
-		case 3: Weight 1 & 3 = 1.5f, weight 2 & 4 = 3.4f;
-		case 4: Weight 1 = 3.4f, weight 2 = 2.3f, weight 3 = 1, weight 4 = -1;
 * threshold -2.1f, 1.3f, 2.5f and 4
 * Simulation of training at the end: Changing threshold and get result again and changing
 * weights and get result again
@@ -113,7 +124,6 @@ public
 	nrInputs = 1;
 	maxNrInputs = 4;
 	setInputs = 0b0000;
-	weights = new float[4];
 	thresholds = new float[4];
 	thresholds[0] = -2.1f;
 	thresholds[1] =  1.3f;
@@ -161,76 +171,33 @@ public
 				
 				System.out.println("treshold: " + thresholds[casesThreshold]);
 			
-				// Set weights
-				for(int casesWheights = 0; casesWheights < 5; casesWheights++){
-					System.out.println("\n// Set weights");
-					
-					switch (casesWheights){
-						case 0:	weights[0] = weights[1] = weights[2] = weights[3] = -1.9f;
+				// Set/unset inputs
+				System.out.print("// Set/unset inputs");
+				// cases: 0000, 0011, 0101, 1010, 1100, 1111, 
+				for (int casesInputs = 0; casesInputs < 6; casesInputs++){
+					switch (casesInputs){
+						case 0:	setInputs = 0b0000;
 							break;
-						case 1:	weights[0] = weights[1] = weights[2] = weights[3] = 2.3f;
+						case 1:	setInputs = 0b0011;
 							break;
-						case 2:	weights[0] = weights[1] = -1;
-							weights[2] = weights[3] =  1;
+						case 2:	setInputs = 0b0101;
 							break;
-						case 3:	weights[0] = weights[2] = 1.5f;
-							weights[1] = weights[3] = 3.4f;
+						case 3:	setInputs = 0b1010;
 							break;
-						case 4:	weights[0] = 3.4f;
-							weights[1] = 2.3f;
-							weights[2] = 1;
-							weights[3] = -1;
+						case 4:	setInputs = 0b1100;
+							break;
+						case 5:	setInputs = 0b1111;
 							break;
 					}
-				
-					testNeuron.setWeight(0, weights[0]);
-					System.out.print("w0: " + weights[0]);
 					
-					if (nrInputs >= 2){
-						testNeuron.setWeight(1, weights[1]);
-						System.out.print(", w1: " + weights[1]);
-					}
-					
-					if (nrInputs >= 3){
-						testNeuron.setWeight(2, weights[2]);
-						System.out.print(", w2: " + weights[2]);
-					}
-					
-					if (nrInputs >= 4){
-						testNeuron.setWeight(3, weights[3]);
-						System.out.print(", w3: " + weights[3]);
-					}
-					
-					System.out.print("\n\n");
-					
-					// Set/unset inputs
-					System.out.print("// Set/unset inputs");
-					// cases: 0000, 0011, 0101, 1010, 1100, 1111, 
-					for (int casesInputs = 0; casesInputs < 6; casesInputs++){
-						switch (casesInputs){
-							case 0:	setInputs = 0b0000;
-								break;
-							case 1:	setInputs = 0b0011;
-								break;
-							case 2:	setInputs = 0b0101;
-								break;
-							case 3:	setInputs = 0b1010;
-								break;
-							case 4:	setInputs = 0b1100;
-								break;
-							case 5:	setInputs = 0b1111;
-								break;
-						}
-					
-						setUnsetInputs(setInputs);
+					setUnsetInputs(setInputs);
 						
-						System.out.print("Inputs: " + Integer.toBinaryString(setInputs));
+					System.out.print("Inputs: " + Integer.toBinaryString(setInputs));
 						
-						System.out.print(", Output: " + testNeuron.getOutput());
-					}// Set/unset inputs
+					System.out.print(", Output: " + testNeuron.getOutput());
+				}// Set/unset inputs
 					
-					System.out.print("\n");
-				}// Set weights
+				System.out.print("\n");
 			}// Set thresholds
 		}// Number of inputs
 		
@@ -261,35 +228,12 @@ public
 		testNeuron.setThreshold(thresholds[3]);
 		System.out.println("treshold: " + thresholds[3]);
 		
-		// Change weights and get output
-		System.out.println("// Change weights and get output");
-		weights[0] = weights[1] = 2.1f;
-		weights[2] = weights[3] = 1.6f;
-		testNeuron.setWeight(0, weights[0]);
-		System.out.print("w0: " + weights[0]);
-		testNeuron.setWeight(1, weights[1]);
-		System.out.print(", w1: " + weights[1]);
-		testNeuron.setWeight(2, weights[2]);
-		System.out.print(", w2: " + weights[2]);
-		testNeuron.setWeight(3, weights[3]);
-		System.out.print(", w3: " + weights[3]);
-		System.out.print("\n");
+		// Change and get output
+		System.out.println("// Change get output");
 		System.out.print("Inputs: " + Integer.toBinaryString(setInputs));
 		System.out.println(", Output: " + testNeuron.getOutput());
 		System.out.print("\n");
 		
-		weights[0] = -1;
-		weights[1] = weights[2] = 2;
-		weights[3] = 3;
-		testNeuron.setWeight(0, weights[0]);
-		System.out.print("w0: " + weights[0]);
-		testNeuron.setWeight(1, weights[1]);
-		System.out.print(", w1: " + weights[1]);
-		testNeuron.setWeight(2, weights[2]);
-		System.out.print(", w2: " + weights[2]);
-		testNeuron.setWeight(3, weights[3]);
-		System.out.print(", w3: " + weights[3]);
-		System.out.print("\n");
 		System.out.print("Inputs: " + Integer.toBinaryString(setInputs));
 		System.out.println(", Output: " + testNeuron.getOutput());
 		System.out.print("\n");
@@ -304,7 +248,7 @@ public
 		for (int i = 0; i < nrInputs; i++){
 			
 			if ((inputValues & (1 << i)) == (1 << i))
-				testNeuron.setInput(i);
+				testNeuron.setInput(i, 1);
 			
 			else 
 				testNeuron.unsetInput(i);
