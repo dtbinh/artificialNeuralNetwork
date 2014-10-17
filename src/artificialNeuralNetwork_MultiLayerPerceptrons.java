@@ -83,8 +83,7 @@ public
 		for (int i = 0; i < inputNeurons; i++){
 			inputNeuron[i] = new Neuron(1);
 			
-			// Initial values: all weights and thresholds = 1
-			inputNeuron[i].setWeight(0, 1);
+			// Initial values: all thresholds = 1
 			inputNeuron[i].setThreshold(1);
 		}
 		
@@ -117,9 +116,7 @@ public
 					
 				hiddenNeuron[i][j] = new Neuron(neededNeuronInputs);
 					
-				// Initial values: all weights and thresholds = 1
-				for (int k = 0; k < neededNeuronInputs; k++)
-					hiddenNeuron[i][j].setWeight(k, 1);
+				// Initial values: all thresholds = 1
 					
 				hiddenNeuron[i][j].setThreshold(1);
 			}
@@ -149,10 +146,7 @@ public
 			
 			outputNeuron[i] = new Neuron(neededNeuronInputs);
 			
-			// Initial values: all weights and thresholds = 1
-			for (int j = 0; j < neededNeuronInputs; j++)
-				outputNeuron[i].setWeight(j, 1);
-			
+			// Initial values: thresholds = 1			
 			outputNeuron[i].setThreshold(1);
 			
 			// Set output to 0
@@ -266,9 +260,12 @@ public
 	
 	/****************************************************************************************
 	* Executes the built multi-layer perceptron with given input vector
-	* Returns the output vector
+	* Returns the output vector as single integer
+	* Bit is set if depending output value is > 0.5
 	****************************************************************************************/
-	float[] run(int inputVector){
+	int run(int inputVector){
+		int output = 0;
+		
 		// DEBUG
 		System.out.println("inputNeurons: " + inputNeuron.length +
 				", hiddenNeuronsPerLayer: " + hiddenNeuron[0].length +
@@ -279,7 +276,7 @@ public
 		for (int i = 0; i < inputNeuron.length; i++){
 			
 			if ((inputVector & (1 << i)) == (1 << i))
-				inputNeuron[i].setInput(0);
+				inputNeuron[i].setInput(0, 1);
 			else
 				inputNeuron[i].unsetInput(0);
 		}
@@ -317,24 +314,9 @@ public
 		}
 		
 		// Now get the result(s)
-		for (int i = 0; i < outputNeuron.length; i++)
+		for (int i = 0; i < outputNeuron.length; i++){
 			outputVector[i] = outputNeuron[i].getOutput();
-		
-		return outputVector;
-	}// run()
-	
-	/****************************************************************************************
-	* Executes the built multi-layer perceptron with given input vector
-	* Returns the output vector as single integer
-	* Bit is set if depending output value is > 0.5
-	****************************************************************************************/
-	int run(int inputVector){
-		int output = 0;
-		float networkOutputVector[] = new float[outputVector.length];
-		
-		networkOutputVector = run(inputVector);
-		
-		for (int i = 0; i < outputVector.length || i < 32; i++){
+
 			if(outputVector[i] >= 0.5f)
 				output |= (1 << i);
 		}
@@ -345,9 +327,9 @@ public
 	/****************************************************************************************
 	* Executes the built multi-layer perceptron with given input vector
 	* Returns the output vector as single integer
-	* Bit is set if depending output value is > threshold
+	* TODO: Bit is set if depending output value is > threshold
 	****************************************************************************************/
-	int run(int inputVector, float threshold){
+	/*int run(int inputVector, float threshold){
 		int output = 0;
 		float networkOutputVector[] = new float[outputVector.length];
 		
@@ -359,7 +341,7 @@ public
 		}
 		
 		return output;
-	}// run()
+	}// run()*/
 	
 	/****************************************************************************************
 	* Trains the multi layer perceptron
@@ -368,12 +350,8 @@ public
 	* Returns true if the output vector is correct, false is given output vector is too long
 	* or too short
 	****************************************************************************************/
-	Boolean training(int trainigInVector, float[] trainingOutVector){
-		float outVector[] = new float[outputVector.length];
-		
-		// Training vector does not match number of output neurons
-		if (outVector.length != trainingOutVector.length)
-			return false;
+	Boolean training(int trainigInVector, int trainingOutVector){
+		int outVector;
 		
 		int debugStopTraining = 0;
 		
@@ -384,27 +362,19 @@ public
 			// For debug purposes cancel training after 100 trials
 			debugStopTraining++;
 			
-			// Check result of each output neuron
-			for (int i = 0; i < outVector.length; i++){
-			
-				// For debug purposes, print output vector
-				System.out.println("Trial " + debugStopTraining + ":");
+			// For debug purposes, print output vector
+			System.out.println("Trial " + debugStopTraining + ":");
 				
-				for (int deb = 0; deb < outVector.length; deb++){
-					System.out.print("trainingOutVector[" + deb + "]: " + trainingOutVector[deb]);
-					System.out.println(", outVector[" + deb + "]: " + outVector[deb]);
-				}
+			System.out.print("trainingOutVector: " + trainingOutVector);
+			System.out.println(", outVector: " + outVector);
 			
-				// Wrong result, use backpropagation to find a better one and try again
-				if (outVector[i] != trainingOutVector[i]){
-					backpropagation(int trainigInVector, outVector, trainingOutVector);
-					break;
-				}
-				
-				// All results are like we want them, stop training
-				else if (i == (outVector.length - 1))
-					keepGoing = false;
+			// Wrong result, use backpropagation to find a better one and try again
+			if (outVector != trainingOutVector){
+				backpropagation(trainigInVector, outVector, trainingOutVector);
 			}
+			
+			else
+				keepGoing = false;
 			
 			if (debugStopTraining >= 100)
 				return false;
@@ -488,7 +458,7 @@ public
 	* Um Folgeneuronen zu ermitteln Position in Array benötigt, dann loops über die folgende
 	* Netzstruktur (nicht einfach über die ConnectionArrays)
 	****************************************************************************************/
-	void backpropagation(int inputVector, float[] resultOut, float[] wantedOut){
+	void backpropagation(int inputVector, int resultOut, int wantedOut){
 		int inputVectorAsArray[] = new int[inputNeuron.length];
 		float trainingCoefficient = 0.2f;
 		float weightDelta;

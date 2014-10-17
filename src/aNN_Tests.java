@@ -76,15 +76,9 @@ public
 		for (int i = 0; i < MultiLayerPerceptron.length; i++){
 			
 			// Run with all inputs high
-			float[] outputVector = MultiLayerPerceptron[i].run(0b11111111);
+			int outputVector = MultiLayerPerceptron[i].run(0b11111111);
 			
-			for (int nrVec = 0; nrVec < outputVector.length; nrVec++){
-				if (nrVec > 0)
-					System.out.print(", ");
-					
-				System.out.print("outputVector[" + nrVec + "]: " + outputVector[nrVec]);
-			}
-			
+			System.out.print("outputVector: " + outputVector);
 			System.out.print("\n--------------------------------------------------------\n");
 		}
 		//}
@@ -105,7 +99,6 @@ public
 class unitTestNeuron {
 private
 	Neuron testNeuron;
-	ThresholdItem testNeuron;
 	int nrInputs;
 	int maxNrInputs;
 	int setInputs;
@@ -115,11 +108,7 @@ private
 public
 	// Constructor
 	unitTestNeuron(String version){
-	
-	if (String.equals("Neuron");)
 		testNeuron = new Neuron(0);
-	else
-		testNeuron = new ThresholdItem(0);
 		
 	nrInputs = 1;
 	maxNrInputs = 4;
