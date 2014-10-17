@@ -134,13 +134,14 @@ public
 /************************************************************************************************
 * class Neuron:
 * Uses logistic function for calculating output
+* TODO:	input float[]
+*	weights löschen, connection entsprechend anpassen
 ************************************************************************************************/
-class Neuron extends ThresholdItem {
+class Neuron {
 private
-	int inputs;
 	int nrInputs;
+	float inputs[];
 	float netInput;
-	float weights[];
 	float threshold;
 	float output;
 
@@ -148,21 +149,21 @@ public
 	// Constructor
 	Neuron(int nrInputs){
 		this.nrInputs = nrInputs;
-		weights = new float[nrInputs];
 		
-		// Initialize inputs, output and weights to 0, threshold to max
-		inputs = 0;
+		inputs = new float[nrInputs];
+		
+		// Initialize inputs and output to 0, threshold to max
 		netInput = 0;
 		threshold = 0x7fffffff;
 		output = 0;
 		
 		for (int i = 0; i < nrInputs; i++)
-			weights[i] = 0;
+			inputs[i] = 0;
 	}
 	
-	Boolean setInput(int nrInput){
+	Boolean setInput(int nrInput, float value){
 		if(nrInput < nrInputs){
-			inputs |= 1 << nrInput;
+			inputs[nrInput] = value;
 			
 			return true;
 		}
@@ -172,17 +173,8 @@ public
 	
 	Boolean unsetInput(int nrInput){
 		if(nrInput < nrInputs){
-			inputs &= ~(1 << nrInput);
+			inputs[nrInput] = 0;
 			
-			return true;
-		}
-		
-		return false;
-	}
-	
-	Boolean setWeight(int nrInput, float weight){
-		if(nrInput < weights.length){
-			weights[nrInput] = weight;
 			return true;
 		}
 		
@@ -199,8 +191,7 @@ public
 		
 		// Net input function f_net
 		for (int i = 0; i < nrInputs; i++){
-			if((inputs & (1 << i)) == (1 << i))
-				netInput += weights[i];
+			netInput += inputs[i];
 		}
 		
 		// Activation function f_act:
@@ -225,7 +216,7 @@ private
 	Neuron neuronTo;
 	int input;
 	float connWeight;
-	float weightToSet;
+	float valueToSet;
 	
 public
 	// Constructor
@@ -238,15 +229,10 @@ public
 
 	// Execute connection
 	void run(){
-		weightToSet = neuronFrom.getOutput();
-		weightToSet *= connWeight;
+		valueToSet = neuronFrom.getOutput();
+		valueToSet *= connWeight;
 		
-		neuronTo.setWeight(input, weightToSet);
-	
-		if (neuronFrom.getOutput() != 0)
-			neuronTo.setInput(input);
-		else
-			neuronTo.unsetInput(input);
+		neuronTo.setInput(input, valueToSet);
 	}// run()
 	
 	// Add in training calculated weight difference
