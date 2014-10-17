@@ -44,7 +44,6 @@ private
 	Neuron hiddenNeuron[][];
 	Neuron outputNeuron[];
 	int hiddenLayers;
-	//int connectionsPerNeuron;
 	float inputConnWeights[];
 	float hiddenConnWeights[][];
 	float outputConnWeights[];
@@ -160,12 +159,14 @@ public
 		for (int i = 0; i < (inputNeurons * hiddenNeuronsPerLayer); i++)
 			inputConnWeights[i] = 1;
 		
-		hiddenConnWeights = new float[hiddenLayers-1][hiddenNeuronsPerLayer * hiddenNeuronsPerLayer];
-
-		for (int i = 0; i < hiddenLayers; i++){
-			
-			for (int j = 0; j < hiddenConnWeights[i].length; j++)
-				hiddenConnWeights[i][j] = 1;
+		if (hiddenLayers > 1){
+			hiddenConnWeights = new float[hiddenLayers-1][hiddenNeuronsPerLayer * hiddenNeuronsPerLayer];
+	
+			for (int i = 0; i < hiddenLayers-1; i++){
+				
+				for (int j = 0; j < hiddenConnWeights[i].length; j++)
+					hiddenConnWeights[i][j] = 1;
+			}
 		}
 		
 		outputConnWeights = new float[hiddenNeuronsPerLayer];
@@ -176,7 +177,8 @@ public
 		/*** Connections ***/
 		// We need as many connections as connection weights (obviously)
 		inputConnection = new Connection[inputConnWeights.length];
-		hiddenConnection = new Connection[hiddenLayers-1][hiddenConnWeights[0].length];
+		if (hiddenLayers > 1)
+			hiddenConnection = new Connection[hiddenLayers-1][hiddenConnWeights[0].length];
 		outputConnection = new Connection[outputConnWeights.length];
 		
 		// Connections between input layer and 1st hidden layer
