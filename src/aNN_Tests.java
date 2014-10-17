@@ -10,9 +10,10 @@ public class aNN_Tests {
 	public static void main(String[] args){
 		
 		// Unit test for class Neuron
-		// TODO: Neu ausführen und diff mit result von 28., danach class Neuron umbennen in ThresholdItem
+		// TODO: unitTest ThresholdItem, nach ausführen diffs der Ergebnisse
+		unitTestNeuron uTNeuron = new unitTestNeuron("ThresholdItem");
 		// Passed with floats, 28.Sep.14
-		unitTestNeuron uTNeuron = new unitTestNeuron();
+		//unitTestNeuron uTNeuron = new unitTestNeuron("Neuron");
 		
 		uTNeuron.runTest();
 		
@@ -104,6 +105,7 @@ public
 class unitTestNeuron {
 private
 	Neuron testNeuron;
+	ThresholdItem testNeuron;
 	int nrInputs;
 	int maxNrInputs;
 	int setInputs;
@@ -112,8 +114,13 @@ private
 	
 public
 	// Constructor
-	unitTestNeuron(){
-	testNeuron = new Neuron(0);
+	unitTestNeuron(String version){
+	
+	if (String.equals("Neuron");)
+		testNeuron = new Neuron(0);
+	else
+		testNeuron = new ThresholdItem(0);
+		
 	nrInputs = 1;
 	maxNrInputs = 4;
 	setInputs = 0b0000;
