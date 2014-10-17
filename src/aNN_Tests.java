@@ -10,18 +10,15 @@ public class aNN_Tests {
 	public static void main(String[] args){
 		
 		// Unit test for class Neuron
-		// TODO: unitTest ThresholdItem, nach ausführen diffs der Ergebnisse
-		unitTestNeuron uTNeuron = new unitTestNeuron("ThresholdItem");
-		// Passed with floats, 28.Sep.14
-		//unitTestNeuron uTNeuron = new unitTestNeuron("Neuron");
+		//unitTestNeuron uTNeuron = new unitTestNeuron();
 		
-		uTNeuron.runTest();
+		//uTNeuron.runTest();
 		
 		// Test for whole network, needs debug prints, look at commit when passed,
 		// in class otherwise you'll just see the output vector
-		//multilayerPerceptronTest multilayerPerceptronTest = new multilayerPerceptronTest();
+		multilayerPerceptronTest multilayerPerceptronTest = new multilayerPerceptronTest();
 		
-		//multilayerPerceptronTest.runTest();
+		multilayerPerceptronTest.runTest();
 		
 		//TODO: Test mit Training: Backpropagation
 		//		-> Vergleich von verschiedenen Topologien, welche erreicht am schnellsten die lösung
@@ -103,7 +100,7 @@ public
 
 /*************************************** Unit Test Neuron ***************************************
 * neuron with 1,2 and 4 inputs - every input gets toggled
-* threshold -2.1f, 1.3f, 2.5f and 4
+* threshold -10, 1.3f, 6.5f and 10
 * Simulation of training at the end: Changing threshold and get result again and changing
 * weights and get result again
 ************************************************************************************************/
@@ -118,17 +115,17 @@ private
 	
 public
 	// Constructor
-	unitTestNeuron(String version){
+	unitTestNeuron(){
 		testNeuron = new Neuron(0);
 		
 	nrInputs = 1;
 	maxNrInputs = 4;
 	setInputs = 0b0000;
 	thresholds = new float[4];
-	thresholds[0] = -2.1f;
+	thresholds[0] = -10;
 	thresholds[1] =  1.3f;
-	thresholds[2] =  2.5f;
-	thresholds[3] =  4;	
+	thresholds[2] =  6.5f;
+	thresholds[3] =  10;	
 	}
 	/**********************************************
 	* Test function
@@ -202,13 +199,7 @@ public
 		}// Number of inputs
 		
 		// Simulate training: nrInputs = 4, setInputs = 0b1111
-		// threshold = 4, weights = {3, 2, 1, -1}
 		System.out.println("// Simulate training: nrInputs = 4, setInputs = 0b1111");
-		System.out.println("// threshold = 4, weights = {3.4, 2.3, 1, -1}");
-		System.out.print("w0: " + weights[0]);
-		System.out.print(", w1: " + weights[1]);
-		System.out.print(", w2: " + weights[2]);
-		System.out.print(", w3: " + weights[3]);
 		System.out.print("\n\n");
 		
 		// Change threshold and get output

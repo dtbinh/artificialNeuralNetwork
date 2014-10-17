@@ -134,8 +134,6 @@ public
 /************************************************************************************************
 * class Neuron:
 * Uses logistic function for calculating output
-* TODO:	input float[]
-*	weights löschen, connection entsprechend anpassen
 ************************************************************************************************/
 class Neuron {
 private
