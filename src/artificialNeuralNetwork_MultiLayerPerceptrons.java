@@ -269,11 +269,11 @@ public
 		if (inputVector.length == inputNeuron.length){
 		
 			// DEBUG
-			System.out.println("inputNeurons: " + inputNeuron.length +
+			/*System.out.println("inputNeurons: " + inputNeuron.length +
 					", hiddenNeuronsPerLayer: " + hiddenNeuron[0].length +
 					", hiddenLayers: " + hiddenLayers +
 					", outputNeurons: " + outputNeuron.length);
-			
+			*/
 			//Set inputs
 			for (int i = 0; i < inputNeuron.length; i++)
 				inputNeuron[i].setInput(0, inputVector[i]);
@@ -282,7 +282,7 @@ public
 			for (int pos = 0; pos < inputConnection.length; pos++){
 				
 				// DEBUG
-				System.out.println("inputConnection[" + pos + "]");
+				//System.out.println("inputConnection[" + pos + "]");
 				
 				inputConnection[pos].run();
 			}
@@ -291,12 +291,12 @@ public
 			for(int layer = 0; layer < (hiddenLayers-1); layer++){
 				
 				//DEBUG
-				System.out.println("connection["+layer+"].length: "+ hiddenConnection[layer].length);
+				//System.out.println("connection["+layer+"].length: "+ hiddenConnection[layer].length);
 				
 				for (int pos = 0; pos < hiddenConnection[layer].length; pos++){
 					
 					// DEBUG
-					System.out.println("hiddenConnection[" + layer + "][" + pos + "]");
+					//System.out.println("hiddenConnection[" + layer + "][" + pos + "]");
 					
 					hiddenConnection[layer][pos].run();
 				}
@@ -305,7 +305,7 @@ public
 			for (int pos = 0; pos < outputConnection.length; pos++){
 				
 				// DEBUG
-				System.out.println("outputConnection[" + pos + "]");
+				//System.out.println("outputConnection[" + pos + "]");
 				
 				outputConnection[pos].run();
 			}
@@ -331,7 +331,7 @@ public
 	* Executes the built multi-layer perceptron with given input vector
 	* Returns the output vector as single integer
 	****************************************************************************************/
-	int runInt(int inputVector){
+/*	int runInt(int inputVector){
 		int output = 0;
 		float networkInputVector[] = new float[inputNeuron.length];
 		float networkOutputVector[] = new float[outputVector.length];
@@ -354,7 +354,7 @@ public
 		
 		return output;
 	}// run()
-	
+*/	
 	/****************************************************************************************
 	* Executes the built multi-layer perceptron with given input vector
 	* Returns the output vector as single integer
@@ -381,15 +381,25 @@ public
 	* Returns true if the output vector is correct, false is given output vector is too long
 	* or too short
 	****************************************************************************************/
-	Boolean training(float[] trainigInVector, float[] trainingOutVector){
+	Boolean training(float[] trainingInVector, float[] trainingOutVector){
 		float[] outVector;
 		outVector = new float[outputNeuron.length];
+		
+		if (trainingInVector.length == inputNeuron.length)
+			keepGoing = true;
+		
+		if (trainingOutVector.length != outputNeuron.length){
+			//DEBUG
+			System.out.println("trainingOutVector.length ("+trainingOutVector.length+
+					") != outputNeuron.length("+outputNeuron.length+")");
+			keepGoing = false;
+		}
 		
 		int debugStopTraining = 0;
 		
 		while(keepGoing){
 			// Execute perceptron with training input vector
-			outVector = run(trainigInVector);
+			outVector = run(trainingInVector);
 			
 			// For debug purposes cancel training after 100 trials
 			debugStopTraining++;
@@ -405,7 +415,7 @@ public
 				
 				// Wrong result, use backpropagation to find a better one and try again
 				if (outVector != trainingOutVector){
-					backpropagation(trainigInVector, outVector, trainingOutVector);
+					backpropagation(trainingInVector, outVector, trainingOutVector);
 					break;
 				}
 			
@@ -414,8 +424,8 @@ public
 					keepGoing = false;
 			}
 			
-			// For debug purposes cancel training after 100 trials
-			if (debugStopTraining >= 100)
+			// For debug purposes cancel training after 1000 trials
+			if (debugStopTraining >= 1000)
 				return false;
 		}
 		
@@ -518,6 +528,9 @@ private	void backpropagation(float[] inputVector, float[] resultOut, float[] wan
 			// -> mit layer ermitteln in welchem Layer: output, hidden o input
 			// -> mit neuron an welcher Stelle im Layer
 			// Grenze für Summe über Folgeneuronen
+			
+			// DEBUG
+			System.out.println("int layer = " + hiddenLayers + "; layer >= 0; layer: " + layer + "{");
 			
 			// Outputconnection layer
 			if (layer == hiddenLayers){
@@ -622,16 +635,23 @@ private	void backpropagation(float[] inputVector, float[] resultOut, float[] wan
 				connections = new Connection [hiddenConnection[layer-1].length];
 				connections = hiddenConnection[layer-1];
 			}
+			//DEBUG
+			System.out.println("\tconnWeights.lenght: " + connWeights.length);
 			
 			// ..., über alle Neuronen in dem Layer...
 			for (int neuron = 0; neuron < neuronsInLayer; neuron++){
-						
+				//DEBUG
+				System.out.println("\tfor (int neuron = 0; neuron < "+neuronsInLayer+"; neuron: "+neuron+"{");
+				
 				// Position of 1st connection of this neuron (Is the same
 				// for all neurons in this layer)
 				offset = neuron * connectionsOfNeuron;
 			
 				// ...und nu über alle Verbindungen des Neurons
 				for (int conn = 0; conn < connectionsOfNeuron; conn++){
+					//DEBUG
+					System.out.println("\t\tfor (int conn = 0; conn < "+connectionsOfNeuron+"; conn" +conn+ "{");
+					
 					/*** Notwendig?
 					// pro Inputneuron:
 					// Notwendig? wie sonst inputVector[inp] verwenden?
@@ -643,9 +663,14 @@ private	void backpropagation(float[] inputVector, float[] resultOut, float[] wan
 					// deltaGewichtsvektor_u = Lernfaktor * -> hinter die Summen verschoben
 					// weightDelta = trainingCoefficient * 
 					
-					// Summe über Folgeneuronen
-					for (int succ = 0; succ < neuronsInNextLayer; succ++){
+					// DEBUG
+					System.out.println("\t\tneuronsInNextLayer: " + neuronsInNextLayer);
 					
+					// Summe über Folgeneuronen
+					// TODO:	< neuronsInNextLayer funktioniert nur bei each,
+					// 			bei outputNeurons knallts
+					for (int succ = 0; succ < neuronsInNextLayer; succ++){
+						
 						// Summe über Ausgabeneuronen
 						for (int out = 0; out < outputNeuron.length; out++){
 							weightDelta += (
@@ -661,6 +686,10 @@ private	void backpropagation(float[] inputVector, float[] resultOut, float[] wan
 						// succ: x-te FolgeNeuron von Neuron; Offset zu Neuron
 						
 						// * Gewicht_Neuron-FolgeNeuron
+						
+						//DEBUG
+						System.out.println("\t\t\tconnWeights["+ (offset+succ) + "]");
+						
 						weightDelta *= connWeights[offset + succ];
 					}// for() Summe über Folgeneuronen
 					
