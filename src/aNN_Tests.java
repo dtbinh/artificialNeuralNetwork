@@ -204,12 +204,6 @@ public
 	// Constructor
 	multilayerPerceptronTest(){
 		//MultiLayerPerceptron(inputNeurons, hiddenNeuronsPerLayer, hiddenLayers, outputNeurons)
-		// TODO: Needed Tests:	// From each neuron to each neuron
-								// Split input neurons in 2 groups
-								// Split hidden neurons in 2 groups
-								// From each neuron to each neuron (between hidden layers)
-								// connectionsPerNeuron < hiddenNeuron.length
-								// Test für Teilerreste
 	
 		MultiLayerPerceptron = new MultiLayerPerceptron[2];
 		MultiLayerPerceptron[0] = new MultiLayerPerceptron(2, 1, 1, 1);
@@ -245,9 +239,6 @@ public
 			}
 			
 			System.out.print("\n--------------------------------------------------------\n");
-			
-			//TODO: run test again with int input vector
-			//int outputVector = MultiLayerPerceptron[i].runInt(0b11111111);
 		}
 		//}
 	}// runTest()
@@ -269,10 +260,10 @@ private
 public
 	// Constructor
 	backpropagationTest(){
-		numberInputs = 4;
-		numberOutputs = 2;
-		numberHiddenNeurons = 2;
-		numberHiddenLayers = 1;
+		numberInputs = 8;
+		numberOutputs = 8;
+		numberHiddenNeurons = 16;
+		numberHiddenLayers = 4;
 		
 		trainingInVector = new float[numberInputs];
 		trainingOutVector = new float[numberOutputs];
@@ -285,56 +276,73 @@ public
 			System.out.println("numberOutputs ("+numberOutputs+") > numberHiddenNeurons ("+numberHiddenNeurons+")");
 		else {
 //			System.out.println(
-//					"-------------------------------- 1st run --------------------------------"
+//					"------------------------------ 1st training -----------------------------"
 //					);
-			
+		
 			trainingInVector[0]= 1;
 			trainingInVector[1]= 1;
-			trainingInVector[2]= 0;
-			trainingInVector[3]= 0;
-//			trainingInVector[4]= 1;
-//			trainingInVector[5]= 0.5f;
-//			trainingInVector[6]= 0.5f;
-//			trainingInVector[7]= 1;
-			
-			trainingOutVector[0] = 0.8f;
-			trainingOutVector[1] = 0.5f;
-			
-			perceptron.training(trainingInVector, trainingOutVector);
-/*			
-			System.out.println(
-					"-------------------------------- 2nd run --------------------------------"
-					);
-			
-			trainingInVector[0]= 0.5f;
-			trainingInVector[1]= 0.5f;
 			trainingInVector[2]= 1;
 			trainingInVector[3]= 1;
-			trainingInVector[4]= 0.5f;
+			trainingInVector[4]= 1;
+			trainingInVector[5]= 1;
+			trainingInVector[6]= 1;
+			trainingInVector[7]= 1;
+			
+			trainingOutVector[0] = 0.5f;
+			trainingOutVector[1] = 0.5f;
+			trainingOutVector[2] = 0.5f;
+			trainingOutVector[3] = 0.5f;
+			trainingOutVector[4] = 0.5f;
+			trainingOutVector[5] = 0.5f;
+			trainingOutVector[6] = 0.5f;
+			trainingOutVector[7] = 0.5f;
+			
+			perceptron.training(trainingInVector, trainingOutVector, 1);
+			
+/*			System.out.println(
+					"------------------------------ 2nd training -----------------------------"
+					);
+			
+			trainingInVector[0]= 0;
+			trainingInVector[1]= 0;
+			trainingInVector[2]= 0;
+			trainingInVector[3]= 0;
+			trainingInVector[4]= 0;
 			trainingInVector[5]= 0;
 			trainingInVector[6]= 0;
-			trainingInVector[7]= 0.5f;
+			trainingInVector[7]= 1;
 			
-			trainingOutVector[0] = 0.2f;
+			trainingOutVector[0] = 0;
+			trainingOutVector[1] = 0.9f;
 			
-			perceptron.training(trainingInVector, trainingOutVector);
+			perceptron.training(trainingInVector, trainingOutVector, 1);
 
 			System.out.println(
 					"-------------------------- Run with 1st input ---------------------------"
 					);
-			trainingInVector[0]= 1;
-			trainingInVector[1]= 1;
-			trainingInVector[2]= 0;
-			trainingInVector[3]= 0;
-			trainingInVector[4]= 1;
-			trainingInVector[5]= 0.5f;
-			trainingInVector[6]= 0.5f;
-			trainingInVector[7]= 1;
+*/
+/*			// Shiften einer 1 durch das gesamte Array
+			for (int i = 0; i < numberInputs; i++){
+				System.out.print("trainingInVector: ");
+				
+				for (int j = 0; j < numberInputs; j++){
+					if (j == i)
+						trainingInVector[j]= 1;
+					else
+						trainingInVector[j]= 0;
+					
+					System.out.print("["+trainingInVector[j]+"]");
+				}
 			
-			float out[] = perceptron.run(trainingInVector);
-			
-			System.out.println("out[0]: "+out[0]);
-*/		}
+				System.out.print("\n");
+				
+				float out[] = perceptron.run(trainingInVector);
+				
+				for (int k = 0; k < numberOutputs; k++)
+					System.out.println("out["+k+"]: " + out[k]);
+			}
+*/
+		}
 	}
 
 }// class backpropagationTest
