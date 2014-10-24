@@ -90,14 +90,16 @@ private
 	int input;
 	float connWeight;
 	float valueToSet;
+	int positionNeuronTo;
 	
 public
 	// Constructor
-	Connection(Neuron neuronFrom, Neuron neuronTo, int input, float connWeight){
+	Connection(Neuron neuronFrom, Neuron neuronTo, int input, float connWeight, int positionNeuronTo){
 		this.neuronFrom = neuronFrom;
 		this.neuronTo = neuronTo;
 		this.input = input;
 		this.connWeight = connWeight;
+		this.positionNeuronTo = positionNeuronTo;
 	}// Connection()
 
 	// Execute connection
@@ -119,5 +121,9 @@ public
 	
 	Neuron getNeuronTo(){
 		return neuronTo;
+	}
+	
+	int getPositionNeuronTo(){
+		return positionNeuronTo;
 	}
 }// class Connection

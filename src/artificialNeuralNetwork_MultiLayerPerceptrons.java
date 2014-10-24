@@ -162,7 +162,7 @@ public
 			for (int conn = 0; conn < hiddenNeurons[0].length; conn++){
 				
 				inputConnections[positionInLayer] = new Connection(inputNeurons[inp],
-						hiddenNeurons[0][conn], inp, inputConnWeights[positionInLayer]);
+						hiddenNeurons[0][conn], inp, inputConnWeights[positionInLayer], conn);
 				
 				positionInLayer++;
 			}
@@ -179,7 +179,7 @@ public
 				for (int conn = 0; conn < hiddenNeurons[layer+1].length; conn++){
 					
 					hiddenConnections[layer][positionInLayer] = new Connection(hiddenNeurons[layer][neur],
-							hiddenNeurons[layer+1][conn], neur, hiddenConnWeights[layer][positionInLayer]);
+							hiddenNeurons[layer+1][conn], neur, hiddenConnWeights[layer][positionInLayer], conn);
 					
 					positionInLayer++;
 				}
@@ -205,7 +205,7 @@ public
 			
 			// ...to the "nearest" output neuron (if several are available)
 			outputConnections[hidNeur] = new Connection(hiddenNeurons[hiddenLayers-1][hidNeur],
-					outputNeurons[outNeur], inp, outputConnWeights[hidNeur]);
+					outputNeurons[outNeur], inp, outputConnWeights[hidNeur], outNeur);
 		}
 		
 		keepGoing  = false;
@@ -396,7 +396,7 @@ public
 					
 					// ...to the "nearest" hidden neuron (if several are available)
 					inputConnections[inNeur] = new Connection(inputNeurons[inNeur],
-							hiddenNeurons[0][outNeur], inp, inputConnWeights[inNeur]);
+							hiddenNeurons[0][outNeur], inp, inputConnWeights[inNeur], outNeur);
 				}
 			}
 			else{
@@ -414,12 +414,9 @@ public
 						inp = 0;
 					}
 					
-					System.out.println("inputConnections["+hidNeur+"] = new Connection(inputNeurons["+outNeur
-							+"] ,hiddenNeurons[0]["+hidNeur+"], "+inp+", inputConnWeights["+hidNeur+"]);");
-					
 					// ...to the "nearest" input neuron (if several are available)
 					inputConnections[hidNeur] = new Connection(inputNeurons[outNeur],
-							hiddenNeurons[0][hidNeur], inp, inputConnWeights[hidNeur]);
+							hiddenNeurons[0][hidNeur], inp, inputConnWeights[hidNeur], hidNeur);
 				}
 			}
 			break;
@@ -431,7 +428,7 @@ public
 				for (int conn = 0; conn < hiddenNeurons[0].length; conn++){
 					
 					inputConnections[positionInLayer] = new Connection(inputNeurons[inp],
-							hiddenNeurons[0][conn], inp, inputConnWeights[positionInLayer]);
+							hiddenNeurons[0][conn], inp, inputConnWeights[positionInLayer], conn);
 					
 					positionInLayer++;
 				}
@@ -454,7 +451,7 @@ public
 				for (int conn = 0; conn < hiddenNeurons[layer+1].length; conn++){
 					
 					hiddenConnections[layer][positionInLayer] = new Connection(hiddenNeurons[layer][neur],
-							hiddenNeurons[layer+1][conn], neur, hiddenConnWeights[layer][positionInLayer]);
+							hiddenNeurons[layer+1][conn], neur, hiddenConnWeights[layer][positionInLayer], conn);
 					
 					positionInLayer++;
 				}
@@ -463,24 +460,29 @@ public
 		
 		// Connections between last hidden and output layer
 		inp = 0;
-		outNeur = -1;
-		
+		outNeur = 0;
+		numberOfInputs = (hiddenNeurons[hiddenLayers-1].length/outputNeurons.length);
+			
+		if ((hiddenNeurons[hiddenLayers-1].length % outputNeurons.length) != 0)
+			numberOfInputs++;
+			
 		// From each hidden neuron...
 		for (int hidNeur = 0; hidNeur < hiddenNeurons[hiddenLayers-1].length; hidNeur++, inp++){
 			
 			// Go to next output neuron if all inputs are connected
-			if ((hidNeur % (hiddenNeurons[hiddenLayers-1].length/outputNeurons.length)) == 0){
+			if ((hidNeur > 0) && (hidNeur % numberOfInputs  == 0)){
 				outNeur++;
 				inp = 0;
 			}
-			
+					
 			// ...to the "nearest" output neuron (if several are available)
 			outputConnections[hidNeur] = new Connection(hiddenNeurons[hiddenLayers-1][hidNeur],
-					outputNeurons[outNeur], inp, outputConnWeights[hidNeur]);
+					outputNeurons[outNeur], inp, outputConnWeights[hidNeur], outNeur);
 		}
 		
 		keepGoing  = false;
-	}// MultiLayerPerceptron()
+	}// MultiLayerPerceptron(int nrInputNeurons, int hiddenNeuronsPerLayer, int hiddenLayers,
+		// int nrOutputNeurons, String inputTopology)
 
 	/****************************************************************************************
 	* Executes the built multi-layer perceptron with given input vector
@@ -488,65 +490,69 @@ public
 	* Bit is set if depending output value is > 0.5
 	****************************************************************************************/
 	float[] run(float[] inputVector){
-		if (inputVector.length == inputNeurons.length){
 		
+		// Prevent wrong usage
+		if (inputVector.length != inputNeurons.length){
+			float[] vectorCopy = new float[inputNeurons.length];
+			
+			for (int i = 0; i < vectorCopy.length; i++){
+				if (i >= inputVector.length)
+					vectorCopy[i] = 0;
+				else
+					vectorCopy[i] = inputVector[i];
+			}
+			
+			inputVector = new float[inputNeurons.length];
+			inputVector = vectorCopy;
+		}
+		
+		// DEBUG
+//		System.out.println("inputNeurons: " + inputNeurons.length +
+//				", hiddenNeuronsPerLayer: " + hiddenNeurons[0].length +
+//				", hiddenLayers: " + hiddenLayers +
+//				", outputNeurons: " + outputNeurons.length);
+		
+		//Set inputs
+		for (int i = 0; i < inputNeurons.length; i++)
+			inputNeurons[i].setInput(0, inputVector[i]);
+		
+		// Execute input layer
+		for (int pos = 0; pos < inputConnections.length; pos++){
+			
 			// DEBUG
-//			System.out.println("inputNeurons: " + inputNeurons.length +
-//					", hiddenNeuronsPerLayer: " + hiddenNeurons[0].length +
-//					", hiddenLayers: " + hiddenLayers +
-//					", outputNeurons: " + outputNeurons.length);
+//			System.out.println("inputConnection[" + pos + "]");
 			
-			//Set inputs
-			for (int i = 0; i < inputNeurons.length; i++)
-				inputNeurons[i].setInput(0, inputVector[i]);
+			inputConnections[pos].run();
+		}
 			
-			// Execute input layer
-			for (int pos = 0; pos < inputConnections.length; pos++){
+		// Execute hidden layer(s)
+		for(int layer = 0; layer < (hiddenLayers-1); layer++){
+			
+			//DEBUG
+//			System.out.println("connection["+layer+"].length: "+ hiddenConnections[layer].length);
+			
+			for (int pos = 0; pos < hiddenConnections[layer].length; pos++){
 				
 				// DEBUG
-//				System.out.println("inputConnection[" + pos + "]");
+//				System.out.println("hiddenConnection[" + layer + "][" + pos + "]");
 				
-				inputConnections[pos].run();
+				hiddenConnections[layer][pos].run();
 			}
-			
-			// Execute hidden layer(s)
-			for(int layer = 0; layer < (hiddenLayers-1); layer++){
-				
-				//DEBUG
-//				System.out.println("connection["+layer+"].length: "+ hiddenConnections[layer].length);
-				
-				for (int pos = 0; pos < hiddenConnections[layer].length; pos++){
-					
-					// DEBUG
-//					System.out.println("hiddenConnection[" + layer + "][" + pos + "]");
-					
-					hiddenConnections[layer][pos].run();
-				}
-			}
-			
-			for (int pos = 0; pos < outputConnections.length; pos++){
-				
-				// DEBUG
-//				System.out.println("outputConnection[" + pos + "]");
-				
-				outputConnections[pos].run();
-			}
-			
-			// Now get the result(s)
-			for (int i = 0; i < outputNeurons.length; i++)
-				outputVector[i] = outputNeurons[i].getOutput();
-	
-			return outputVector;
 		}
 		
-		else {
-			float[] error;
-			error = new float[1];
+		for (int pos = 0; pos < outputConnections.length; pos++){
 			
-			error[0] = -1;
+			// DEBUG
+//			System.out.println("outputConnection[" + pos + "]");
 			
-			return error;
+			outputConnections[pos].run();
 		}
+		
+		// Now get the result(s)
+		for (int i = 0; i < outputNeurons.length; i++)
+			outputVector[i] = outputNeurons[i].getOutput();
+			
+		return outputVector;
 	}// run()
 	
 	/****************************************************************************************
@@ -608,31 +614,32 @@ public
 		float[] absErrorTol;
 		Boolean wrong = false;
 		
-		if (trainingInVector.length == inputNeurons.length)
-			keepGoing = true;
-		else
-//			return false;
-			return -1;
-		
+		// Prevent wrong usage (InVector will be corrected in run())
 		if (trainingOutVector.length != outputNeurons.length){
-			//DEBUG
-			System.out.println("trainingOutVector.length ("+trainingOutVector.length+
-					") != outputNeuron.length("+outputNeurons.length+")");
-			keepGoing = false;
+			float[] vectorCopy = new float[trainingOutVector.length];
 			
-//			return false;
-			return -1;
+			for (int i = 0; i < vectorCopy.length; i++){
+				if (i >= trainingOutVector.length)
+					vectorCopy[i] = 0;
+				else
+					vectorCopy[i] = trainingOutVector[i];
+			}
+			
+			trainingOutVector = new float[trainingOutVector.length];
+			trainingOutVector = vectorCopy;
 		}
 		
+		keepGoing = true;
+		
 		outVector = new float[outputNeurons.length];
-		absErrorTol = new float[trainingOutVector.length];
+		absErrorTol = new float[outputNeurons.length];
 		
 		// Calculate absolute acceptable error
-		for (int i = 0; i < trainingOutVector.length; i++){
+		for (int i = 0; i < outputNeurons.length; i++){
 			absErrorTol[i] = trainingOutVector[i] / 100 * errorTolerance;
 			
 			// DEBUG
-			System.out.println("absErrorTol["+i+"] = " + absErrorTol[i]);
+//			System.out.println("absErrorTol["+i+"] = " + absErrorTol[i]);
 		}
 		
 		int debugStopTraining = 0;
@@ -645,13 +652,13 @@ public
 			debugStopTraining++;
 			
 			// For debug purposes, print output vector
-			System.out.println("Trial " + debugStopTraining + ":");
-			
-			for (int deb = 0; deb < outVector.length; deb++){
-				System.out.print("trainingOutVector[" + deb + "]: " + (trainingOutVector[deb] - absErrorTol[deb]));
-				System.out.print(" - " + (trainingOutVector[deb] + absErrorTol[deb]));
-				System.out.println(", outVector[" + deb + "]: " + outVector[deb]);
-			}
+//			System.out.println("Trial " + debugStopTraining + ":");
+//			
+//			for (int deb = 0; deb < outVector.length; deb++){
+//				System.out.print("trainingOutVector[" + deb + "]: " + (trainingOutVector[deb] - absErrorTol[deb]));
+//				System.out.print(" - " + (trainingOutVector[deb] + absErrorTol[deb]));
+//				System.out.println(", outVector[" + deb + "]: " + outVector[deb]);
+//			}
 			
 			// Wrong result, use backpropagation to find a better one and try again
 			// TODO: In gitk schauen, wie for-loop zuerst war
@@ -676,7 +683,16 @@ public
 			// Max number of trials ~2*10^9 (2^31)
 			if (debugStopTraining >= 10000)
 //				return false;
-				return debugStopTraining;
+/* DEBUG*/		keepGoing = false;
+		}
+		
+		// For debug purposes, print output vector
+		System.out.println("\ttrainingOut\t\t| outVector");
+//		System.out.println("\t------------------------------------------");
+		for (int deb = 0; deb < outVector.length; deb++){
+			System.out.print("\t[" + deb + "]: " + (trainingOutVector[deb] - absErrorTol[deb]));
+			System.out.print(" - " + (trainingOutVector[deb] + absErrorTol[deb]));
+			System.out.println("\t| [" + deb + "]: " + outVector[deb]);
 		}
 		
 //		return true;
@@ -760,14 +776,15 @@ public
 	****************************************************************************************/
 private	void backpropagation(float[] resultOut, float[] wantedOut){
 		// TODO: wofür Variablen, Richtige Reihenfolge
-		float trainingCoefficient = 0.2f;
+		float trainingCoefficient = 2;
 		float weightDelta = 0;
 		float succWeights[] = new float[1];
 		Connection connections[] = new Connection[1];
 		int succNeurons = 0;
 		int numberOfThresholds;
 		float outputOfNeuron;
-		float inputVectorOfNeuron;
+		float inputOfNeuron;
+		int position;
 		
 		// Um deltaGewicht für jede verbindung zu berechnen erst loop über alle (Verbindungs-)Layer...
 		int connectionLayer = hiddenLayers - 1;
@@ -788,15 +805,15 @@ private	void backpropagation(float[] resultOut, float[] wantedOut){
 					succWeights = new float [hiddenConnWeights[0].length];
 					succWeights = hiddenConnWeights[0];
 					
-					// To each neuron of the following layer
-					succNeurons = hiddenNeurons[0].length;
+					// Number of inputs of neuron in 1st hidden layer = number of
+					// successive neurons
+					succNeurons = hiddenConnWeights[0].length/hiddenNeurons[0].length;
 				}
 				else {
 					succWeights = new float [outputConnWeights.length];
 					succWeights = outputConnWeights;
 					
-					// To each neuron of the following layer
-					succNeurons = outputNeurons.length;
+					succNeurons = outputConnWeights.length/outputNeurons.length;
 				}
 
 				connections = new Connection [inputConnections.length];
@@ -837,40 +854,9 @@ private	void backpropagation(float[] resultOut, float[] wantedOut){
 					// delta Gewichtsvektor_u = Lernfaktor (Erwartete Ausgabe - Ausgabe) Ausgabe (1 - Ausgabe) * Eingabevektor_u
 					// -> delta Gewichtsvektor_u = Lernfaktor Ausgabe (1 - Ausgabe) * Eingabevektor_u auch in backpropagation (hinter for-loops)
 					// -> nur (Erwartete Ausgabe - Ausgabe) benötigt
-					// Erwartete Ausgabe - Ausgabe
-					// TODO: Allgemeine Formulierung, wenn andere Verbindungen möglich
-					// out: Output des Neurons, conn: aktuelle Verbindung
-					/***************************************************************************************
-					// From each hidden neuron...
-					for (int hidNeur = 0; hidNeur < hiddenNeurons[hiddenLayers-1].length; hidNeur++, inp++){
-						
-						// Go to next output neuron if all inputs are connected
-						if ((hidNeur % (hiddenNeurons[hiddenLayers-1].length/outputNeurons.length)) == 0){
-							outNeur++;
-							inp = 0;
-						}
-						
-						// ...to the "nearest" output neuron (if several are available)
-						outputConnections[hidNeur] = new Connection(hiddenNeurons[hiddenLayers-1][hidNeur],
-								outputNeurons[outNeur], inp, outputConnWeights[hidNeur]);
-					}
-					***************************************************************************************/
-					/*** Zur Verfügung
-					connections = new Connection [outputConnections.length];
-					connections = outputConnections;
-				
-					numberOfThresholds = outputNeurons.length;
-					 ***/
-					int out = 0;
-					// Anzahl der Neuronen im vorherigen Layer / Anzahl der Output Neuronen
-					// -> Anzahl der Verbindungen zu einem Outputneuron -> Distanz zwischen einzelnen Output-
-					// neuronen im connectionsArray
-					// -> Anzahl der Neuronen im vorherigen Layer: connections.length / numberOfThresholds
-					// -> Anzahl der Output Neuronen: numberOfThresholds
-					if (conn > (connections.length/(numberOfThresholds * numberOfThresholds)))
-						out++;
+					position = connections[conn].getPositionNeuronTo();
 					
-					weightDelta = wantedOut[out] - resultOut[out];
+					weightDelta = wantedOut[position] - resultOut[position];
 				}
 				
 				// Da real backpropagation
@@ -895,7 +881,9 @@ private	void backpropagation(float[] resultOut, float[] wantedOut){
 						weightDelta += sumOutputNeurons;
 						
 						// * Gewicht_Neuron-FolgeNeuron
-						weightDelta *= succWeights[succ];
+						position = connections[conn].getPositionNeuronTo();
+						
+						weightDelta *= succWeights[position];
 					}// for() Summe über Folgeneuronen
 				}
 				
@@ -903,9 +891,9 @@ private	void backpropagation(float[] resultOut, float[] wantedOut){
 				// Ausgabe_u	= getOutput von aktuellem Neuron -> connection[neuron + conn].getNeuronTo.getOutput
 				// Eingabevektor_u	= inputs[] von aktuellem Neuron -> getInputVector() in Neuron implementieren
 				outputOfNeuron = connections[conn].getNeuronTo().getOutput();
-				inputVectorOfNeuron = connections[conn].getNeuronFrom().getOutput();
+				inputOfNeuron = connections[conn].getNeuronFrom().getOutput();
 					
-				weightDelta *= (outputOfNeuron * (1 - outputOfNeuron) * inputVectorOfNeuron);
+				weightDelta *= (outputOfNeuron * (1 - outputOfNeuron) * inputOfNeuron);
 					
 				// deltaGewichtsvektor_u = Lernfaktor * -> hinter die Summen verschoben
 				weightDelta *= trainingCoefficient;
