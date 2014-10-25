@@ -688,7 +688,6 @@ public
 		
 		// For debug purposes, print output vector
 		System.out.println("\ttrainingOut\t\t| outVector");
-//		System.out.println("\t------------------------------------------");
 		for (int deb = 0; deb < outVector.length; deb++){
 			System.out.print("\t[" + deb + "]: " + (trainingOutVector[deb] - absErrorTol[deb]));
 			System.out.print(" - " + (trainingOutVector[deb] + absErrorTol[deb]));
