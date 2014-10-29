@@ -27,8 +27,8 @@ public class aNN_Tests {
 		// TODO: -> Vergleich von verschiedenen Topologien, welche erreicht am schnellsten die lösung
 		backpropagationTest backpropagationTest = new backpropagationTest();
 		
-		//backpropagationTest.runTestTopologies();
-		backpropagationTest.runTestTrainings();
+		backpropagationTest.runTestTopologies();
+		//backpropagationTest.runTestTrainings();
 	}
 }
 
@@ -207,12 +207,13 @@ private
 public	
 	// Constructor
 	multilayerPerceptronTest(){
-		//MultiLayerPerceptron(inputNeurons, hiddenNeuronsPerLayer, hiddenLayers, outputNeurons)
+		//MultiLayerPerceptron(int nrInputNeurons, int hiddenNeuronsPerLayer, int hiddenLayers,
+		//						int nrOutputNeurons, String inputTopology, String hiddenTopology, String outputTopology){
 	
 		MultiLayerPerceptron = new MultiLayerPerceptron[1];
 		//MultiLayerPerceptron[0] = new MultiLayerPerceptron(2, 4, 1, 1, "one");
 		//MultiLayerPerceptron[0] = new MultiLayerPerceptron(4, 2, 2, 2, "one");
-		MultiLayerPerceptron[0] = new MultiLayerPerceptron(8, 12, 6, 4, "one");
+		//MultiLayerPerceptron[0] = new MultiLayerPerceptron(8, 12, 6, 4, "one");
 	}
 	
 	/***************************************************************************************
@@ -272,7 +273,7 @@ public
 		trainingInVector = new float[2][16];
 		trainingOutVector = new float[2][16];
 		
-		perceptron = new MultiLayerPerceptron[2];
+		perceptron = new MultiLayerPerceptron[6];
 	}
 
 	void runTestTopologies(){
@@ -284,7 +285,7 @@ public
 		numberHiddenNeurons[0] = 4;		numberHiddenLayers[0] = 1;
 		numberHiddenNeurons[1] = 8;		numberHiddenLayers[1] = 2;
 		numberHiddenNeurons[2] = 16;	numberHiddenLayers[2] = 4;
-		numberHiddenNeurons[3] = 32;	numberHiddenLayers[3] = 16;
+		numberHiddenNeurons[3] = 32;	numberHiddenLayers[3] = 5;
 		
 		trainingInVector[0][0]= 0.5f;
 		trainingInVector[0][1]= 0;
@@ -323,17 +324,25 @@ public
 		int[] trials = new int[perceptron.length * numberInputs.length];
 		int trial = 0;
 		
-		for (int run = 0; run < numberInputs.length-3; run++){
+		for (int run = 0; run < numberInputs.length-1; run++){
 			perceptron[0] = new MultiLayerPerceptron(numberInputs[run], numberHiddenNeurons[run],
-														numberHiddenLayers[run], numberOutputs[run]);
+														numberHiddenLayers[run], numberOutputs[run], "each", "each", "one");
 			perceptron[1] = new MultiLayerPerceptron(numberInputs[run], numberHiddenNeurons[run],
-														numberHiddenLayers[run], numberOutputs[run], "one");
+														numberHiddenLayers[run], numberOutputs[run], "one", "each", "one");
+			perceptron[2] = new MultiLayerPerceptron(numberInputs[run], numberHiddenNeurons[run],
+														numberHiddenLayers[run], numberOutputs[run], "twoGroups", "each", "one");
+			perceptron[3] = new MultiLayerPerceptron(numberInputs[run], numberHiddenNeurons[run],
+														numberHiddenLayers[run], numberOutputs[run], "one", "one", "one");
+			perceptron[4] = new MultiLayerPerceptron(numberInputs[run], numberHiddenNeurons[run],
+														numberHiddenLayers[run], numberOutputs[run], "twoGroups", "one", "one");
+			perceptron[5] = new MultiLayerPerceptron(numberInputs[run], numberHiddenNeurons[run],
+														numberHiddenLayers[run], numberOutputs[run], "each", "each", "each");
 			
 			System.out.println("MultiLayerPerceptron("+numberInputs[run]+", "+numberHiddenNeurons[run]+
 									", "+numberHiddenLayers[run]+", "+numberOutputs[run]+")");
 		
 			for (int exec = 0; exec < perceptron.length; exec++, trial++){
-				trials[trial] = perceptron[exec].training(trainingInVector[0], trainingOutVector[0], 1);
+				trials[trial] = perceptron[exec].training(trainingInVector[0], trainingOutVector[0], 0.001f, 10000);
 				System.out.println("     --------------------------------------------------");
 			}
 			
@@ -388,13 +397,13 @@ public
 		trainingOutVector[0][3] = 0.4f;	trainingOutVector[1][3] = 0.6f;
 		
 		perceptron[0] = new MultiLayerPerceptron(numberInputs[0], numberHiddenNeurons[0],
-				numberHiddenLayers[0], numberOutputs[0], "one");
+				numberHiddenLayers[0], numberOutputs[0], "each", "each", "one");
 		
 		System.out.println("MultiLayerPerceptron("+numberInputs[0]+", "+numberHiddenNeurons[0]+
 								", "+numberHiddenLayers[0]+", "+numberOutputs[0]+")");
 		
 		for (int exec = 0; exec < 2; exec++){
-			trials[exec] = perceptron[0].training(trainingInVector[exec], trainingOutVector[exec], 1);
+			trials[exec] = perceptron[0].training(trainingInVector[exec], trainingOutVector[exec], 0.001f, 10000);
 		
 			System.out.println("     --------------------------------------------------");
 			System.out.print("\ttrials["+exec+"]: "+ trials[exec]);
