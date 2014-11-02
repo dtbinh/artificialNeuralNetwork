@@ -1,5 +1,7 @@
 /********************************** Artificial neural network ***********************************
 * TODO:	Description, Header, Comments, TechDoc
+* 		Save-Funktion um weights und thresholds zu speichern
+* 		Find fastest Funktion um schnellste Topologien für gegebenen input und output zu finden
 ************************************************************************************************/
 
 /************************************************************************************************
@@ -37,7 +39,6 @@ public
 	/****************************************************************************************/
 	MultiLayerPerceptron(int nrInputNeurons, int hiddenNeuronsPerLayer, int hiddenLayers,
 				int nrOutputNeurons, String inputTopology, String hiddenTopology, String outputTopology){
-		//			Connections für hidden layer:	cross, zigzag
 		
 		int neededNeuronInputs;
 		
@@ -46,9 +47,15 @@ public
 		if (nrInputNeurons < 1)
 			nrInputNeurons = 1;
 		
-		// Abhängikeiten von inputTopology:	Anzahl der Inputs der hidden[0] Neuronen
-		//									Arraygröße inputConnWeights & -> inputConnections
-		//									Algorythmus für Connections between input layer and 1st hidden layer
+		if (hiddenNeuronsPerLayer < 1)
+			hiddenNeuronsPerLayer = 1;
+		
+		if (hiddenLayers < 1)
+			hiddenLayers = 1;
+
+		if (nrOutputNeurons < 1)
+			nrOutputNeurons = 1;
+		
 		switch (inputTopology){
 		case "one":
 			// Every input neuron will be connected to the nearest hidden neuron
@@ -77,12 +84,24 @@ public
 		case "twoGroups":
 			// The hidden neurons will be split into two groups
 			// Every input neuron will be connected to every neuron of the nearest group
-			int neededConnections = hiddenNeuronsPerLayer/2;
 			
+			// Prevent wrong usage
+			// Two groups with one input neuron makes no sense
+			if (nrInputNeurons == 1)
+				nrInputNeurons++;
+			
+			// and with just on hidden neuron neither
+			if (hiddenNeuronsPerLayer == 1)
+				hiddenNeuronsPerLayer++;
+			
+			int neededConnections = hiddenNeuronsPerLayer/2 * nrInputNeurons;
+			
+			// The upper group will have one more neuron
 			if ((hiddenNeuronsPerLayer % 2) != 0)
-				neededConnections++;
-			
-			inputConnWeights = new float[nrInputNeurons * neededConnections];
+				neededConnections += (nrInputNeurons/2);
+				
+			// The upper group
+			inputConnWeights = new float[neededConnections];
 			
 			neededNeuronInputs = nrInputNeurons/2;
 			
@@ -90,7 +109,7 @@ public
 				neededNeuronInputs++;	
 			break;
 		
-		default: // each
+		default: // "each"
 			inputConnWeights = new float[nrInputNeurons * hiddenNeuronsPerLayer];
 			neededNeuronInputs = nrInputNeurons;
 		}// switch (inputTopology)
@@ -113,76 +132,80 @@ public
 		inputConnections = new Connection[inputConnWeights.length];
 		
 		/*** Hidden layer ***/
-		// Just to prevent wrong usage
-		if (hiddenNeuronsPerLayer < 1)
-			hiddenNeuronsPerLayer = 1;
-		
-		// Makes no sense when we have hidden neurons
-		if (hiddenLayers < 1)
-			hiddenLayers = 1;
-		
-		// We need this in run() too for building the connections
-		this.hiddenLayers = hiddenLayers;
-		
-		hiddenNeurons = new Neuron[hiddenLayers][hiddenNeuronsPerLayer];
-				
-		// Abhängikeiten von hiddenTopology:	Anzahl der Inputs der hidden[>0] Neuronen
-		//										Arraygröße hiddenConnWeights & -> hiddenConnections
-		//										Algorythmus für Connections between hidden layer
-		switch (hiddenTopology){
-		case "one":
-			// Every hidden neuron will be connected to the nearest hidden neuron in the next layer
-			if (hiddenLayers > 1){
+		if (hiddenLayers == 1)
+			hiddenNeurons = new Neuron[hiddenLayers][hiddenNeuronsPerLayer];
+			
+		else {
+			hiddenNeurons = new Neuron[hiddenLayers][hiddenNeuronsPerLayer];
+			
+			switch (hiddenTopology){
+			case "one":
+				// Every hidden neuron will be connected to the nearest hidden neuron in the next layer
 				hiddenConnWeights = new float[hiddenLayers-1][hiddenNeuronsPerLayer];
+			
+				for (int i = 0; i < hiddenLayers-1; i++){
+					
+					for (int j = 0; j < hiddenConnWeights[i].length; j++)
+						hiddenConnWeights[i][j] = 1;
+				}
+				
+				neededNeuronInputs = 1;
+				break;
+			
+			case "cross":
+				// Every neuron will be connected to two neurons of the following layer,
+				// the neuron a position up and the neuron a position down
+				hiddenConnWeights = new float[hiddenLayers-1][hiddenNeuronsPerLayer * 2];
+				
+				for (int i = 0; i < hiddenLayers-1; i++){
+					
+					for (int j = 0; j < hiddenConnWeights[i].length; j++)
+						hiddenConnWeights[i][j] = 1;
+				}
+				
+				neededNeuronInputs = 2;
+				break;
+			
+			case "zigzag":
+				// Every neuron will be connected to two neurons of the following layer,
+				// the neuron at same position and the neuron a position up
+				hiddenConnWeights = new float[hiddenLayers-1][hiddenNeuronsPerLayer * 2];
+				
+				for (int i = 0; i < hiddenLayers-1; i++){
+					
+					for (int j = 0; j < hiddenConnWeights[i].length; j++)
+						hiddenConnWeights[i][j] = 1;
+				}
+				
+				neededNeuronInputs = 2;
+				break;
+			
+			default: // each
+				hiddenConnWeights = new float[hiddenLayers-1][hiddenNeuronsPerLayer * hiddenNeuronsPerLayer];
 		
 				for (int i = 0; i < hiddenLayers-1; i++){
 					
 					for (int j = 0; j < hiddenConnWeights[i].length; j++)
 						hiddenConnWeights[i][j] = 1;
 				}
-			}
-			
-			neededNeuronInputs = 1;
-			break;
 				
-		default: // each
-			hiddenConnWeights = new float[hiddenLayers-1][hiddenNeuronsPerLayer * hiddenNeuronsPerLayer];
-	
-			for (int i = 0; i < hiddenLayers-1; i++){
-				
-				for (int j = 0; j < hiddenConnWeights[i].length; j++)
-					hiddenConnWeights[i][j] = 1;
-			}
-			
-			neededNeuronInputs = hiddenNeuronsPerLayer;
-		}// switch (hiddenTopology)
-				
+				neededNeuronInputs = hiddenNeuronsPerLayer;
+			}// switch (hiddenTopology)
+		} // else (hiddenLayers > 1)
+					
 		// Set number of inputs; resp. number of connections
 		// to the previous layer
 		for (int i = 0; i < hiddenLayers; i++){
 			
 			for (int j = 0; j < hiddenNeuronsPerLayer; j++){
-				
-				// Input layer to 1st hidden in switch
-				if (i < 0)
-					neededNeuronInputs = hiddenNeuronsPerLayer;
-					
 				hiddenNeurons[i][j] = new Neuron(neededNeuronInputs);
 					
 				// Initial values: all thresholds = 0
-					
 				hiddenNeurons[i][j].setThreshold(0);
 			}
 		}
-		
-		/*** Output layer ***/
-		// Just to prevent wrong usage
-		if (nrOutputNeurons < 1)
-			nrOutputNeurons = 1;
-			
-		else if (nrOutputNeurons > hiddenNeuronsPerLayer)
-			nrOutputNeurons = hiddenNeuronsPerLayer;
-			
+		 
+		/*** Output layer ***/		
 		outputNeurons = new Neuron[nrOutputNeurons];
 		
 		outputVector = new float[nrOutputNeurons];
@@ -194,14 +217,28 @@ public
 			neededNeuronInputs = hiddenNeuronsPerLayer;
 			break;
 			
-		default:
-			outputConnWeights = new float[hiddenNeuronsPerLayer];
+		default: // "one"
+			// Every hidden neuron will be connected to the nearest output neuron
+			if (hiddenNeuronsPerLayer >= nrOutputNeurons){
+				outputConnWeights = new float[hiddenNeuronsPerLayer];
 			
-			neededNeuronInputs = hiddenNeuronsPerLayer / nrOutputNeurons;
+				neededNeuronInputs = hiddenNeuronsPerLayer / nrOutputNeurons;
+				
+				// Maybe we need 1 more input
+				if ((hiddenNeuronsPerLayer % nrOutputNeurons) != 0)
+					neededNeuronInputs++;
+			}
 			
-			// Maybe we need 1 more input
-			if ((hiddenNeuronsPerLayer % nrOutputNeurons) != 0)
-				neededNeuronInputs++;
+			// Every output neuron will be connected to the nearest hidden neuron
+			else{
+				outputConnWeights = new float[nrOutputNeurons];
+			
+				neededNeuronInputs = nrOutputNeurons / hiddenNeuronsPerLayer;
+				
+				// Maybe we need 1 more input
+				if ((nrOutputNeurons % hiddenNeuronsPerLayer) != 0)
+					neededNeuronInputs++;
+			}
 			break;
 		}// switch (outputTopology)
 		
@@ -245,8 +282,8 @@ public
 						inp = 0;
 					}
 					
-					System.out.println("inputConnections["+inNeur+"] = new Connection(inputNeurons["+inNeur
-							+"] ,hiddenNeurons[0]["+outNeur+"], "+inp+", inputConnWeights["+inNeur+"]);");
+//					System.out.println("inputConnections["+inNeur+"] = new Connection(inputNeurons["+inNeur
+//							+"] ,hiddenNeurons[0]["+outNeur+"], "+inp+", inputConnWeights["+inNeur+"]);");
 					
 					// ...to the "nearest" hidden neuron (if several are available)
 					inputConnections[inNeur] = new Connection(inputNeurons[inNeur],
@@ -276,11 +313,20 @@ public
 			break;
 			
 		case "twoGroups": // From each input neuron...
-			for (inp = 0; inp < inputNeurons.length; inp++){
+			// Split the groups here
+			int groupLimit;
 			
+			if ((hiddenNeurons[0].length % 2) == 0)
+				groupLimit = hiddenNeurons[0].length/2;
+			else
+				groupLimit = (hiddenNeurons[0].length/2) + 1;
+			
+			for (inp = 0; inp < inputNeurons.length; inp++){
+				
 				// ...to each neuron in the nearest group
 				if (inp < (inputNeurons.length/2)){
-					for (int conn = 0; conn < (hiddenNeurons[0].length/2); conn++){
+						
+					for (int conn = 0; conn < groupLimit; conn++){
 						
 						inputConnections[positionInLayer] = new Connection(inputNeurons[inp],
 								hiddenNeurons[0][conn], inp, inputConnWeights[positionInLayer], conn);
@@ -289,7 +335,7 @@ public
 					}
 				}
 				else {
-					for (int conn = (hiddenNeurons[0].length/2); conn < hiddenNeurons[0].length; conn++){
+					for (int conn = groupLimit; conn < hiddenNeurons[0].length; conn++){
 						
 						inputConnections[positionInLayer] = new Connection(inputNeurons[inp],
 								hiddenNeurons[0][conn], inp, inputConnWeights[positionInLayer], conn);
@@ -300,7 +346,8 @@ public
 			}
 			break;
 		
-		default: // From each input neuron...
+		default: // "each"
+			// From each input neuron...
 			for (inp = 0; inp < inputNeurons.length; inp++){
 			
 				// ...to each neuron of the 1st hidden layer
@@ -319,7 +366,7 @@ public
 			hiddenConnections = new Connection[hiddenLayers-1][hiddenConnWeights[0].length];
 				
 			switch (hiddenTopology){
-			case "one":		
+			case "one":
 				for (int layer = 0; layer < (hiddenLayers-1); layer++){
 			
 					// From each hidden neuron...
@@ -327,12 +374,58 @@ public
 			
 						// ...to the nearest neuron of the next hidden layer
 						hiddenConnections[layer][neur] = new Connection(hiddenNeurons[layer][neur],
-							hiddenNeurons[layer+1][neur], 1, hiddenConnWeights[layer][neur], neur);
+							hiddenNeurons[layer+1][neur], 0, hiddenConnWeights[layer][neur], neur);
+					}
+				}
+				break;
+			
+			case "cross":
+				for (int layer = 0; layer < (hiddenLayers-1); layer++){
+			
+					// From each hidden neuron...
+					for (int neur = 0; neur < hiddenNeurons[layer].length; neur++){
+			
+						// ...to the neuron 1 position down of the next hidden layer...
+						if (neur > 0)
+							hiddenConnections[layer][neur*2] = new Connection(hiddenNeurons[layer][neur],
+								hiddenNeurons[layer+1][neur-1], 0, hiddenConnWeights[layer][neur*2], (neur-1));
+						else
+							hiddenConnections[layer][neur*2] = new Connection(hiddenNeurons[layer][neur],
+								hiddenNeurons[layer+1][0], 0, hiddenConnWeights[layer][neur*2], 0);
+						
+						// ...and the neuron 1 position up of the next hidden layer
+						if (neur < hiddenNeurons[layer].length - 1)
+							hiddenConnections[layer][(neur*2)+1] = new Connection(hiddenNeurons[layer][neur],
+								hiddenNeurons[layer+1][neur+1], 1, hiddenConnWeights[layer][(neur*2)+1], (neur+1));
+						else
+							hiddenConnections[layer][(neur*2)+1] = new Connection(hiddenNeurons[layer][neur],
+								hiddenNeurons[layer+1][neur], 1, hiddenConnWeights[layer][(neur*2)+1], neur);
+					}
+				}
+				break;
+			
+			case "zigzag":
+				for (int layer = 0; layer < (hiddenLayers-1); layer++){
+			
+					// From each hidden neuron...
+					for (int neur = 0; neur < hiddenNeurons[layer].length; neur++){
+			
+						// ...to the neuron at the same position of the next hidden layer...
+						hiddenConnections[layer][neur*2] = new Connection(hiddenNeurons[layer][neur],
+								hiddenNeurons[layer+1][neur], 0, hiddenConnWeights[layer][neur*2], neur);
+						
+						// ...and a neuron 1 position up of the next hidden layer
+						if (neur < hiddenNeurons[layer].length - 1)
+							hiddenConnections[layer][(neur*2)+1] = new Connection(hiddenNeurons[layer][neur],
+								hiddenNeurons[layer+1][neur+1], 1, hiddenConnWeights[layer][(neur*2)+1], (neur+1));
+						else
+							hiddenConnections[layer][(neur*2)+1] = new Connection(hiddenNeurons[layer][neur],
+								hiddenNeurons[layer+1][0], 1, hiddenConnWeights[layer][(neur*2)+1], 0);
 					}
 				}
 				break;
 				
-			default: // each
+			default: // "each"
 				for (int layer = 0; layer < (hiddenLayers-1); layer++){
 					positionInLayer = 0;
 					
@@ -368,27 +461,51 @@ public
 					positionInLayer++;
 				}
 			}
-			
-		default: // one	
+		
+		default: // "one"	
 			inp = 0;
 			outNeur = 0;
-			numberOfInputs = (hiddenNeurons[hiddenLayers-1].length/outputNeurons.length);
 			
-			if ((hiddenNeurons[hiddenLayers-1].length % outputNeurons.length) != 0)
-				numberOfInputs++;
+			if (hiddenNeuronsPerLayer >= nrOutputNeurons){
+				numberOfInputs = (hiddenNeurons[hiddenLayers-1].length/outputNeurons.length);
 			
-			// From each hidden neuron...
-			for (int hidNeur = 0; hidNeur < hiddenNeurons[hiddenLayers-1].length; hidNeur++, inp++){
+				if ((hiddenNeurons[hiddenLayers-1].length % outputNeurons.length) != 0)
+					numberOfInputs++;
 				
-				// Go to next output neuron if all inputs are connected
-				if ((hidNeur > 0) && (hidNeur % numberOfInputs  == 0)){
-					outNeur++;
-					inp = 0;
+				// From each hidden neuron...
+				for (int hidNeur = 0; hidNeur < hiddenNeurons[hiddenLayers-1].length; hidNeur++, inp++){
+					
+					// Go to next output neuron if all inputs are connected
+					if ((hidNeur > 0) && (hidNeur % numberOfInputs  == 0)){
+						outNeur++;
+						inp = 0;
+					}
+							
+					// ...to the "nearest" output neuron (if several are available)
+					outputConnections[hidNeur] = new Connection(hiddenNeurons[hiddenLayers-1][hidNeur],
+							outputNeurons[outNeur], inp, outputConnWeights[hidNeur], outNeur);
 				}
-						
-				// ...to the "nearest" output neuron (if several are available)
-				outputConnections[hidNeur] = new Connection(hiddenNeurons[hiddenLayers-1][hidNeur],
-						outputNeurons[outNeur], inp, outputConnWeights[hidNeur], outNeur);
+			}
+			
+			else {
+				numberOfInputs = (outputNeurons.length/hiddenNeurons[hiddenLayers-1].length);
+			
+				if ((outputNeurons.length % hiddenNeurons[hiddenLayers-1].length) != 0)
+					numberOfInputs++;
+				
+				// From each output neuron...
+				for (int oNeur = 0; oNeur < outputNeurons.length; oNeur++, inp++){
+					
+					// Go to next hidden neuron if all inputs are connected
+					if ((oNeur > 0) && (oNeur % numberOfInputs  == 0)){
+						outNeur++;
+						inp = 0;
+					}
+							
+					// ...to the "nearest" output neuron (if several are available)
+					outputConnections[oNeur] = new Connection(hiddenNeurons[hiddenLayers-1][outNeur],
+							outputNeurons[oNeur], inp, outputConnWeights[oNeur], oNeur);
+				}
 			}
 			break;
 		}// switch (inputTopology)
@@ -423,7 +540,7 @@ public
 		// Test output
 //		System.out.println("inputNeurons: " + inputNeurons.length +
 //				", hiddenNeuronsPerLayer: " + hiddenNeurons[0].length +
-//				", hiddenLayers: " + hiddenLayers +
+//				", hiddenLayers: " + hiddenNeurons.length +
 //				", outputNeurons: " + outputNeurons.length);
 		
 		//Set inputs
@@ -433,13 +550,14 @@ public
 		// Execute input layer
 		for (int pos = 0; pos < inputConnections.length; pos++){			
 			// Test output
-//			System.out.println("inputConnection[" + pos + "]");
+//			System.out.println("inputConnections.length: "+inputConnections.length
+//								+", inputConnection[" + pos + "]");
 			
 			inputConnections[pos].run();
 		}
 			
 		// Execute hidden layer(s)
-		for(int layer = 0; layer < (hiddenLayers-1); layer++){
+		for(int layer = 0; layer < (hiddenNeurons.length-1); layer++){
 			
 			// Test output
 //			System.out.println("connection["+layer+"].length: "+ hiddenConnections[layer].length);
@@ -447,7 +565,7 @@ public
 			for (int pos = 0; pos < hiddenConnections[layer].length; pos++){
 				
 				// Test output
-//				System.out.println("hiddenConnection[" + layer + "][" + pos + "]");
+//				System.out.println("hiddenConnections[" + layer + "][" + pos + "]");
 				
 				hiddenConnections[layer][pos].run();
 			}
@@ -521,7 +639,6 @@ public
 //			}
 			
 			// Wrong result, use backpropagation to find a better one and try again
-			// TODO: In gitk schauen, wie for-loop zuerst war
 			for (int i = 0; (i < outVector.length) && (wrong == false); i++){
 				if ((outVector[i] < (trainingOutVector[i] - errorTolerance))
 						|| (outVector[i] > (trainingOutVector[i] + errorTolerance)))
@@ -546,12 +663,12 @@ public
 		}
 		
 		// For debug purposes, print output vector
-		System.out.println("\ttrainingOut\t\t| outVector");
-		for (int deb = 0; deb < outVector.length; deb++){
-			System.out.print("\t[" + deb + "]: " + (trainingOutVector[deb] - errorTolerance));
-			System.out.print(" - " + (trainingOutVector[deb] + errorTolerance));
-			System.out.println("\t| [" + deb + "]: " + outVector[deb]);
-		}
+//		System.out.println("\ttrainingOut\t\t| outVector");
+//		for (int deb = 0; deb < outVector.length; deb++){
+//			System.out.print("\t[" + deb + "]: " + (trainingOutVector[deb] - errorTolerance));
+//			System.out.print(" - " + (trainingOutVector[deb] + errorTolerance));
+//			System.out.println("\t| [" + deb + "]: " + outVector[deb]);
+//		}
 		
 		return abortTraining;
 	}// training()
@@ -573,7 +690,7 @@ private	void backpropagation(float[] resultOut, float[] wantedOut){
 		
 		// For calculating the weight differences for every connection loop over every
 		// (connection) layer...
-		int connectionLayer = hiddenLayers - 1;
+		int connectionLayer = hiddenNeurons.length - 1;
 		
 		for (int layer = connectionLayer; layer >= 0; layer--){
 			

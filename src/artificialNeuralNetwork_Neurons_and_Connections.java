@@ -1,6 +1,7 @@
 /********************************** Artificial neural network ***********************************
 * TODO:	Description, Header, Comments
 ************************************************************************************************/
+//TODO: import java.lang.Math; mit und ohne ergebnis testen
 
 /************************************************************************************************
 * class Neuron:
@@ -33,16 +34,6 @@ public
 	Boolean setInput(int nrInput, float value){
 		if(nrInput < nrInputs){
 			inputs[nrInput] = value;
-			
-			return true;
-		}
-		
-		return false;
-	}
-	
-	Boolean unsetInput(int nrInput){
-		if(nrInput < nrInputs){
-			inputs[nrInput] = 0;
 			
 			return true;
 		}
