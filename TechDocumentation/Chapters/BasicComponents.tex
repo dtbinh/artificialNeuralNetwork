@@ -2,47 +2,47 @@
 Uses step function for calculating the output.
 
 \section{Attributes}
-\paragraph{int inputs}
+\subsection{int inputs}
 For all inputs one integer variable is used. So the neuron can handle up to 32 inputs, which can just be 0 or 1.
 
-\paragraph{int nrInputs}
+\subsection{int nrInputs}
 Specifies how many inputs (respectively bits of the variable \texttt{inputs}) shall be used.
 
-\paragraph{float netInput}
+\subsection{float netInput}
 The result of the net input function:\\
 $netInput = input.1*weights[0] + ... + input.32*weights[31]$\\
 So far also used as output.
 
-\paragraph{float weights[]}
+\subsection{float weights[]}
 The weights of the inputs. Array size depends on the number of inputs.
 
-\paragraph{float threshold}
+\subsection{float threshold}
 The threshold when output is activated.
 
 %\paragraph{Boolean activated}
 %Boolean output, true if the calculated output is $>=$ the threshold.
 
 \section{Constructors}
-\paragraph{Neuron(int nrInputs)}
+\subsection{Neuron(int nrInputs)}
 Sets \texttt{nrInputs}, size of array \texttt{weights} and initialzes \texttt{inputs}, \texttt{netInput}, and \texttt{weights} to 0, \texttt{activated} to false, and \texttt{threshold} to max ($0x7fffffff$).
 
 \section{Methods}
-\paragraph{Boolean setInput(int nrInput)}
+\subsection{Boolean setInput(int nrInput)}
 Sets given input to 1 by shifting a 1 to the corresponding bit in \texttt{inputs}.\\
 Returns true if input was set, returns false if input number is to high.
 
-\paragraph{Boolean unsetInput(int nrInput)}
+\subsection{Boolean unsetInput(int nrInput)}
 Sets given input to 0 by shifting a 1 to the corresponding bit in \texttt{inputs} and bitwise inverting it.\\
 Returns true if input was unset, returns false if input number is to high.
 
-\paragraph{Boolean setWeight(int nrInput, float weight)}
+\subsection{Boolean setWeight(int nrInput, float weight)}
 Puts the given weight into the for the given input corresponding field in the weights array.\\
 Returns true if weight was set, returns false if input number is to high.
 
-\paragraph{void setThreshold(float threshold)}
+\subsection{void setThreshold(float threshold)}
 Sets threshold for the neuron.
 
-\paragraph{float getOutput()}
+\subsection{float getOutput()}
 Calculates the \texttt{netInput}, the result of the net input function, and uses the activation function for returning the output.\\
 So far, there is no extra output variable in the class, since the output function is just the identity. So the method returns the variable \texttt{netInput}.\\
 So far, the activation function is just a step function, which is implemented as a simple if-else.
@@ -51,26 +51,26 @@ So far, the activation function is just a step function, which is implemented as
 Connects the output of a neuron to an input of another neuron. The weight of the following input is the output value times the weight of the connection.
 
 \section{Attributes}
-\paragraph{Neuron neuronFrom}
+\subsection{Neuron neuronFrom}
 Neuron the output is taken from.
 
-\paragraph{Neuron neuronTo}
+\subsection{Neuron neuronTo}
 Neuron the input is set.
 
-\paragraph{int input}
+\subsection{int input}
 Input of \texttt{neuronTo} which is set.
 
-\paragraph{float connWeight}
+\subsection{float connWeight}
 Weight of the connection.
 
-\paragraph{float weightToSet}
+\subsection{float weightToSet}
 Weight set in \texttt{neuronTo}. Output of \texttt{neuronFrom} $*$ weight of connection.
 
 \section{Constructors}
-\paragraph{Connection(Neuron neuronFrom, Neuron neuronTo, int input, float connWeight)}
+\subsection{Connection(Neuron neuronFrom, Neuron neuronTo, int input, float connWeight)}
 Just sets \texttt{neuronFrom}, \texttt{neuronTo}, \texttt{input}, and \texttt{connWeight}.
 
 \section{Methods}
-\paragraph{void run()}
+\subsection{void run()}
 Calculates the weight for \texttt{neuronTo}. The weight, which is set, is calculated by \texttt{getOutput()} from \texttt{neuronFrom} $*$ the weight of the connection.for \texttt{neuronTo}. The calculated weight is set to the given input.\\
 The method uses \texttt{getActivation()} from \texttt{neuronFrom} to set or unset the given input of \texttt{neuronTo}.
