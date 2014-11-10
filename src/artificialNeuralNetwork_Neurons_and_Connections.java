@@ -15,7 +15,7 @@ private
 	float threshold;
 	float output;
 
-public
+protected
 	// Constructor
 	Neuron(int nrInputs){
 		this.nrInputs = nrInputs;
@@ -83,7 +83,7 @@ private
 	float valueToSet;
 	int positionNeuronTo;
 	
-public
+protected
 	// Constructor
 	Connection(Neuron neuronFrom, Neuron neuronTo, int input, float connWeight, int positionNeuronTo){
 		this.neuronFrom = neuronFrom;
