@@ -2,7 +2,6 @@
 * TODO:	Description, Header, Comments, TechDoc
 * 		Save-Funktion um weights und thresholds zu speichern
 * 		System.out.prints komplett für multiLayerPerceptron-Test (Tabelle, wie bei inputTopology each)
-* 		in constructor: topoly == null, topology = default
 ************************************************************************************************/
 import java.util.ArrayList;
 
@@ -29,6 +28,9 @@ private
 	Connection[] hiddenLyrConnections;
 	ArrayList<Connection[]> hiddenConnections;
 	Connection[] outputConnections;
+	String inputTopology;
+	String hiddenTopology;
+	String outputTopology;
 	// For training loop
 	Boolean keepGoing;
 
@@ -52,11 +54,26 @@ public
 		hiddenConnWeights = new ArrayList<float[]>();
 		hiddenConnections = new ArrayList<Connection[]>();
 		
+		if (inputTopology == null)
+			inputTopology = new String("each");
+		else
+			this.inputTopology = inputTopology;
+		
+		if (hiddenTopology == null)
+			hiddenTopology = new String("each");
+		else
+			this.hiddenTopology = hiddenTopology;
+		
+		if (outputTopology == null)
+			outputTopology = new String("each");
+		else
+			this.outputTopology = outputTopology;
+		
 		/*** Input layer ***/
 		// Just to prevent wrong usage
 		if (nrInputNeurons < 1)
 			nrInputNeurons = 1;
-		
+			
 		if (nrHiddenNeurons.length < 1)
 			nrHiddenNeurons = new int[1];
 		
@@ -132,12 +149,14 @@ public
 		for (int i = 0; i < nrInputNeurons; i++){
 			inputNeurons[i] = new Neuron(1);
 			
-			// Initial values: all thresholds = 0
-			inputNeurons[i].setThreshold(0);
+			// Initialise thresholds
+			// (to 8 so the output is almost 0)
+			inputNeurons[i].setThreshold(8);
 		}
 		
-		// Initialize weights, all weights = 1
+		// Initialise weights
 		for (int i = 0; i < inputConnWeights.length; i++)
+			
 			inputConnWeights[i] = 1;
 		
 		// We need as many connections as connection weights (obviously)
@@ -248,8 +267,8 @@ public
 			for (int n = 0; n < hiddenNeurons.get(i).length; n++){
 				hiddenNeurons.get(i)[n] = new Neuron(neededNeuronInputs[i]);
 					
-				// Initial values: all thresholds = 0
-				hiddenNeurons.get(i)[n].setThreshold(0);
+				// Initialise thresholds
+				hiddenNeurons.get(i)[n].setThreshold(8);
 			}
 		}
 		 
@@ -292,8 +311,8 @@ public
 		for (int i = 0; i < outputNeurons.length; i++){
 			outputNeurons[i] = new Neuron(neededNeuronInputs[nrHiddenNeurons.length]);
 			
-			// Initial values: thresholds = 0
-			outputNeurons[i].setThreshold(0);
+			// Initialise thresholds
+			outputNeurons[i].setThreshold(8);
 			
 			// Set output to 0
 			outputVector[i] = 0;
@@ -374,7 +393,7 @@ public
 					}
 					
 					// Test output: multilayerPerceptronTest
-					System.out.println("\t\t["+inNeur+"]\t|\t["+inNeur+"]\t [0]["+neur+"]\t\t "+inp+" | "+neur);
+//					System.out.println("\t\t["+inNeur+"]\t|\t["+inNeur+"]\t [0]["+neur+"]\t\t "+inp+" | "+neur);
 					
 					// ...to a hidden neuron
 					inputConnections[inNeur] = new Connection(inputNeurons[inNeur],
@@ -420,7 +439,7 @@ public
 						neur = hidNeur / (hiddenNeurons.get(0).length / inputNeurons.length);
 					
 					// Test output: multilayerPerceptronTest
-					System.out.println("\t\t["+hidNeur+"]\t|\t["+neur+"]\t [0]["+hidNeur+"]\t\t 0 | "+hidNeur);
+//					System.out.println("\t\t["+hidNeur+"]\t|\t["+neur+"]\t [0]["+hidNeur+"]\t\t 0 | "+hidNeur);
 					
 					// ...to a hidden neuron
 					inputConnections[hidNeur] = new Connection(inputNeurons[neur],
@@ -554,7 +573,7 @@ public
 							}
 							
 							// Test output: multilayerPerceptronTest
-							System.out.println("\t\t["+hidNeur+"]\t|\t["+(layer)+"]["+hidNeur+"]\t ["+(layer+1)+"]["+neur+"]\t\t "+inp+" | "+neur);
+//							System.out.println("\t\t["+hidNeur+"]\t|\t["+(layer)+"]["+hidNeur+"]\t ["+(layer+1)+"]["+neur+"]\t\t "+inp+" | "+neur);
 							
 							// ...to a hidden neuron
 							hiddenConnections.get(layer)[hidNeur] = new Connection(hiddenNeurons.get(layer)[hidNeur],
@@ -600,7 +619,7 @@ public
 								neur = hidNeur / (hiddenNeurons.get(0).length / hiddenNeurons.get(layer).length);
 							
 							// Test output: multilayerPerceptronTest
-							System.out.println("\t\t["+hidNeur+"]\t|\t["+neur+"]\t [0]["+hidNeur+"]\t\t 0 | "+hidNeur);
+//							System.out.println("\t\t["+hidNeur+"]\t|\t["+neur+"]\t [0]["+hidNeur+"]\t\t 0 | "+hidNeur);
 							
 							// ...to a hidden neuron
 							hiddenConnections.get(layer)[hidNeur] = new Connection(hiddenNeurons.get(layer)[neur],
@@ -658,8 +677,8 @@ public
 							// ...to the neuron 1 position down of the next hidden layer...
 							if (neur > 0){
 								// Test output: multilayerPerceptronTest
-								System.out.println("\t\t["+(n*2)+"]\t|\t["+(layer)+"]["+n+"]\t ["+(layer+1)+"]["
-													+(neur-1)+"]\t\t "+inp+" | "+(neur-1));							
+//								System.out.println("\t\t["+(n*2)+"]\t|\t["+(layer)+"]["+n+"]\t ["+(layer+1)+"]["
+//													+(neur-1)+"]\t\t "+inp+" | "+(neur-1));							
 					
 								hiddenConnections.get(layer)[n*2] = new Connection(hiddenNeurons.get(layer)[n],
 									hiddenNeurons.get(layer+1)[neur-1], inp, hiddenConnWeights.get(layer)[n*2], (neur-1));
@@ -667,8 +686,8 @@ public
 							
 							else {
 								// Test output: multilayerPerceptronTest
-								System.out.println("\t\t["+(n*2)+"]\t|\t["+(layer)+"]["+n+"]\t ["+(layer+1)+"][0]\t\t "
-													+inp+" | 0");	
+//								System.out.println("\t\t["+(n*2)+"]\t|\t["+(layer)+"]["+n+"]\t ["+(layer+1)+"][0]\t\t "
+//													+inp+" | 0");	
 								
 								hiddenConnections.get(layer)[n*2] = new Connection(hiddenNeurons.get(layer)[n],
 									hiddenNeurons.get(layer+1)[0], inp, hiddenConnWeights.get(layer)[n*2], 0);
@@ -679,16 +698,16 @@ public
 							// ...and the neuron 1 position up of the next hidden layer
 							if (neur < hiddenNeurons.get(layer+1).length - 1){
 								// Test output: multilayerPerceptronTest
-								System.out.println("\t\t["+((n*2)+1)+"]\t|\t["+(layer)+"]["+n+"]\t ["+(layer+1)+"]["
-													+(neur+1)+"]\t\t "+inp+" | "+(neur+1));							
+//								System.out.println("\t\t["+((n*2)+1)+"]\t|\t["+(layer)+"]["+n+"]\t ["+(layer+1)+"]["
+//													+(neur+1)+"]\t\t "+inp+" | "+(neur+1));							
 					
 								hiddenConnections.get(layer)[(n*2)+1] = new Connection(hiddenNeurons.get(layer)[n],
 									hiddenNeurons.get(layer+1)[neur+1], inp, hiddenConnWeights.get(layer)[(n*2)+1], (neur+1));
 							}
 							else{
 								// Test output: multilayerPerceptronTest
-								System.out.println("\t\t["+((n*2)+1)+"]\t|\t["+(layer)+"]["+n+"]\t ["+(layer+1)+"]["
-													+neur+"]\t\t "+inp+" | "+neur);	
+//								System.out.println("\t\t["+((n*2)+1)+"]\t|\t["+(layer)+"]["+n+"]\t ["+(layer+1)+"]["
+//													+neur+"]\t\t "+inp+" | "+neur);	
 								
 								hiddenConnections.get(layer)[(n*2)+1] = new Connection(hiddenNeurons.get(layer)[n],
 									hiddenNeurons.get(layer+1)[neur], inp, hiddenConnWeights.get(layer)[(n*2)+1], neur);
@@ -738,8 +757,8 @@ public
 							// ...to the neuron 1 position down...
 							if (neur > 0){
 								// Test output: multilayerPerceptronTest
-								System.out.println("\t\t["+(n*2)+"]\t|\t["+(layer)+"]["+(neur-1)+"]\t ["+(layer+1)+"]["
-													+(n)+"]\t\t 0 | "+(n));							
+//								System.out.println("\t\t["+(n*2)+"]\t|\t["+(layer)+"]["+(neur-1)+"]\t ["+(layer+1)+"]["
+//													+(n)+"]\t\t 0 | "+(n));							
 					
 								hiddenConnections.get(layer)[n*2] = new Connection(hiddenNeurons.get(layer)[neur-1],
 									hiddenNeurons.get(layer+1)[n], 0, hiddenConnWeights.get(layer)[n*2], n);
@@ -747,7 +766,7 @@ public
 							
 							else {
 								// Test output: multilayerPerceptronTest
-								System.out.println("\t\t["+(n*2)+"]\t|\t["+(layer)+"][0]\t ["+(layer+1)+"]["+n+"]\t\t 0 | "+n);	
+//								System.out.println("\t\t["+(n*2)+"]\t|\t["+(layer)+"][0]\t ["+(layer+1)+"]["+n+"]\t\t 0 | "+n);	
 								
 								hiddenConnections.get(layer)[n*2] = new Connection(hiddenNeurons.get(layer)[0],
 									hiddenNeurons.get(layer+1)[n], 0, hiddenConnWeights.get(layer)[n*2], n);
@@ -756,16 +775,16 @@ public
 							// ...and the neuron 1 position up
 							if (neur < hiddenNeurons.get(layer).length - 1){
 								// Test output: multilayerPerceptronTest
-								System.out.println("\t\t["+((n*2)+1)+"]\t|\t["+(layer)+"]["+n+"]\t ["+(layer+1)+"]["
-													+(neur+1)+"]\t\t "+1+" | "+(neur+1));							
+//								System.out.println("\t\t["+((n*2)+1)+"]\t|\t["+(layer)+"]["+n+"]\t ["+(layer+1)+"]["
+//													+(neur+1)+"]\t\t "+1+" | "+(neur+1));							
 					
 								hiddenConnections.get(layer)[(n*2)+1] = new Connection(hiddenNeurons.get(layer)[neur+1],
 									hiddenNeurons.get(layer+1)[n], 1, hiddenConnWeights.get(layer)[(n*2)+1], (n));
 							}
 							else{
 								// Test output: multilayerPerceptronTest
-								System.out.println("\t\t["+((n*2)+1)+"]\t|\t["+(layer)+"]["+n+"]\t ["+(layer+1)+"]["
-													+neur+"]\t\t "+1+" | "+neur);	
+//								System.out.println("\t\t["+((n*2)+1)+"]\t|\t["+(layer)+"]["+n+"]\t ["+(layer+1)+"]["
+//													+neur+"]\t\t "+1+" | "+neur);	
 								
 								hiddenConnections.get(layer)[(n*2)+1] = new Connection(hiddenNeurons.get(layer)[neur],
 									hiddenNeurons.get(layer+1)[n], 1, hiddenConnWeights.get(layer)[(n*2)+1], n);
@@ -822,8 +841,8 @@ public
 							inp = n % (2 * hiddenNeurons.get(layer).length / hiddenNeurons.get(layer+1).length);
 			
 							// Test output: multilayerPerceptronTest
-							System.out.println("\t\t["+(n*2)+"]\t|\t["+(layer)+"]["+n+"]\t ["+(layer+1)+"]["
-												+(neur)+"]\t\t "+inp+" | "+neur);	
+//							System.out.println("\t\t["+(n*2)+"]\t|\t["+(layer)+"]["+n+"]\t ["+(layer+1)+"]["
+//												+(neur)+"]\t\t "+inp+" | "+neur);	
 							
 							// ...to the neuron at the same position of the next hidden layer...
 							hiddenConnections.get(layer)[n*2] = new Connection(hiddenNeurons.get(layer)[n],
@@ -835,16 +854,16 @@ public
 							if (neur < hiddenNeurons.get(layer+1).length - 1){
 								
 								// Test output: multilayerPerceptronTest
-								System.out.println("\t\t["+((n*2)+1)+"]\t|\t["+(layer)+"]["+n+"]\t ["+(layer+1)+"]["
-													+(neur+1)+"]\t\t "+inp+" | "+(neur+1));	
+//								System.out.println("\t\t["+((n*2)+1)+"]\t|\t["+(layer)+"]["+n+"]\t ["+(layer+1)+"]["
+//													+(neur+1)+"]\t\t "+inp+" | "+(neur+1));	
 								
 								hiddenConnections.get(layer)[(n*2)+1] = new Connection(hiddenNeurons.get(layer)[n],
 									hiddenNeurons.get(layer+1)[neur+1], inp, hiddenConnWeights.get(layer)[(n*2)+1], (neur+1));
 							}
 							
-							else{
+							else {
 								// Test output: multilayerPerceptronTest
-								System.out.println("\t\t["+((n*2)+1)+"]\t|\t["+(layer)+"]["+n+"]\t ["+(layer+1)+"][0]\t\t "+inp+" | 0");	
+//								System.out.println("\t\t["+((n*2)+1)+"]\t|\t["+(layer)+"]["+n+"]\t ["+(layer+1)+"][0]\t\t "+inp+" | 0");	
 								
 								hiddenConnections.get(layer)[(n*2)+1] = new Connection(hiddenNeurons.get(layer)[n],
 									hiddenNeurons.get(layer+1)[0], inp, hiddenConnWeights.get(layer)[(n*2)+1], 0);
@@ -892,8 +911,8 @@ public
 								neur = n / (hiddenNeurons.get(layer+1).length / hiddenNeurons.get(layer).length);
 			
 							// Test output: multilayerPerceptronTest
-							System.out.println("\t\t["+(n*2)+"]\t|\t["+(layer)+"]["+neur+"]\t ["+(layer+1)+"]["
-												+n+"]\t\t 0 | "+n);	
+//							System.out.println("\t\t["+(n*2)+"]\t|\t["+(layer)+"]["+neur+"]\t ["+(layer+1)+"]["
+//												+n+"]\t\t 0 | "+n);	
 							
 							// ...to the neuron at the same position of the next hidden layer...
 							hiddenConnections.get(layer)[n*2] = new Connection(hiddenNeurons.get(layer)[neur],
@@ -903,8 +922,8 @@ public
 							if (n < hiddenNeurons.get(layer).length - 1){
 								
 								// Test output: multilayerPerceptronTest
-								System.out.println("\t\t["+((n*2)+1)+"]\t|\t["+(layer)+"]["+neur+"]\t ["+(layer+1)+"]["
-													+(n+1)+"]\t\t 1 | "+(n+1));	
+//								System.out.println("\t\t["+((n*2)+1)+"]\t|\t["+(layer)+"]["+neur+"]\t ["+(layer+1)+"]["
+//													+(n+1)+"]\t\t 1 | "+(n+1));	
 								
 								hiddenConnections.get(layer)[(n*2)+1] = new Connection(hiddenNeurons.get(layer)[neur],
 									hiddenNeurons.get(layer+1)[n+1], 1, hiddenConnWeights.get(layer)[(n*2)+1], (n+1));
@@ -912,7 +931,7 @@ public
 							
 							else {
 								// Test output: multilayerPerceptronTest
-								System.out.println("\t\t["+((n*2)+1)+"]\t|\t["+(layer)+"]["+neur+"]\t ["+(layer+1)+"][0]\t\t 1 | 0");	
+//								System.out.println("\t\t["+((n*2)+1)+"]\t|\t["+(layer)+"]["+neur+"]\t ["+(layer+1)+"][0]\t\t 1 | 0");	
 								
 								hiddenConnections.get(layer)[(n*2)+1] = new Connection(hiddenNeurons.get(layer)[neur],
 									hiddenNeurons.get(layer+1)[0], 1, hiddenConnWeights.get(layer)[(n*2)+1], 0);
@@ -1004,6 +1023,7 @@ public
 	}// MultiLayerPerceptron(int nrInputNeurons, int hiddenNeuronsPerLayer, int hiddenLayers,
 		// int nrOutputNeurons, String inputTopology, String hiddenTopology)
 
+	// TODO: Header
 	MultiLayerPerceptron(int nrInputNeurons, int[] nrHiddenNeurons, int nrOutputNeurons){
 		this(nrInputNeurons, nrHiddenNeurons, nrOutputNeurons, "each", "each", "each");
 	}
@@ -1089,16 +1109,17 @@ private static	int[] getHiddenNeurons(int nrHiddenNeuronsPerLayer, int numberHid
 	
 	/****************************************************************************************
 	* int training(float[] trainingInVector, float[] trainingOutVector, float errorTolerance,
-	*				int abort):
+	*				int abort, float trainingCoefficient):
 	* Trains the multi layer perceptron
 	* Executes the perceptron with given input vector, compares with the given output vector,
 	* and calculates (if necessary) new connection weights and neuron thresholds
 	* The training will be aborted (to avoid endless execution if now result can be found)
 	* after the given number of trials
+	* The training coefficient defines the learning step size in backpropagation
 	* Returns the number of trials
 	****************************************************************************************/
 	int training(float[] trainingInVector, float[] trainingOutVector, float errorTolerance,
-					int abort){
+					int abort, float trainingCoefficient){
 		float[] outVector;
 		Boolean wrong = false;
 		
@@ -1131,13 +1152,13 @@ private static	int[] getHiddenNeurons(int nrHiddenNeuronsPerLayer, int numberHid
 			abortTraining++;
 			
 			// Backpropagation test output: print output vector
-			System.out.println("Trial " + abortTraining + ":");
-			
-			for (int deb = 0; deb < outVector.length; deb++){
-				System.out.print("trainingOutVector[" + deb + "]: " + (trainingOutVector[deb] - errorTolerance));
-				System.out.print(" - " + (trainingOutVector[deb] + errorTolerance));
-				System.out.println(", outVector[" + deb + "]: " + outVector[deb]);
-			}
+//			System.out.println("Trial " + abortTraining + ":");
+//			
+//			for (int deb = 0; deb < outVector.length; deb++){
+//				System.out.print("trainingOutVector[" + deb + "]: " + (trainingOutVector[deb] - errorTolerance));
+//				System.out.print(" - " + (trainingOutVector[deb] + errorTolerance));
+//				System.out.println(", outVector[" + deb + "]: " + outVector[deb]);
+//			}
 			
 			// Wrong result, use backpropagation to find a better one and try again
 			for (int i = 0; (i < outVector.length) && (wrong == false); i++){
@@ -1148,7 +1169,7 @@ private static	int[] getHiddenNeurons(int nrHiddenNeuronsPerLayer, int numberHid
 			
 			// At least 1 wrong output
 			if (wrong == true){
-				backpropagation(outVector, trainingOutVector);
+				backpropagation(outVector, trainingOutVector, trainingCoefficient);
 				
 				wrong = false;
 			}
@@ -1174,14 +1195,18 @@ private static	int[] getHiddenNeurons(int nrHiddenNeuronsPerLayer, int numberHid
 		return abortTraining;
 	}// training()
 	
-	//TODO int training(float[] trainingInVector, float[] trainingOutVector, float errorTolerance, int abort, float trainingCoefficient)
+	//TODO Header
+	int training(float[] trainingInVector, float[] trainingOutVector, float errorTolerance, int abort){
+		int trials = training(trainingInVector, trainingOutVector, errorTolerance, abort, 0.2f);
+		
+		return trials;
+	}
 	
 	/****************************************************************************************
 	* void backpropagation(float[] resultOut, float[] wantedOut):
 	* Calculates the differences for weights and thresholds and add them.
 	****************************************************************************************/
-private	void backpropagation(float[] resultOut, float[] wantedOut){
-		float trainingCoefficient = 0.2f;
+private	void backpropagation(float[] resultOut, float[] wantedOut, float trainingCoefficient){
 		float weightDelta = 0;
 		float succWeights[] = new float[1];
 		Connection connections[] = new Connection[1];
@@ -1260,9 +1285,6 @@ private	void backpropagation(float[] resultOut, float[] wantedOut){
 					position = connections[conn].getPositionNeuronTo();
 					
 					weightDelta = wantedOut[position] - resultOut[position];
-					
-//					System.out.println("weightDelta = wantedOut[position] - resultOut[position]");
-//					System.out.println(weightDelta+" = "+wantedOut[position]+" - "+resultOut[position]);
 					
 					// Everything else we need comes after the for-loops
 				}
@@ -1448,5 +1470,5 @@ private	void backpropagation(float[] resultOut, float[] wantedOut){
 		trialPos = 0;
 		
 		return fastestString;
-	}
+	}// findFastest()
 }// class MultiLayerPerceptron

@@ -1,7 +1,6 @@
 /********************************** Artificial neural network ***********************************
 * TODO:	Description, Header, Comments
 ************************************************************************************************/
-//TODO: import java.lang.Math; mit und ohne ergebnis testen
 
 /************************************************************************************************
 * class Neuron:
@@ -108,13 +107,13 @@ protected
 	
 	Neuron getNeuronFrom(){
 		return neuronFrom;
-	}
+	}// getNeuronFrom()
 	
 	Neuron getNeuronTo(){
 		return neuronTo;
-	}
+	}// getNeuronTo()
 	
 	int getPositionNeuronTo(){
 		return positionNeuronTo;
-	}
+	}// getPositionNeuronTo()
 }// class Connection
