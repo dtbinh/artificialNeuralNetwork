@@ -106,15 +106,19 @@ protected
 		connWeight += weightDelta;
 	}// addWeightDelta()
 	
+	void setWeight(float connWeight){
+		this.connWeight = connWeight;
+	}// setWeight()
+	
 	Neuron getNeuronFrom(){
 		return neuronFrom;
-	}
+	}// getNeuronFrom()
 	
 	Neuron getNeuronTo(){
 		return neuronTo;
-	}
+	}// getNeuronTo()
 	
 	int getPositionNeuronTo(){
 		return positionNeuronTo;
-	}
+	}// getPositionNeuronTo()
 }// class Connection

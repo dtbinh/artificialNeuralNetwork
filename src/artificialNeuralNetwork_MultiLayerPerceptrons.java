@@ -2,8 +2,14 @@
 * TODO:	Description, Header, Comments, TechDoc
 * 		Save-Funktion um weights und thresholds zu speichern
 * 		System.out.prints komplett für multiLayerPerceptron-Test (Tabelle, wie bei inputTopology each)
-* 		in constructor: topoly == null, topology = default
 ************************************************************************************************/
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /************************************************************************************************
@@ -29,6 +35,9 @@ private
 	Connection[] hiddenLyrConnections;
 	ArrayList<Connection[]> hiddenConnections;
 	Connection[] outputConnections;
+	String inputTopology;
+	String hiddenTopology;
+	String outputTopology;
 	// For training loop
 	Boolean keepGoing;
 
@@ -51,6 +60,21 @@ public
 		hiddenNeurons = new ArrayList<Neuron[]>();
 		hiddenConnWeights = new ArrayList<float[]>();
 		hiddenConnections = new ArrayList<Connection[]>();
+		
+		if (inputTopology == null)
+			inputTopology = new String("each");
+		else
+			this.inputTopology = inputTopology;
+		
+		if (hiddenTopology == null)
+			hiddenTopology = new String("each");
+		else
+			this.hiddenTopology = hiddenTopology;
+		
+		if (outputTopology == null)
+			outputTopology = new String("each");
+		else
+			this.outputTopology = outputTopology;
 		
 		/*** Input layer ***/
 		// Just to prevent wrong usage
@@ -1448,5 +1472,294 @@ private	void backpropagation(float[] resultOut, float[] wantedOut){
 		trialPos = 0;
 		
 		return fastestString;
-	}
+	}// findFastest()
+	
+	/****************************************************************************************
+	* String savePerceptron(String fileName)
+	* Saves weights and thresholds to file
+	* Returns filename
+	****************************************************************************************/
+	String savePerceptron(String fileName){
+		BufferedWriter writer = null;
+		
+		if (fileName == null){
+			fileName = new String("aNN_MultiLayerPerceptron_" + Integer.toString(inputNeurons.length));
+			
+			for (int i = 0; i < hiddenNeurons.size(); i++)
+				fileName += "_"+ Integer.toString(hiddenNeurons.get(i).length);
+									
+			fileName += "_"+ inputTopology + "_"+ hiddenTopology + "_"+ outputTopology;
+		}
+		
+		File file = new File(fileName);
+		
+		if (file.exists()){
+			int add = 0;
+			String oldFileName = new String(fileName);
+			
+			while (file.exists()){
+				add++;
+				
+				fileName = oldFileName;
+				
+				fileName += "_" + Integer.toString(add);
+				
+				file = new File(fileName);
+			}
+		}
+		
+		try
+		{
+		    writer = new BufferedWriter( new FileWriter(file));
+		    
+		    // Save weights
+		    writer.write("inputConnWeights");	writer.newLine();
+		    writer.write(Integer.toString(inputConnWeights.length));	writer.newLine();
+		    
+		    for (int w = 0; w < inputConnWeights.length; w++){
+		    	writer.write(Float.toString(inputConnWeights[w]));	writer.newLine();
+		    }
+
+		    writer.write("hiddenConnWeights");	writer.newLine();
+		    writer.write(Integer.toString(hiddenConnWeights.size()));	writer.newLine();
+		    
+		    for (int lyr = 0; lyr < hiddenConnWeights.size(); lyr++){
+		    	writer.write(Integer.toString(hiddenConnWeights.get(lyr).length));	writer.newLine();
+		    	
+		    	for (int w = 0; w < hiddenConnWeights.get(lyr).length; w++){
+			    	writer.write(Float.toString(hiddenConnWeights.get(lyr)[w]));	writer.newLine();
+			    }
+		    }
+		    	
+		    writer.write("outputConnWeights");	writer.newLine();
+		    writer.write(Integer.toString(outputConnWeights.length));	writer.newLine();
+		    
+		    for (int w = 0; w < outputConnWeights.length; w++){
+		    	writer.write(Float.toString(outputConnWeights[w]));	writer.newLine();
+		    }
+		    
+		    // Add thresholds
+		    writer.write("inputThresholds");	writer.newLine();
+		    writer.write(Integer.toString(inputNeurons.length));	writer.newLine();
+		    
+		    for (int n = 0; n < inputNeurons.length; n++){
+				writer.write(Float.toString(inputNeurons[n].getThreshold()));	writer.newLine();
+		    }
+			
+		    writer.write("hiddenThresholds");	writer.newLine();
+		    writer.write(Integer.toString(hiddenNeurons.size()));	writer.newLine();
+		    
+		    for (int lyr = 0; lyr < hiddenNeurons.size(); lyr++){
+		    	writer.write(Integer.toString(hiddenNeurons.get(lyr).length));	writer.newLine();
+		    	
+				for (int n = 0; n < hiddenNeurons.get(lyr).length; n++){
+					writer.write(Float.toString(hiddenNeurons.get(lyr)[n].getThreshold()));	writer.newLine();
+			    }
+			}
+			
+		    writer.write("outputThresholds");	writer.newLine();
+		    writer.write(Integer.toString(outputNeurons.length));	writer.newLine();
+		    
+		    for (int n = 0; n < outputNeurons.length; n++){
+				writer.write(Float.toString(outputNeurons[n].getThreshold())); writer.newLine();
+		    }
+		}
+		
+		catch ( IOException e){}
+		
+		finally
+		{
+		    try
+		    {
+		        if ( writer != null)
+		        writer.close( );
+		        
+		        return fileName;
+		    }
+		    
+		    catch ( IOException e){}
+		}
+		
+		return "ERROR";
+		// string to float: Float.parseFloat("25");
+	}// savePerceptron()
+	
+	/****************************************************************************************
+	* void loadPerceptron(String fileName)
+	* Loads weights and thresholds from file and sets it to perceptron
+	****************************************************************************************/
+	void loadPerceptron(String fileName){
+		if (fileName != null){
+			
+			BufferedReader reader;
+			
+			try {
+				reader = new BufferedReader(new FileReader (fileName));
+			} catch (FileNotFoundException e) {
+				reader = null;
+				e.printStackTrace();
+			}
+			
+			String line = null;
+			String mode = new String("default");
+			int amount = 0;
+			int nrLayers = 0;
+			int layer = 0;
+			int read = 0;
+			
+			try {
+				while((line = reader.readLine()) != null){
+					
+					switch (mode) {
+					case "inputConnWeights":
+						if (read == 0)
+							amount = Integer.parseInt(line);
+						
+						else if (read <= amount)
+							inputConnections[read-1].setWeight(Float.parseFloat(line));
+
+						read++;
+						
+						if (read > amount){
+							amount = 0;
+							read = 0;
+							mode = "default";
+						}
+						break;
+						
+					case "hiddenConnWeights":
+						if (read == 0)
+							nrLayers = Integer.parseInt(line);
+						
+						else if (read == 1)
+							amount = Integer.parseInt(line);
+						
+						else if (read <= (amount+1))
+							hiddenConnections.get(layer)[read-2].setWeight(Float.parseFloat(line));
+						
+						read++;
+							
+						if ((read > (amount+1)) && (layer < (nrLayers-1))){
+							read = 1;
+							layer++;
+						}
+						
+						else if (read > (amount+1)){
+							amount = 0;
+							layer = 0;
+							read = 0;
+							mode = "default";
+						}
+						break;
+
+					case "outputConnWeights":
+						if (read == 0)
+							amount = Integer.parseInt(line);
+						
+						else if (read <= amount)
+							outputConnections[read-1].setWeight(Float.parseFloat(line));
+
+						read++;
+						
+						if (read > amount){
+							amount = 0;
+							read = 0;
+							mode = "default";
+						}
+						break;
+
+					case "inputThresholds":
+						if (read == 0)
+							amount = Integer.parseInt(line);
+						
+						else if (read <= amount)
+							inputNeurons[read-1].setThreshold(Float.parseFloat(line));
+
+						read++;
+						
+						if (read > amount){
+							amount = 0;
+							read = 0;
+							mode = "default";
+						}
+						break;
+						
+					case "hiddenThresholds":
+						if (read == 0)
+							nrLayers = Integer.parseInt(line);
+						
+						else if (read == 1)
+							amount = Integer.parseInt(line);
+						
+						else if (read <= (amount+1))
+							hiddenNeurons.get(layer)[read-2].setThreshold(Float.parseFloat(line));
+						
+						read++;
+							
+						if ((read > (amount+1)) && (layer < (nrLayers-1))){
+							read = 1;
+							layer++;
+						}
+						
+						else if (read > (amount+1)){
+							amount = 0;
+							layer = 0;
+							read = 0;
+							mode = "default";
+						}
+						break;
+
+					case "outputThresholds":
+						if (read == 0)
+							amount = Integer.parseInt(line);
+						
+						else if (read <= amount)
+							outputNeurons[read-1].setThreshold(Float.parseFloat(line));
+
+						read++;
+						
+						if (read > amount){
+							amount = 0;
+							read = 0;
+							mode = "default";
+						}
+						break;
+						
+					default:
+						if (line.equals("inputConnWeights")){
+							mode = "inputConnWeights";
+						}
+						
+						else if (line.equals("hiddenConnWeights")){
+							mode = "hiddenConnWeights";
+						}
+						
+						else if (line.equals("outputConnWeights")){
+							mode = "outputConnWeights";
+						}
+						
+						else if (line.equals("inputThresholds")){
+							mode = "inputThresholds";
+						}
+						
+						else if (line.equals("hiddenThresholds")){
+							mode = "hiddenThresholds";
+						}
+						
+						else if (line.equals("outputThresholds")){
+							mode = "outputThresholds";
+						}
+					}
+				}
+				
+				reader.close();
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}// loadPerceptron()
 }// class MultiLayerPerceptron
