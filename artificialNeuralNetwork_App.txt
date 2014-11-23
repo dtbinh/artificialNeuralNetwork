@@ -1,0 +1,60 @@
+Netzwerk wird auf Screen dargestellt: Kreise = Neuronen, Striche = Verbindungen
+Thresholds als Nummern in Kreis: 3 Dezimalstellen, Gewichte = Nummern an Verbindungen, 3 Dezimalstellen
+Textfeld für Eingabevektor: Von 1 bis 9
+Textfeld für gewollten Ausgabevektor: Von 1 bis 9
+Outputvektor wird an Outputneuronen dargestellt
+DisplayMode Landscape
+Textfeld für abort
+Textfeld für aktuellen Trial
+
+Visualisierung von Training: Jedes Gewicht/ Threshold wird gleich nach Berechnung aktualisiert (Highlight von aktuellem Layer in Training? (falls Berechnung langsam genug))
+Verwendung von extra lightweight-Netzwerk (branch aNN_App): Nur Topologie one, da sonst zu unübersichtlich, aNNTests anpassen für mögliche Netztopologien
+Info/Howto-Screen: Erklärung was man mit Netzwerk macht und wie App benutzt wird
+Name: ANAB (Artificial Networks Are Bastards)
+
+
+
+1.Seite:
+					      Artificial Networks Are Bastard
+
+Infotext:
+This app visualises how an artificial neural network is trained. (By backpropagation if you care)
+
+First choose the dimensions of the network. (The higher the total number of neurons, the longer the training will be.)
+
+Then choose the input of the network and the result you want to obtain.
+(To avoid endless execution the training stops after 1000 trials so it might happen no result will be found.)
+
+							Button Ok
+
+
+
+2.Seite:
+Text: Input neurons									Text: Output neurons
+DropDown 										DropDown
+(2, 4 oder 8)										(2, 4 oder 8)
+
+Text: Hidden layer	Neurons per hidden layer
+DropDown		DropDown1	DropDown2	DropDown3
+(1, 2 oder 3)		(2, 4 oder 8)	(2, 4 oder 8)	(2, 4 oder 8)
+
+							Button Ok
+
+
+	
+3.Seite:
+Text: Input vector
+DropDown1	DropDown2	DropDown3	DropDown4	DropDown5	DropDown6	DropDown7	DropDown8
+(0.1-0.9)	(0.1-0.9)	(0.1-0.9)	(0.1-0.9)	(0.1-0.9)	(0.1-0.9)	(0.1-0.9)	(0.1-0.9)
+
+
+Text: Output vector
+DropDown1	DropDown2	DropDown3	DropDown4	DropDown5	DropDown6	DropDown7	DropDown8
+(0.1-0.9)	(0.1-0.9)	(0.1-0.9)	(0.1-0.9)	(0.1-0.9)	(0.1-0.9)	(0.1-0.9)	(0.1-0.9)
+
+							Button Ok
+
+
+4. Seite:
+Netzwerk:	Kreisradius: Seitenhöhe/16
+		Vertikaler Abstand zwischen Kreisen: 
