@@ -11,6 +11,10 @@ import java.util.ArrayList;
 * description of constructors for more details
 * Max. number of neurons per layer: 32
 ************************************************************************************************/
+/*** TODO:
+	Diff mit _App-Version wg connweights löschen und Fehlerkorrektur get(0) usw
+	Backpropagation reparieren, siehe _App (nur angefangen)
+***/
 class MultiLayerPerceptron
 {
 private
@@ -1316,6 +1320,7 @@ private	void backpropagation(float[] resultOut, float[] wantedOut, float trainin
 			// InputConnection layer
 			else if (layer == 0){
 				if (connectionLayer > 1){
+					// TODO: Berechnung succNeurons für verschiedenen Topologien
 					succWeights = new float [hiddenConnWeights.get(0).length];
 					succWeights = hiddenConnWeights.get(0);
 					
@@ -1338,6 +1343,7 @@ private	void backpropagation(float[] resultOut, float[] wantedOut, float trainin
 			
 			// Hidden Layer
 			else {
+				// TODO: Berechnung succNeurons für verschiedenen Topologien
 				if (layer == connectionLayer - 1){
 					succWeights = new float [outputConnWeights.length];
 					succWeights = outputConnWeights;
