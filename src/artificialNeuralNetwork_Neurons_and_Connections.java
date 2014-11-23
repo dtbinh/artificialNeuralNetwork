@@ -105,6 +105,11 @@ protected
 		connWeight += weightDelta;
 	}// addWeightDelta()
 	
+	// For visualisation
+	float getConnectionWeight(){
+		return connWeight;
+	}// getConnectionWeight()
+	
 	Neuron getNeuronFrom(){
 		return neuronFrom;
 	}// getNeuronFrom()
