@@ -301,7 +301,7 @@ public
 		
 		MultiLayerPerceptron.multiLayerPerceptronTest = true;
 		
-		for (int testCase = 0; testCase <= 4/*28*/; testCase++){
+		for (int testCase = 0; testCase <= 3/*28*/; testCase++){
 			switch (testCase){
 			// Topologies = null
 			case 0:
@@ -492,9 +492,11 @@ public
 			}
 			
 			System.out.println("Test case " + testCase + ":");
-			System.out.println("\tMultiLayerPerceptron("+numberInputs+", ["+numberHiddenNeurons.length+"]["
-								+numberHiddenNeurons[0]+"], "+numberOutputs+", "+inputTopology+", "
-								+hiddenTopology+", "+outputTopology+")");
+			System.out.print("\tMultiLayerPerceptron("+numberInputs+",");
+			for (int i = 0; i < numberHiddenNeurons.length; i++)
+				System.out.print("[" + numberHiddenNeurons[i] +"],");
+			
+			System.out.println(numberOutputs+", "+inputTopology+", "+hiddenTopology+", "+outputTopology+")");
 			
 			multiLayerPerceptron = new MultiLayerPerceptron(numberInputs, numberHiddenNeurons, 
 													numberOutputs, inputTopology, hiddenTopology, outputTopology);

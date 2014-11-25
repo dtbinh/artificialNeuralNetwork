@@ -8,7 +8,6 @@
 ************************************************************************************************/
 class Neuron {
 private
-	int nrInputs;
 	float inputs[];
 	float netInput;
 	float threshold;
@@ -17,8 +16,6 @@ private
 protected
 	// Constructor
 	Neuron(int nrInputs){
-		this.nrInputs = nrInputs;
-		
 		inputs = new float[nrInputs];
 		
 		// Initialize inputs and output to 0, threshold to max
@@ -26,18 +23,22 @@ protected
 		threshold = 0x7fffffff;
 		output = 0;
 		
-		for (int i = 0; i < nrInputs; i++)
+		for (int i = 0; i < inputs.length; i++)
 			inputs[i] = 0;
 	}
 	
 	Boolean setInput(int nrInput, float value){
-		if(nrInput < nrInputs){
+		if(nrInput < inputs.length){
 			inputs[nrInput] = value;
 			
 			return true;
 		}
 		
 		return false;
+	}
+	
+	int getNumberOfInputs(){
+		return inputs.length;
 	}
 	
 	float getThreshold(){
@@ -53,7 +54,7 @@ protected
 		netInput = 0;
 		
 		// Net input function f_net
-		for (int i = 0; i < nrInputs; i++){
+		for (int i = 0; i < inputs.length; i++){
 			netInput += inputs[i];
 		}
 		
@@ -78,32 +79,36 @@ private
 	Neuron neuronFrom;
 	Neuron neuronTo;
 	int input;
-	float connWeight;
+	float connectionWeight;
 	float valueToSet;
 	int positionNeuronTo;
 	
 protected
 	// Constructor
-	Connection(Neuron neuronFrom, Neuron neuronTo, int input, float connWeight, int positionNeuronTo){
+	Connection(Neuron neuronFrom, Neuron neuronTo, int input, float connectionWeight, int positionNeuronTo){
 		this.neuronFrom = neuronFrom;
 		this.neuronTo = neuronTo;
 		this.input = input;
-		this.connWeight = connWeight;
+		this.connectionWeight = connectionWeight;
 		this.positionNeuronTo = positionNeuronTo;
 	}// Connection()
 
 	// Execute connection
 	void run(){
 		valueToSet = neuronFrom.getOutput();
-		valueToSet *= connWeight;
+		valueToSet *= connectionWeight;
 		
 		neuronTo.setInput(input, valueToSet);
 	}// run()
 	
 	// Add in training calculated weight difference
 	void addWeightDelta(float weightDelta){
-		connWeight += weightDelta;
+		connectionWeight += weightDelta;
 	}// addWeightDelta()
+	
+	float getConnectionWeight(){
+		return connectionWeight;
+	}
 	
 	Neuron getNeuronFrom(){
 		return neuronFrom;
