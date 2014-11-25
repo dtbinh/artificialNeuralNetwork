@@ -1,7 +1,5 @@
 /********************************** Artificial neural network ***********************************
 * TODO:	Description, Header, Comments, TechDoc
-* 		Save-Funktion um weights und thresholds zu speichern
-* 		System.out.prints komplett für multiLayerPerceptron-Test (Tabelle, wie bei inputTopology each)
 ************************************************************************************************/
 import java.util.ArrayList;
 
@@ -11,26 +9,6 @@ import java.util.ArrayList;
 * description of constructors for more details
 * Max. number of neurons per layer: 32
 ************************************************************************************************/
-/*** TODO:
-	inputConnWeights:
-	Initialisierung:
-		inputConnWeights = new float[nrInputNeurons];
-
-	.length wird benutzt um neededNeuronInputs zu berechnen
-		neededNeuronInputs[0] = inputConnWeights.length / nrHiddenNeurons[0];
-		-> kann durch nrInputNeurons ersetzt werden
-
-	werden mit 1 initialisiert
-		inputConnWeights[i] = 1;
-
-	.length wird benutzt um inputconnections[] zu erzeugen
-		inputConnections = new Connection[inputConnWeights.length];
-
-	werden an connections constructor übergeben
-		inputConnections[inNeur] = new Connection(inputNeurons[inNeur], hiddenNeurons.get(0)[neur], inp, inputConnWeights[inNeur], neur);
-
-	-> kann gelöscht werden
-***/
 class MultiLayerPerceptron
 {
 private
@@ -39,7 +17,6 @@ private
 	ArrayList<Neuron[]> hiddenNeurons;
 	Neuron[] outputNeurons;
 	int[] neededNeuronInputs;
-//	float[] outputConnWeights;
 	float[] outputVector;
 	Connection[] inputConnections;
 	Connection[] hiddenLyrConnections;
@@ -132,11 +109,6 @@ public
 			
 			// Every hidden neuron will be connected to the nearest hidden neuron in the next layer			
 			for (int lyr = 0; lyr < nrHiddenNeurons.length-1; lyr++){
-				
-// TODO				if (nrHiddenNeurons[lyr] >= nrHiddenNeurons[lyr+1])
-//					hiddenLyrConnWeights = new float[nrHiddenNeurons[lyr]];
-//				else
-//					hiddenLyrConnWeights = new float[nrHiddenNeurons[lyr+1]];
 				
 				neededNeuronInputs[lyr + 1] = nrHiddenNeurons[lyr] / nrHiddenNeurons[lyr+1];
 				
@@ -567,36 +539,19 @@ public
 			inputNeurons[i].setInput(0, inputVector[i]);
 		
 		// Execute input layer
-		for (int pos = 0; pos < inputConnections.length; pos++){			
-			// TODO: Test output für welchen Test?
-//			System.out.println("inputConnections.length: "+inputConnections.length
-//								+", inputConnection[" + pos + "]");
-			
+		for (int pos = 0; pos < inputConnections.length; pos++)	
 			inputConnections[pos].run();
-		}
 			
 		// Execute hidden layer(s)
 		for(int layer = 0; layer < (hiddenNeurons.size()-1); layer++){
 			
-			// Test output
-//			System.out.println("connection["+layer+"].length: "+ hiddenConnections[layer].length);
-			
-			for (int pos = 0; pos < hiddenConnections.get(layer).length; pos++){
-				
-				// Test output
-//				System.out.println("hiddenConnections[" + layer + "][" + pos + "]");
-				
+			for (int pos = 0; pos < hiddenConnections.get(layer).length; pos++)
 				hiddenConnections.get(layer)[pos].run();
-			}
 		}
 		
-		for (int pos = 0; pos < outputConnections.length; pos++){
-			
-			// Test output
-//			System.out.println("outputConnection[" + pos + "]");
-			
+		// Execute output layer
+		for (int pos = 0; pos < outputConnections.length; pos++)
 			outputConnections[pos].run();
-		}
 		
 		// Now get the result(s)
 		for (int i = 0; i < outputNeurons.length; i++)
@@ -704,7 +659,7 @@ private	void backpropagation(float[] resultOut, float[] wantedOut, float trainin
 		
 		for (int layer = connectionLayer; layer >= 0; layer--){
 			
-			// Outputconnection layer
+			// Output connection layer
 			if (layer == connectionLayer){
 				connections = new Connection [outputConnections.length];
 				connections = outputConnections;
@@ -712,8 +667,9 @@ private	void backpropagation(float[] resultOut, float[] wantedOut, float trainin
 				numberOfThresholds = outputNeurons.length;
 			}
 			
-			// InputConnection layer
+			// Input connection layer
 			else if (layer == 0){
+				
 				// More than one hidden layer
 				if (connectionLayer > 1){
 					
@@ -724,14 +680,23 @@ private	void backpropagation(float[] resultOut, float[] wantedOut, float trainin
 					else
 						// TODO: Beenden
 						// In the middle there are extra connections
+						// 	0 -> 0-0
+						// 0	1 -> 0-1
+						// 1	2 -> 1-2
+						// 	3 -> 1-3
 						succNeurons = 1;
 				}
 				
 				else {
-//					succWeights = new float [outputConnWeights.length];
-//					succWeights = outputConnWeights;
-					
-					succNeurons = outputConnWeights.length/outputNeurons.length;
+				
+					// More input neurons than output neurons
+					if (inputNeurons.length >= outputNeurons.length)
+						// Just one connection to the next layer
+						succNeurons = 1;
+					else
+						// TODO: Beenden
+						// In the middle there are extra connections
+						succNeurons = outputConnections.length/outputNeurons.length;
 				}
 
 				connections = new Connection [inputConnections.length];
@@ -742,6 +707,7 @@ private	void backpropagation(float[] resultOut, float[] wantedOut, float trainin
 			
 			// Hidden Layer
 			else {
+				
 				if (layer == connectionLayer - 1){
 //					succWeights = new float [outputConnWeights.length];
 //					succWeights = outputConnWeights;
@@ -786,9 +752,6 @@ private	void backpropagation(float[] resultOut, float[] wantedOut, float trainin
 						for (int out = 0; out < outputNeurons.length; out++){
 							sumOutputNeurons += ((wantedOut[out] - resultOut[out]) *
 										resultOut[out] * (1- resultOut[out]));
-				
-//							System.out.println("sumOutputNeurons += ((wantedOut[out] - resultOut[out]) * resultOut[out] * (1- resultOut[out]))");
-//							System.out.println(sumOutputNeurons+" += (("+wantedOut[out]+" - "+resultOut[out]+") * "+resultOut[out]+" * ("+(1- resultOut[out])+"))");
 						}
 						
 						weightDelta += sumOutputNeurons;

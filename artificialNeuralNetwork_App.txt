@@ -25,24 +25,24 @@ First choose the dimensions of the network. (The higher the total number of neur
 Then choose the input of the network and the result you want to obtain.
 (To avoid endless execution the training stops after 1000 trials so it might happen no result will be found.)
 
-							Button Ok
+														-->
 
 
 
-2.Seite:
+2.Seite: (PageNeurons)
 Text: Input neurons									Text: Output neurons
 DropDown 										DropDown
 (2, 4 oder 8)										(2, 4 oder 8)
 
-Text: Hidden layer	Neurons per hidden layer
+Text: Hidden layers	Neurons per hidden layer
 DropDown		DropDown1	DropDown2	DropDown3
 (1, 2 oder 3)		(2, 4 oder 8)	(2, 4 oder 8)	(2, 4 oder 8)
 
-							Button Ok
+														-->
 
 
 	
-3.Seite:
+3.Seite: (PageVectors)
 Text: Input vector
 DropDown1	DropDown2	DropDown3	DropDown4	DropDown5	DropDown6	DropDown7	DropDown8
 (0.1-0.9)	(0.1-0.9)	(0.1-0.9)	(0.1-0.9)	(0.1-0.9)	(0.1-0.9)	(0.1-0.9)	(0.1-0.9)
@@ -52,9 +52,9 @@ Text: Output vector
 DropDown1	DropDown2	DropDown3	DropDown4	DropDown5	DropDown6	DropDown7	DropDown8
 (0.1-0.9)	(0.1-0.9)	(0.1-0.9)	(0.1-0.9)	(0.1-0.9)	(0.1-0.9)	(0.1-0.9)	(0.1-0.9)
 
-							Button Ok
+														-->
 
 
-4. Seite:
+4. Seite: (PageNetwork)
 Netzwerk:	Kreisradius: Seitenhöhe/16
 		Vertikaler Abstand zwischen Kreisen: 
