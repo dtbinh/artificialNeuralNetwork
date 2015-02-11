@@ -8,7 +8,7 @@
 ************************************************************************************************/
 class Neuron {
 private
-	float inputs[];
+	float[] inputs;
 	float netInput;
 	float threshold;
 	float output;
@@ -91,7 +91,7 @@ protected
 		this.input = input;
 		this.connectionWeight = connectionWeight;
 		this.positionNeuronTo = positionNeuronTo;
-	}// Connection()
+	}
 
 	// Execute connection
 	void run(){
@@ -99,12 +99,12 @@ protected
 		valueToSet *= connectionWeight;
 		
 		neuronTo.setInput(input, valueToSet);
-	}// run()
+	}
 	
 	// Add in training calculated weight difference
 	void addWeightDelta(float weightDelta){
 		connectionWeight += weightDelta;
-	}// addWeightDelta()
+	}
 	
 	float getConnectionWeight(){
 		return connectionWeight;
@@ -112,13 +112,13 @@ protected
 	
 	Neuron getNeuronFrom(){
 		return neuronFrom;
-	}// getNeuronFrom()
+	}
 	
 	Neuron getNeuronTo(){
 		return neuronTo;
-	}// getNeuronTo()
+	}
 	
 	int getPositionNeuronTo(){
 		return positionNeuronTo;
-	}// getPositionNeuronTo()
+	}
 }// class Connection

@@ -2,50 +2,38 @@
 Uses step function for calculating the output.
 
 \section{Attributes}
-\subsection{int inputs}
-For all inputs one integer variable is used. So the neuron can handle up to 32 inputs, which can just be 0 or 1.
-
-\subsection{int nrInputs}
-Specifies how many inputs (respectively bits of the variable \texttt{inputs}) shall be used.
+\subsection{float[] inputs}
+For each input one float variable is used, which stores the value given by the \texttt{setInput()}-Method.
 
 \subsection{float netInput}
-The result of the net input function:\\
-$netInput = input.1*weights[0] + ... + input.32*weights[31]$\\
-So far also used as output.
-
-\subsection{float weights[]}
-The weights of the inputs. Array size depends on the number of inputs.
+The result of the net input function, respectively the sum of all inputs.
 
 \subsection{float threshold}
-The threshold when output is activated.
+The value when the output will be 0.5.
 
-%\paragraph{Boolean activated}
-%Boolean output, true if the calculated output is $>=$ the threshold.
+\subsection{float output}
+So far, since the output function is the identity, the variable contains the result of the the activation function.
 
-\section{Constructors}
+\section{Constructor}
 \subsection{Neuron(int nrInputs)}
-Sets \texttt{nrInputs}, size of array \texttt{weights} and initialzes \texttt{inputs}, \texttt{netInput}, and \texttt{weights} to 0, \texttt{activated} to false, and \texttt{threshold} to max ($0x7fffffff$).
+Creates \texttt{inputs} by the given value \texttt{nrInputs} and initialzes \texttt{inputs}, \texttt{netInput}, \texttt{output} to 0, and \texttt{threshold} to max ($0x7fffffff$).
 
 \section{Methods}
-\subsection{Boolean setInput(int nrInput)}
-Sets given input to 1 by shifting a 1 to the corresponding bit in \texttt{inputs}.\\
-Returns true if input was set, returns false if input number is to high.
+\subsection{Boolean setInput(int nrInput, float value)}
+Sets given input to the given value.\\
+Returns true if input was set, respectively if \texttt{nrInput} is smaller than the length of the \texttt{inputs}-array.
+	
+\subsection{int getNumberOfInputs()}
+Returns the length of the \texttt{inputs}-array.
 
-\subsection{Boolean unsetInput(int nrInput)}
-Sets given input to 0 by shifting a 1 to the corresponding bit in \texttt{inputs} and bitwise inverting it.\\
-Returns true if input was unset, returns false if input number is to high.
-
-\subsection{Boolean setWeight(int nrInput, float weight)}
-Puts the given weight into the for the given input corresponding field in the weights array.\\
-Returns true if weight was set, returns false if input number is to high.
+\subsection{float getThreshold()}
+Returns the value of \texttt{threshold}.
 
 \subsection{void setThreshold(float threshold)}
-Sets threshold for the neuron.
+Sets \texttt{threshold} to the given value.
 
 \subsection{float getOutput()}
-Calculates the \texttt{netInput}, the result of the net input function, and uses the activation function for returning the output.\\
-So far, there is no extra output variable in the class, since the output function is just the identity. So the method returns the variable \texttt{netInput}.\\
-So far, the activation function is just a step function, which is implemented as a simple if-else.
+Calculates and returns the \texttt{output}. First \texttt{netInput} is calculated by summing up all inputs. Since the output function is just the identity the \texttt{output} is calculated by using the activation function, which is a logistic function: $output = 1 / (1 + e^{(-(netInput - threshold))})$.
 
 \chapter{class Connection}
 Connects the output of a neuron to an input of another neuron. The weight of the following input is the output value times the weight of the connection.
