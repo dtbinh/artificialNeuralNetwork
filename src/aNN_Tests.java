@@ -277,18 +277,28 @@ public
 *								nrHiddenNeurons[lyr] = nrHiddenNeurons[lyr+1]
 *								nrHiddenNeurons[lyr] < nrHiddenNeurons[lyr+1]
 *								(nrHiddenNeurons[lyr] % nrHiddenNeurons[lyr+1]) != 0)
-*						each:	nrHiddenNeurons[lyr] > nrHiddenNeurons[lyr+1]	Note: done already (case 4)
-*								nrHiddenNeurons[lyr] = nrHiddenNeurons[lyr+1]	Note: done already (case 2)
-*								nrHiddenNeurons[lyr] < nrHiddenNeurons[lyr+1]	Note: done already (case 4)
+*						each:	nrHiddenNeurons[lyr] > nrHiddenNeurons[lyr+1]
+*								nrHiddenNeurons[lyr] = nrHiddenNeurons[lyr+1]
+*								nrHiddenNeurons[lyr] < nrHiddenNeurons[lyr+1]
 *								(nrHiddenNeurons[lyr] % nrHiddenNeurons[lyr+1]) != 0)
 *	Output-Topologien:	one:	nrHiddenNeurons > nrOutputNeurons
+*									nrHiddenNeurons % nrOutputNeurons != 0
+*									(nrHiddenNeurons % nrOutputNeurons)/2 < 1
+*									(nrHiddenNeurons % nrOutputNeurons) = even
+*									(nrHiddenNeurons % nrOutputNeurons) = odd
+*									Even number of hidden neurons
+*									Odd number of hidden neurons
+*									Whole-number ratio
 *								nrHiddenNeurons = nrOutputNeurons
 *								nrHiddenNeurons < nrOutputNeurons
-*									(nrOutputNeurons % nrHiddenNeurons) != 0
-*						each:	nrHiddenNeurons > nrOutputNeurons
-*								nrHiddenNeurons = nrOutputNeurons
-*								nrHiddenNeurons < nrOutputNeurons
-*									(nrOutputNeurons % nrHiddenNeurons) != 0					
+*									nrOutputNeurons % nrHiddenNeurons != 0
+*									(nrOutputNeurons % nrHiddenNeurons)/2 < 1
+*									(nrOutputNeurons % nrHiddenNeurons) = odd
+*									(nrOutputNeurons % nrHiddenNeurons) = even
+*									Even number of output neurons
+*									Odd number of output neurons
+*									Whole-number ratio
+*						each:	nrHiddenNeurons >=< nrOutputNeurons
 *	run:	
 *			inputVector.length != inputNeurons.length
 *	Testen der anderen Konstruktoren
@@ -315,7 +325,7 @@ public
 		
 		MultiLayerPerceptron.multiLayerPerceptronTest = true;
 		
-		for (int testCase = 0; testCase <= 9/*24*/; testCase++){
+		for (int testCase = 0; testCase <= 24; testCase++){
 			switch (testCase){
 			// Topologies = null
 			case 0:
@@ -333,7 +343,7 @@ public
 				break;
 				
 			// Input topology: one
-			// nrInputNeurons > hiddenNeuronsPerLayer
+			// nrInputNeurons > nrHiddenNeurons
 			// nrInputNeurons % nrHiddenNeurons[0] = 0  (Whole-number ratio)
 			// Even number of input neurons
 			// hiddenlayers > 1
@@ -361,12 +371,17 @@ public
 			// Odd number of input neurons
 			// nrHiddenNeurons[lyr] < nrHiddenNeurons[lyr+1]
 			// nrHiddenNeurons[lyr] > nrHiddenNeurons[lyr+1]
+			// Output topology: one
+			// nrHiddenNeurons > nrOutputNeurons
+			// nrHiddenNeurons % nrOutputNeurons = 0  (Whole-number ratio)
+			// Even number of hidden neurons
+			// TODO: Check results of output tests
 			case 4:
 				numberInputs = 5;
-				numberHiddenNeurons = new int[3];
-				numberHiddenNeurons[0] = 3;
-				numberHiddenNeurons[1] = 4;
-				numberHiddenNeurons[2] = 3;
+				numberHiddenNeurons = new int[4];
+				numberHiddenNeurons[0] = numberHiddenNeurons[2] = 3;
+				numberHiddenNeurons[1] = numberHiddenNeurons[3] = 4;
+				outputTopology = "one";
 				break;
 				
 			// (nrInputNeurons % nrHiddenNeurons[0]) = even
@@ -377,37 +392,49 @@ public
 			// (nrHiddenNeurons[lyr] % nrHiddenNeurons[lyr+1])/2 < 1
 			// Even number of nrHiddenNeurons[lyr]
 			// Odd number of nrHiddenNeurons[lyr]
+			// nrHiddenNeurons % nrOutputNeurons != 0,
+			// (nrHiddenNeurons % nrOutputNeurons)/2 < 1
 			case 5:
 				numberInputs = 6;
 				hiddenTopology = "one";
 				numberHiddenNeurons = new int[4];
 				numberHiddenNeurons[0] = numberHiddenNeurons[3] = 4;
 				numberHiddenNeurons[1] = numberHiddenNeurons[2] = 3;
+				numberOutputs = 3;
 				break;
 				
 			// (nrInputNeurons % nrHiddenNeurons[0]) = odd
 			// Odd number of input neurons
 			// (nrHiddenNeurons[lyr] % nrHiddenNeurons[lyr+1]) = even
+			// (nrHiddenNeurons % nrOutputNeurons) = even
+			// Even number of hidden neurons
 			case 6:
 				numberInputs = 7;
 				numberHiddenNeurons[0] = numberHiddenNeurons[2] = numberHiddenNeurons[3] = 4;
 				numberHiddenNeurons[1] = 6;
+				numberOutputs = 4;
 				break;
 				
 			// (nrInputNeurons % nrHiddenNeurons[0]) = odd
 			// Even number of input neurons
 			// (nrHiddenNeurons[lyr] % nrHiddenNeurons[lyr+1]) = odd
+			// (nrHiddenNeurons % nrOutputNeurons) = even
+			// Odd number of hidden neurons
 			case 7:
 				numberInputs = 8;
 				numberHiddenNeurons[0] = numberHiddenNeurons[2] = numberHiddenNeurons[3] = 5;
 				numberHiddenNeurons[1] = 8;
+				numberOutputs = 3;
 				break;
 				
 			// nrInputNeurons = nrHiddenNeurons
 			// nrHiddenNeurons[lyr] % nrHiddenNeurons[lyr+1] = 0  (Whole-number ratio)
+			// (nrHiddenNeurons % nrOutputNeurons) = odd
+			// Even number of hidden neurons
 			case 8:
 				numberHiddenNeurons[0] = numberHiddenNeurons[3] = 8;
 				numberHiddenNeurons[1] = numberHiddenNeurons[2] = 4;
+				numberOutputs = 5;
 				break;
 				
 			// nrInputNeurons < nrHiddenNeurons
@@ -416,74 +443,119 @@ public
 			// Hidden topology: cross
 			// nrHiddenNeurons[lyr] >=< nrHiddenNeurons[lyr+1]
 			// nrHiddenNeurons[lyr] % nrHiddenNeurons[lyr+1] != 0
-			// (nrHiddenNeurons[lyr] % nrHiddenNeurons[lyr+1])/2 < 1
+			// (nrHiddenNeurons[lyr] % nrHiddenNeurons[lyr+1]) != 0
 			// Even number of nrHiddenNeurons[lyr]
 			// Odd number of nrHiddenNeurons[lyr]
+			// TODO: Check if results are correct
+			// (nrHiddenNeurons % nrOutputNeurons) = odd
+			// Odd number of hidden neurons
 			case 9:
 				numberInputs = 4;
 				hiddenTopology = "cross";
-				numberHiddenNeurons = new int[4];
+				numberHiddenNeurons = new int[5];
 				numberHiddenNeurons[0] = numberHiddenNeurons[3] = 8;
-				numberHiddenNeurons[1] = numberHiddenNeurons[2] = 7;
+				numberHiddenNeurons[1] = numberHiddenNeurons[2] = numberHiddenNeurons[4] = 7;
+				numberOutputs = 4;
 				break;
 				
 			// nrHiddenNeurons[0] % nrInputNeurons != 0,
 			// (nrHiddenNeurons[0] % nrInputNeurons)/2 < 1
+			// Hidden topology: zigzag
+			// nrHiddenNeurons[lyr] >=< nrHiddenNeurons[lyr+1]
+			// nrHiddenNeurons[lyr] % nrHiddenNeurons[lyr+1] != 0
+			// (nrHiddenNeurons[lyr] % nrHiddenNeurons[lyr+1]) != 0
+			// Even number of nrHiddenNeurons[lyr]
+			// Odd number of nrHiddenNeurons[lyr]
+			// nrHiddenNeurons = nrOutputNeurons
 			case 10:
 				numberInputs = 7;
+				hiddenTopology = "zigzag";
+				numberHiddenNeurons = new int[4];
+				numberHiddenNeurons[0] = numberHiddenNeurons[3] = 8;
+				numberHiddenNeurons[1] = numberHiddenNeurons[2] = 6;
+				numberOutputs = 8;
 				break;
 				
 			// (nrHiddenNeurons[0] % nrInputNeurons) = even
 			// Even number of hidden neurons
+			// nrHiddenNeurons < nrOutputNeurons
+			// nrOutputNeurons % nrHiddenNeurons = 0  (Whole-number ratio)
+			// Even number of output neurons
 			case 11:
 				numberInputs = 6;
+				numberHiddenNeurons = new int[2];
+				numberHiddenNeurons[0] = 8;
+				numberHiddenNeurons[1] = 4;
 				break;
 
 			// (nrHiddenNeurons[0] % nrInputNeurons) = even
 			// Odd number of hidden neurons
+			// nrOutputNeurons % nrHiddenNeurons != 0,
+			// (nrOutputNeurons % nrHiddenNeurons)/2 < 1
 			case 12:
 				numberInputs = 5;
-				numberHiddenNeurons[0] = numberHiddenNeurons[1] = 9;
+				numberHiddenNeurons[0] = 9;
+				numberHiddenNeurons[1] = 5;
+				numberOutputs = 6;
 				break;
 					
 			// (nrHiddenNeurons[0] % nrInputNeurons) = odd
 			// Odd number of hidden neurons
+			// (nrOutputNeurons % nrHiddenNeurons) = even
+			// Even number of output neurons
 			case 13:
 				numberInputs = 6;
+				numberHiddenNeurons[1] = 4;
 				break;
 					
 			// (nrHiddenNeurons[0] % nrInputNeurons) = odd
 			// Even number of hidden neurons
+			// (nrOutputNeurons % nrHiddenNeurons) = even
+			// Odd number of output neurons
 			case 14:
 				numberInputs = 5;
-				numberHiddenNeurons[0] = numberHiddenNeurons[1] = 8;
+				numberHiddenNeurons[0] = 8;
+				numberHiddenNeurons[1] = 5;
+				numberOutputs = 9;
 				break;
 				
 			// Input topology: twoGroups
 			// nrInputs = 1
+			// (nrOutputNeurons % nrHiddenNeurons) = odd
+			// Odd number of output neurons
 			case 15:
 				inputTopology = "twoGroups";
 				numberInputs = 1;
+				numberHiddenNeurons[1] = 6;
 				break;
 				
 			// nrHiddenNeurons = 1
+			// (nrOutputNeurons % nrHiddenNeurons) = odd
+			// Even number of output neurons
 			case 16:
 				numberInputs = 4;
 				numberHiddenNeurons[0] = 1;
+				numberHiddenNeurons[1] = 5;
+				numberOutputs = 8;
 				break;
 				
 			// Even number of input neurons
 			// nrInputNeurons < nrHiddenNeurons
+			// Output topology: each
+			// nrHiddenNeurons = nrOutputNeurons
 			case 17:
 				numberHiddenNeurons[0] = numberHiddenNeurons[1] = 8;
+				outputTopology = "each";
 				break;
 				
 			// Odd number of hidden neurons
+			// nrHiddenNeurons > nrOutputNeurons
 			case 18:
 				numberHiddenNeurons[0] = numberHiddenNeurons[1] = 9;
 				break;
 				
 			// Odd number of input neurons
+			// nrHiddenNeurons < nrOutputNeurons
 			case 19:
 				numberInputs = 5;
 				break;
@@ -513,88 +585,9 @@ public
 				break;
 				
 			// nrInputNeurons < nrHiddenNeurons
-			case 24:
+			default:
 				numberInputs = 2;
 				break;
-
-			// Hidden topology:	one, nrHiddenNeurons[lyr] > nrHiddenNeurons[lyr+1]
-//			case 16:
-//				hiddenTopology = "one";
-//				numberHiddenNeurons = new int[2];
-//				numberHiddenNeurons[0] = 8;
-//				numberHiddenNeurons[1] = 5;
-//				break;
-				
-			// nrHiddenNeurons[lyr] = nrHiddenNeurons[lyr+1]
-//			case 17:
-//				numberHiddenNeurons[0] = 5;
-//				numberHiddenNeurons[1] = 5;				
-//				break;
-				
-			// nrHiddenNeurons[lyr] < nrHiddenNeurons[lyr+1]
-//			case 18:
-//				numberHiddenNeurons[0] = 5;
-//				numberHiddenNeurons[1] = 8;				
-//				break;
-				
-			// Hidden topology:	cross, nrHiddenNeurons[lyr] > nrHiddenNeurons[lyr+1]
-//			case 19:
-//				hiddenTopology = "cross";
-//				numberHiddenNeurons[0] = 10;
-//				numberHiddenNeurons[1] = 4;
-//				break;
-				
-			// nrHiddenNeurons[lyr] = nrHiddenNeurons[lyr+1]
-//			case 20:
-//				numberHiddenNeurons[0] = 4;
-//				numberHiddenNeurons[1] = 4;				
-//				break;
-				
-			// nrHiddenNeurons[lyr] < nrHiddenNeurons[lyr+1]
-//			case 21:
-//				numberHiddenNeurons[0] = 4;
-//				numberHiddenNeurons[1] = 10;				
-//				break;
-				
-			// Hidden topology:	zigzag, nrHiddenNeurons[lyr] > nrHiddenNeurons[lyr+1]
-//			case 22:
-//				hiddenTopology = "zigzag";
-//				numberHiddenNeurons[0] = 15;
-//				numberHiddenNeurons[1] = 5;
-//				break;
-				
-			// nrHiddenNeurons[lyr] = nrHiddenNeurons[lyr+1]
-//			case 23:
-//				numberHiddenNeurons[0] = 5;
-//				numberHiddenNeurons[1] = 5;				
-//				break;
-				
-			// nrHiddenNeurons[lyr] < nrHiddenNeurons[lyr+1]
-//			case 24:
-//				numberHiddenNeurons[0] = 5;
-//				numberHiddenNeurons[1] = 15;				
-//				break;
-				
-			// Output topology:	one, hiddenNeuronsPerLayer > nrOutputNeurons
-//			case 25:
-//				outputTopology = "one";
-//				break;
-				
-			// hiddenNeuronsPerLayer = nrOutputNeurons
-//			case 26:
-//				numberHiddenNeurons[1] = 4;
-//				numberOutputs = 4;
-//				break;
-				
-			// hiddenNeuronsPerLayer < nrOutputNeurons
-//			case 27:
-//				numberOutputs = 8;
-//				break;
-				
-			// Output topology:	each, hiddenNeuronsPerLayer < nrOutputNeurons
-			//						 (nrOutputNeurons % hiddenNeuronsPerLayer) == 0
-//			default:
-//				outputTopology = "each";
 			}
 
 			// inputVector.length != inputNeurons.length
