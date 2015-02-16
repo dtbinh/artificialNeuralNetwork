@@ -24,15 +24,15 @@ public class aNN_Tests {
 		
 		// Test for whole network, needs debug prints, look at commit when passed, in class
 		// otherwise you'll just see the output vector
-		multilayerPerceptronTest multilayerPerceptronTest = new multilayerPerceptronTest();
-		multilayerPerceptronTest.runTest();
+//		multilayerPerceptronTest multilayerPerceptronTest = new multilayerPerceptronTest();
+//		multilayerPerceptronTest.runTest();
 		
 		// Erst weiter, wenn multiLayerPerceptronTest komplett fertig!
 		// Test for training using backpropagation
 		// TODO:	System.out.print mit trial = 1 für weight delta berechnung um nachzuvollziehen ob nur thresholds berechnet werden
 		//			Tests mit beiden training() (mit und ohne coefficient)
-//		backpropagationTest backpropagationTest = new backpropagationTest();
-//		backpropagationTest.runTest();
+		backpropagationTest backpropagationTest = new backpropagationTest();
+		backpropagationTest.runTest();
 		
 //		findFastestNet findFastestNet = new findFastestNet();
 //		findFastestNet.runTest();
@@ -268,7 +268,6 @@ public
 *									Even number of nrHiddenNeurons[lyr]
 *									Odd number of nrHiddenNeurons[lyr]
 *									Whole-number ratio
-*	TODO: Testcases neu erstellen und wenn möglich in vorherige Testcases integrieren
 *						cross:	nrHiddenNeurons[lyr] > nrHiddenNeurons[lyr+1]
 *								nrHiddenNeurons[lyr] = nrHiddenNeurons[lyr+1]
 *								nrHiddenNeurons[lyr] < nrHiddenNeurons[lyr+1]
@@ -298,6 +297,7 @@ public
 *									Even number of output neurons
 *									Odd number of output neurons
 *									Whole-number ratio
+*						TODO: twoGroups
 *						each:	nrHiddenNeurons >=< nrOutputNeurons
 *	run:	
 *			inputVector.length != inputNeurons.length
@@ -627,12 +627,15 @@ public
 * Each interim result is printed
 ************************************************************************************************/
 class backpropagationTest {
-	// TODO:	trainingOutVector.length != outputNeurons.length
+	// TODO:	if-Abfragen durchgehen und testen
+	//			trainingOutVector.length != outputNeurons.length
 	//			print aller Zwischenergebnisse
 	
 private
 	MultiLayerPerceptron  perceptron;
+	int inputNeurons;
 	int[] hiddenNeurons;
+	int outputNeurons;
 	float[] trainingInVector;
 	float[] trainingOutVector;
 	int trials;
@@ -640,15 +643,22 @@ private
 public
 	// Constructor
 	backpropagationTest(){
+	
+		MultiLayerPerceptron.backpropagationTest = true;
+		
+		inputNeurons = 16;
+	
 		hiddenNeurons = new int[5];
 		
 		for (int h = 0; h < hiddenNeurons.length; h++)
 			hiddenNeurons[h] = 32;
+		
+		outputNeurons = 16;
 			
 		trainingInVector = new float[16];
 		trainingOutVector = new float[16];
 		
-		perceptron = new MultiLayerPerceptron(16, hiddenNeurons, 16, "each", "each", "each");
+		perceptron = new MultiLayerPerceptron(inputNeurons, hiddenNeurons, outputNeurons, "each", "each", "each");
 	}
 
 	void runTest(){
@@ -686,8 +696,12 @@ public
 		trainingOutVector[14] = 0.2f;
 		trainingOutVector[15] = 0.1f;
 		
-//			System.out.println("MultiLayerPerceptron("+numberInputs[run]+", "+numberHiddenNeurons[run]+
-//									", "+numberHiddenLayers[run]+", "+numberOutputs[run]+")");
+			System.out.print("MultiLayerPerceptron("+inputNeurons+", ");
+			
+			for (int h = 0; h < hiddenNeurons.length; h++)
+				System.out.print("["+hiddenNeurons[h]+"]");
+			
+			System.out.println(", "+outputNeurons+", each, each, each)");
 		
 			trials = perceptron.training(trainingInVector, trainingOutVector, 0.001f, 10000);
 //			System.out.println("     --------------------------------------------------");
