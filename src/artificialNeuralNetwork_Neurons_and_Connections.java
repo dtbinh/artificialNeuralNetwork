@@ -18,9 +18,9 @@ protected
 	Neuron(int nrInputs){
 		inputs = new float[nrInputs];
 		
-		// Initialize inputs and output to 0, threshold to max
+		// Initialize inputs and output to 0, threshold to 8
 		netInput = 0;
-		threshold = 0x7fffffff;
+		threshold = 8;
 		output = 0;
 		
 		for (int i = 0; i < inputs.length; i++)

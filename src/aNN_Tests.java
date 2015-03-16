@@ -203,16 +203,16 @@ public
 	connectionTest(){
 		neuronFrom = new Neuron(1);
 		neuronTo = new Neuron(1);
-		testConnection = new Connection(neuronFrom, neuronTo, 0, 4, 0);
+		testConnection = new Connection(neuronFrom, neuronTo, 0, 8, 0);
 	}
 
 	void runTest(){
-		neuronFrom.setThreshold(0);
+//		neuronFrom.setThreshold(0);
 		
 		System.out.println("neuronTo Output: " + neuronTo.getOutput());
 		
-		neuronFrom.setInput(0, 1);
-		neuronTo.setThreshold(0);
+		neuronFrom.setInput(0, 16);
+//		neuronTo.setThreshold(0);
 		
 		System.out.println("neuronTo Output: " + neuronTo.getOutput());
 
@@ -220,7 +220,7 @@ public
 		
 		System.out.println("neuronTo Output: " + neuronTo.getOutput());
 		
-		testConnection.addWeightDelta(4);
+		testConnection.addWeightDelta(8);
 		testConnection.run();
 		
 		System.out.println("neuronTo Output: " + neuronTo.getOutput());
@@ -636,6 +636,9 @@ private
 	int inputNeurons;
 	int[] hiddenNeurons;
 	int outputNeurons;
+	String inputTopology;
+	String hiddenTopology;
+	String outputTopology;
 	float[] trainingInVector;
 	float[] trainingOutVector;
 	int trials;
@@ -647,18 +650,20 @@ public
 		MultiLayerPerceptron.backpropagationTest = true;
 		
 		inputNeurons = 16;
-	
-		hiddenNeurons = new int[5];
-		
+		hiddenNeurons = new int[4];
 		for (int h = 0; h < hiddenNeurons.length; h++)
 			hiddenNeurons[h] = 32;
-		
 		outputNeurons = 16;
+		
+		inputTopology = "one";
+		hiddenTopology = "each";
+		outputTopology = "one";
 			
 		trainingInVector = new float[16];
 		trainingOutVector = new float[16];
 		
-		perceptron = new MultiLayerPerceptron(inputNeurons, hiddenNeurons, outputNeurons, "each", "each", "each");
+		perceptron = new MultiLayerPerceptron(inputNeurons, hiddenNeurons, outputNeurons,
+				inputTopology, hiddenTopology, outputTopology);
 	}
 
 	void runTest(){
@@ -696,19 +701,31 @@ public
 		trainingOutVector[14] = 0.2f;
 		trainingOutVector[15] = 0.1f;
 		
-			System.out.print("MultiLayerPerceptron("+inputNeurons+", ");
+		// Print perceptron settings
+		System.out.print("MultiLayerPerceptron("+inputNeurons+", ");
 			
-			for (int h = 0; h < hiddenNeurons.length; h++)
-				System.out.print("["+hiddenNeurons[h]+"]");
+		for (int h = 0; h < hiddenNeurons.length; h++)
+			System.out.print("["+hiddenNeurons[h]+"]");
 			
-			System.out.println(", "+outputNeurons+", each, each, each)");
+		System.out.println(", "+outputNeurons+", "+inputTopology+", "+hiddenTopology+", "+outputTopology+")");
 		
-			trials = perceptron.training(trainingInVector, trainingOutVector, 0.001f, 10000);
-//			System.out.println("     --------------------------------------------------");
+		// Run training
+//		trials = perceptron.training(trainingInVector, trainingOutVector, 0.001f, 2);
+		trials = perceptron.training(trainingInVector, trainingOutVector, 0.001f, 10000);
+		
+		// Print result
+		System.out.println("------------------------------------------------------------------------------------------");
 			
-			System.out.print("trials: "+ trials);
-			
-			System.out.println("\n------------------------------------------------------------------------------------------");
+		System.out.print("Trials: "+ trials);
+		
+		// Print used outvector
+		System.out.print("\tTraining Out: ");
+		
+		for (int o = 0; o < outputNeurons; o++)
+			System.out.print("\t["+trainingOutVector[o]+"]");
+		
+		System.out.print("\n");
+		
 	}// runTest()
 
 		// Trains the perceptron 2 times with 2 different input vectors,
