@@ -1,16 +1,21 @@
 /********************************** Artificial neural network ***********************************
-* TODO:	Description, Header, Comments, TechDoc, Aufräumen
+* Description:	This file contains the MultiLayerPerceptron class which builds the artificial
+* 
+* Author:		Giso Pillar
+* 
+* Date:			03.2015
 ************************************************************************************************/
 import java.util.ArrayList;
 
 /************************************************************************************************
 * class MultiLayerPerceptron:
-* automatically builds a multi-layer perceptron, using neurons with logistic function, see
-* description of constructors for more details
-* Max. number of neurons per layer: 32
+* 	Automatically builds a multi-layer perceptron, using neurons with logistic function, see
+* 	description of constructors for more details.
+* 	Max. number of neurons per layer: 32
 ************************************************************************************************/
 class MultiLayerPerceptron
 {
+	
 private
 	Neuron[] inputNeurons;
 	Neuron[] hiddenLayer;
@@ -42,11 +47,11 @@ public
 	/****************************************************************************************
 	* MultiLayerPerceptron(int nrInputNeurons, int[] nrHiddenNeurons, int nrOutputNeurons,
 	*			String inputTopology, String hiddenTopology, String outputTopology):
-	* Multi-layer perceptron where number of input neurons, number of hidden neurons per
-	* each layer, and number of output neurons can (has to) be defined.
-	* The type of connection between the layers has to be defined.
-	* There must be at least 1 hidden layer
-	/****************************************************************************************/
+	* 	Multi-layer perceptron where number of input neurons, number of hidden neurons per
+	* 	each layer, and number of output neurons can (has to) be defined.
+	* 	The type of connection between the layers has to be defined.
+	* 	There must be at least 1 hidden layer
+	****************************************************************************************/
 	MultiLayerPerceptron(int nrInputNeurons, int[] nrHiddenNeurons, int nrOutputNeurons,
 							String inputTopology, String hiddenTopology, String outputTopology){
 	
@@ -78,6 +83,7 @@ public
 			nrHiddenNeurons = new int[1];
 		
 		for (int i = 0; i < nrHiddenNeurons.length; i++){
+			
 			if (nrHiddenNeurons[i] < 1)
 				nrHiddenNeurons[i] = 1;
 		}
@@ -106,19 +112,6 @@ public
 					
 					// We need more connections in the middle
 					if ((nrInputNeurons % nrHiddenNeurons[0]) != 0){
-						
-						/***
-						 * TODO: In Doku
-						 * 		O
-						 * 		I -> rangeStart
-						 * 		I
-						 * 		I -> rangeStart + range
-						 * 		O -> n.length-1
-						 * 
-						 * 		-> m.length - range = Anzahl Neuronen ohne extra Input
-						 * 		-> (m.length - range) / 2 = Anzahl Neuronen ohne extra Input unter-/überhalb range
-						 * 		=> rangeStart  = (m.length - ((m.length-range) / 2)) - range
-						 */
 						
 						// Inside the range of the neurons with one more connection
 						if (m >= rangeStart && m < (rangeStart + range))
@@ -236,6 +229,7 @@ public
 		}// if (nrHiddenNeurons.length == 1)
 			
 		else {
+			
 			for (int lyr = 0; lyr < nrHiddenNeurons.length; lyr++){
 				hiddenLayer = new Neuron[nrHiddenNeurons[lyr]];
 
@@ -770,7 +764,6 @@ public
 		}// switch (inputTopology)
 		
 		/*** Connections between hidden layers ***/
-		
 		if (hiddenNeurons.size() > 1){
 				
 			// Test output: multilayerPerceptronTest
@@ -1013,6 +1006,7 @@ public
 							}// if (n > 0)
 							
 							else {
+								
 								// Test output: multilayerPerceptronTest
 								if (multiLayerPerceptronTest)
 									System.out.println("\t\t["+(m*2)+"]\t|\t["+(l)+"]["+(hiddenNeurons.get(l).length-1)
@@ -1024,6 +1018,7 @@ public
 							
 							// ...and the neuron 1 position up (in the current layer)
 							if (n < hiddenNeurons.get(l).length - 1){
+								
 								// Test output: multilayerPerceptronTest
 								if (multiLayerPerceptronTest)
 									System.out.println("\t\t["+((m*2)+1)+"]\t|\t["+(l)+"]["+(n+1)+"]\t ["+(l+1)+"]["
@@ -1034,6 +1029,7 @@ public
 							}// if (m < hiddenNeurons.get(l).length - 1)
 							
 							else {
+								
 								// Test output: multilayerPerceptronTest
 								if (multiLayerPerceptronTest)
 									System.out.println("\t\t["+((m*2)+1)+"]\t|\t["+(l)+"][0]\t ["+(l+1)+"]["
@@ -1393,11 +1389,11 @@ public
 
 	/****************************************************************************************
 	* MultiLayerPerceptron(int nrInputNeurons, int[] nrHiddenNeurons, int nrOutputNeurons):
-	* Multi-layer perceptron where number of input neurons, number of hidden neurons per
-	* each layer, and number of output neurons can (has to) be defined.
-	* Each neuron will be connected to each neuron of the following layer.
-	* There must be at least 1 hidden layer
-	/****************************************************************************************/
+	* 	Multi-layer perceptron where number of input neurons, number of hidden neurons per
+	* 	each layer, and number of output neurons can (has to) be defined.
+	* 	Each neuron will be connected to each neuron of the following layer.
+	* 	There must be at least 1 hidden layer
+	****************************************************************************************/
 	MultiLayerPerceptron(int nrInputNeurons, int[] nrHiddenNeurons, int nrOutputNeurons){
 		this(nrInputNeurons, nrHiddenNeurons, nrOutputNeurons, "each", "each", "each");
 	}
@@ -1405,17 +1401,21 @@ public
 	/****************************************************************************************
 	* MultiLayerPerceptron(int nrInputNeurons, int hiddenNeuronsPerLayer, int hiddenLayers,
 	*			int nrOutputNeurons):
-	* Multi-layer perceptron where number of input neurons, number of hidden neurons per
-	* layer, number of layers and number of output neurons can (has to) be defined.
-	* Each neuron will be connected to each neuron of the following layer.
-	* There must be at least 1 hidden layer
-	/****************************************************************************************/
+	* 	Multi-layer perceptron where number of input neurons, number of hidden neurons per
+	* 	layer, number of layers and number of output neurons can (has to) be defined.
+	* 	Each neuron will be connected to each neuron of the following layer.
+	* 	There must be at least 1 hidden layer
+	****************************************************************************************/
 	MultiLayerPerceptron(int nrInputNeurons, int nrHiddenNeuronsPerLayer, int numberHiddenLayers,
 			int nrOutputNeurons){
 		this(nrInputNeurons, getHiddenNeurons(nrHiddenNeuronsPerLayer, numberHiddenLayers),
 				nrOutputNeurons, "each", "each", "each");
 	}
-	
+
+	/****************************************************************************************
+	* static int[] getHiddenNeurons(int nrHiddenNeuronsPerLayer, int numberHiddenLayers):
+	* 	Helper function to create integer array with hidden neurons.
+	****************************************************************************************/
 private static int[] getHiddenNeurons(int nrHiddenNeuronsPerLayer, int numberHiddenLayers){
 		int[] nrHiddenNeurons = new int[numberHiddenLayers];
 	
@@ -1428,9 +1428,8 @@ private static int[] getHiddenNeurons(int nrHiddenNeuronsPerLayer, int numberHid
 public
 	/****************************************************************************************
 	* float[] run(float[] inputVector):
-	* Executes the built multi-layer perceptron with given input vector
-	* Returns the output vector as single integer
-	* Bit is set if depending output value is > 0.5
+	* 	Executes the built multi-layer perceptron with given input vector and returns the
+	* 	output vector.
 	****************************************************************************************/
 	float[] run(float[] inputVector){
 		
@@ -1478,13 +1477,13 @@ public
 	/****************************************************************************************
 	* int training(float[] trainingInVector, float[] trainingOutVector, float errorTolerance,
 	*				int abort, float trainingCoefficient):
-	* Trains the multi layer perceptron
-	* Executes the perceptron with given input vector, compares with the given output vector,
-	* and calculates (if necessary) new connection weights and neuron thresholds
-	* The training will be aborted (to avoid endless execution if now result can be found)
-	* after the given number of trials
-	* The training coefficient defines the learning step size in backpropagation
-	* Returns the number of trials
+	* 	Trains the multi layer perceptron.
+	* 	Executes the perceptron with given input vector, compares with the given output vector,
+	* 	and calculates (if necessary) new connection weights and neuron thresholds.
+	* 	The training will be aborted (to avoid endless execution if no result can be found)
+	* 	after the given number of trials.
+	* 	The training coefficient defines the learning step size in backpropagation.
+	* 	Returns the number of needed trials to get the correct result.
 	****************************************************************************************/
 	int training(float[] trainingInVector, float[] trainingOutVector, float errorTolerance,
 					int abort, float trainingCoefficient){
@@ -1657,13 +1656,13 @@ public
 	/****************************************************************************************
 	* int training(float[] trainingInVector, float[] trainingOutVector, float errorTolerance,
 	*				int abort):
-	* Trains the multi layer perceptron
-	* Executes the perceptron with given input vector, compares with the given output vector,
-	* and calculates (if necessary) new connection weights and neuron thresholds
-	* The training will be aborted (to avoid endless execution if now result can be found)
-	* after the given number of trials
-	* The training coefficient is defined as 0.2.
-	* Returns the number of trials
+	* 	Trains the multi layer perceptron.
+	* 	Executes the perceptron with given input vector, compares with the given output vector,
+	* 	and calculates (if necessary) new connection weights and neuron thresholds.
+	* 	The training will be aborted (to avoid endless execution if no result can be found)
+	* 	after the given number of trials.
+	* 	The training coefficient is defined as 0.2.
+	* 	Returns the number of needed trials to get the correct result.
 	****************************************************************************************/
 	int training(float[] trainingInVector, float[] trainingOutVector, float errorTolerance,
 			int abort){
@@ -1674,7 +1673,7 @@ public
 	
 	/****************************************************************************************
 	* void backpropagation(float[] resultOut, float[] wantedOut):
-	* Calculates the differences for weights and thresholds and add them.
+	* 	Calculates the differences for weights and thresholds and adds them.
 	****************************************************************************************/
 private	void backpropagation(float[] resultOut, float[] wantedOut, float trainingCoefficient){
 		float weightDelta = 0;
@@ -1826,8 +1825,10 @@ private	void backpropagation(float[] resultOut, float[] wantedOut, float trainin
 	}// backpropagation()
 
 	/****************************************************************************************
-	* String[] findFastest()
-	*
+	* String[] findFastest(float[] inputVector, float[] outputVector, float errorTolerance,
+	* 						int abort):
+	*	Finds the topology which needs the fewest trials to find the correct training result.
+	*	Returns the input, hidden, and output topology.
 	****************************************************************************************/
 	String[] findFastest(float[] inputVector, float[] outputVector, float errorTolerance, int abort){
 		MultiLayerPerceptron  perceptron;

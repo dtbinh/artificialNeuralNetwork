@@ -1,12 +1,20 @@
 /********************************** Artificial neural network ***********************************
-* TODO:	Description, Header, Comments
+* Description:	This file contains the basic classes neuron and connection for the artificial
+* 				neural network. The network itself is built with the class MultiLayerPerceptron.
+* 
+* Author:		Giso Pillar
+* 
+* Date:			03.2015
 ************************************************************************************************/
 
 /************************************************************************************************
 * class Neuron:
-* Uses logistic function for calculating output
+* 	Basic element of the network. The inputs are summed up. By using a logistic function the
+* 	output is calculated.
 ************************************************************************************************/
-class Neuron {
+class Neuron
+{
+	
 private
 	float[] inputs;
 	float netInput;
@@ -16,6 +24,7 @@ private
 protected
 	// Constructor
 	Neuron(int nrInputs){
+	
 		inputs = new float[nrInputs];
 		
 		// Initialize inputs and output to 0, threshold to 8
@@ -28,6 +37,7 @@ protected
 	}
 	
 	Boolean setInput(int nrInput, float value){
+		
 		if(nrInput < inputs.length){
 			inputs[nrInput] = value;
 			
@@ -38,23 +48,28 @@ protected
 	}
 	
 	int getNumberOfInputs(){
+		
 		return inputs.length;
 	}
 	
 	float getThreshold(){
+		
 		return threshold;
 	}
 	
 	void setThreshold(float threshold){
+		
 		this.threshold = threshold;
 	}
 	
 	float getOutput(){
+		
 		// Reset net input
 		netInput = 0;
 		
 		// Net input function f_net
 		for (int i = 0; i < inputs.length; i++){
+			
 			netInput += inputs[i];
 		}
 		
@@ -70,11 +85,12 @@ protected
 
 /************************************************************************************************
 * class Connection:
-* Connects the output of a neuron to an input of another neuron
-* The weight of the following input is the output value times the weight of the connection
+* 	Connects the output of a neuron to an input of another neuron.
+* 	The weight of the following input is the output value times the weight of the connection.
 ************************************************************************************************/
 class Connection
 {
+	
 private
 	Neuron neuronFrom;
 	Neuron neuronTo;
@@ -86,6 +102,7 @@ private
 protected
 	// Constructor
 	Connection(Neuron neuronFrom, Neuron neuronTo, int input, float connectionWeight, int positionNeuronTo){
+	
 		this.neuronFrom = neuronFrom;
 		this.neuronTo = neuronTo;
 		this.input = input;
@@ -95,6 +112,7 @@ protected
 
 	// Execute connection
 	void run(){
+		
 		valueToSet = neuronFrom.getOutput();
 		valueToSet *= connectionWeight;
 		
@@ -103,22 +121,27 @@ protected
 	
 	// Add in training calculated weight difference
 	void addWeightDelta(float weightDelta){
+		
 		connectionWeight += weightDelta;
 	}
 	
 	float getConnectionWeight(){
+		
 		return connectionWeight;
 	}
 	
 	Neuron getNeuronFrom(){
+		
 		return neuronFrom;
 	}
 	
 	Neuron getNeuronTo(){
+		
 		return neuronTo;
 	}
 	
 	int getPositionNeuronTo(){
+		
 		return positionNeuronTo;
 	}
 }// class Connection
