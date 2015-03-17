@@ -1,0 +1,612 @@
+\chapter{class MultiLayerPerceptron}
+Automatically builds a multi-layer perceptron. The number of input neurons and output neurons can be set in any case, more possibilities depends on the constructors.\\
+The maximum number of neurons for one layer is 32.
+
+\section{Attributes}
+\subsection{Neuron inputNeuron[]}
+Input layer, size depends on definition.
+
+\subsection{Neuron hiddenNeuron[][]}
+Hidden layer(s), dimension 1 depends on how many hidden layers are defined (or calculated). Dimension 2 depends on how many hidden neurons are defined (or calculated).
+
+\subsection{Neuron outputNeuron[]}
+Output layer, size depends on definition.
+
+\subsection{int hiddenLayers}
+Size of 1st dimension of array \texttt{hiddenNeuron}. Depending on the constructor this value may be settable or be calculated in the constructor.
+
+\subsection{float inputConnWeights[]}
+Weights of the connections between input layer and 1st hidden layer.
+
+\subsection{float hiddenConnWeights[][]}
+Weights of the connections between the hidden layers (if more than 1 is defined or calculated). The size of the 1st dimension of this array is set by \texttt{hiddenLayers}.
+
+\subsection{float outputConnWeights[]}
+Weights of the connections between the last hidden layer and the output layer.
+
+\subsection{float outputVector[]}
+The result of the multi layer perceptron, is returned by the method \texttt{run()}. The size of the array depends on the number of output neurons.
+
+\subsection{Connection inputConnection[]}
+Connections between input layer and 1st hidden layer.
+
+\subsection{Connection hiddenConnection[][]}
+Connections between the hidden layers (if more than 1 is defined or calculated). The size of the 1st dimension of this array is set by \texttt{hiddenLayers}.
+
+\subsection{Connection outputConnection[]}
+Connections between the last hidden layer and the output layer.
+
+\section{Constructors}
+\subsection{MultiLayerPerceptron(int inputNeurons, int hiddenNeuronsPerLayer, int hiddenLayers, int outputNeurons)}
+The constructor creates a multi-layer perceptron with the given number of input neurons, number of hidden neurons per layer, number of hidden layers and number of output neurons.\\
+Each input neuron is implemented with one input. All neurons will be connected automatically to each neuron of the following layer, except of the output layer. So the number of inputs for the hidden neurons is calculated by the number of input neurons for the first layer and by the number of hidden neurons for all hidden layers and, in case of just one output neuron, for the output layer. If there are more than one output neuron the outputs of the last hidden layer are split to the output neurons, the lower hidden neurons to the lower output neurons etc., so the number of inputs will be calculated by dividing the number of hidden neurons by the number of output neurons. Therefore it is not possible to have more output neurons than hidden neurons and there must be at least one hidden layer. In case the division has a remainder one more input is added to each output neuron.\\
+The weights and the thresholds of all neurons and the weights of all connections will be initialised with 1.\\
+The constructor calculates the amount of weights for each layer, stored in the corresponding arrays and then sets the connections.\\
+The output vector is set to 0.\\
+Vorüberlegungen in case one, Inputlayer ca. l.100
+\begin{lstlisting}
+/***
+* TODO: In Doku
+* 		O
+* 		I -> rangeStart
+* 		I
+* 		I -> rangeStart + range
+* 		O -> n.length-1
+* 
+* 		-> m.length - range = Anzahl Neuronen ohne extra Input
+* 		-> (m.length - range) / 2 = Anzahl Neuronen ohne extra Input unter-/überhalb range
+* 		=> rangeStart  = (m.length - ((m.length-range) / 2)) - range
+*/
+\end{lstlisting}
+
+\section{Methods}
+\subsection{float[] run(int inputVector)}
+The method just executes the built multi-layer perceptron. The inputs of the input neurons are set with the given input vector. Than the connections of the different layers are executed one after another, starting with the first connection of the input layer, by calling the \texttt{run()}-methods of the connections. Finally, the \texttt{getOutput()}-methods of the output-neurons are called and the output vector returned.
+
+\subsection{void backpropagation(float[] resultOut, float[] wantedOut)}
+%!!! Vorüberlegungen sichern!!! Richtiger Source Code geändert!\\
+% 1. Teil
+\begin{lstlisting}
+/****************************************************************************************
+	* TODO: Klaeren ob inkl. threshold
+	*	Kommentare in TechDoc
+	*	
+	* ---------------------------------------------------------------------------------------
+	* Beispiel:	2 Input, 4 Hidden, 2 Hiddenlayer, 2 Output
+	*		Connection each, Oupuzt connection 2 Groups
+	*              ----------------------------------------------------------------
+	*		inputConnection[] | hiddenConnection[][] | outputConnection[]
+	*	0 :	0 >			0 >			0
+	*					1
+	*					2
+	*					3
+	*		1 >			0
+	*					1
+	*					2
+	*					3
+	*		2 >			0
+	*					1 >			0
+	*					2
+	*					3
+	*		3 >			0
+	*					1
+	*					2
+	*					3
+	*	1 :	0 >			0
+	*					1
+	*					2 >			1
+	*					3
+	*		1 >			0
+	*					1
+	*					2
+	*					3
+	*		2 >			0
+	*					1
+	*					2
+	*					3 >			1
+	*		3 >			0
+	*					1
+	*					2
+	*					3
+	*              ----------------------------------------------------------------
+	* ---------------------------------------------------------------------------------------
+	*
+	* Backpropagation allgemein:
+	* deltaGewichtsvektor_u = Lernfaktor (Summe über Folgeneuronen((Summe über Ausgabeneuronen(
+	* (Erwartete Ausgabe - Ausgabe) dAusgabe_Ausgabeneuron nach dNetzeingabe_Folgeneuron))*Gewicht_Neuron-FolgeNeuron)
+	* ) dAusgabe_u nach dNetzeingabe_u * Eingabevektor_u (S.71)
+	*
+	* Für Identiaet als Ausgabefunktion und logistischer Aktivierungsfunktion:
+	* deltaGewichtsvektor_u = Lernfaktor (Summe über Folgeneuronen((Summe über Ausgabeneuronen(
+	* (Erwartete Ausgabe_Ausgabeneuron - Ausgabe_Ausgabeneuron)dAusgabe_Ausgabeneuron nach dNetzeingabe_Folgeneuron))*Gewicht_FolgeNeuron-u)
+	* ) Ausgabe_u (1 - Ausgabe_u) * Eingabevektor_u
+	
+	* -> SCHICHTENWEISE
+	-> Summe über Ausgabeneuronen:
+	* -> Summe über Folgeneuronen: Pfad im Netz muss mathematisch nachgebildet werden
+	* -> Eingabevektor muss angepasst werden, enthaelt Bitmuster
+	* -> bei logistischer Funktion:
+	*	dAusgabe_Ausgabeneuron nach dNetzeingabe_Folgeneuron = Ausgabe_Ausgabeneuron (1 - Ausgabe_Ausgabeneuron)
+	*
+	* Einzelner Gradientenabstieg:
+	* delta Gewichtsvektor_u = Lernfaktor (Erwartete Ausgabe - Ausgabe) Ausgabe (1 - Ausgabe) * Eingabevektor_u
+	* -> pro inputneuron:
+	* delta Gewicht_u = Lernfaktor (Erwartete Ausgabe - Ausgabe) Ausgabe (1 - Ausgabe) * Eingabe_u
+	*
+	* Um deltaGewicht für jede verbindung zu berechnen erst mit for-loop über outputconnection.length
+	* dann for (int i = hiddenLayer-2; i>=0; i++) -> loop über hiddenLayer[i].length
+	* dann for-loop über inputConnection.length
+	*
+	* Um Folgeneuronen zu ermitteln Position in Array benötigt, dann loops über die folgende
+	* Netzstruktur (nicht einfach über die ConnectionArrays)
+	****************************************************************************************/
+private	void backpropagation(float[] resultOut, float[] wantedOut){
+		// TODO: Kommentare wofür Variablen, Richtige Reihenfolge
+		int connectionsOfNeuron;
+		int neuronsInLayer;
+		int neuronsInNextLayer;
+		int offset;
+		float trainingCoefficient = 0.2f;
+		float weightDelta = 0;
+		float connWeights[];
+		Connection connections[];
+		float outputOfNeuron;
+		float inputVectorOfNeuron;
+		
+		// Um deltaGewicht für jede verbindung zu berechnen loop über alle (Verbindungs-)Layer...
+		for (int layer = hiddenLayers; layer >= 0; layer--){
+			// Bestimmen der Position des Neurons im Netz und der folgenden
+			// Struktur für die Summe über die Folgeneuronen,
+			// d.h. für die Grenze der for-Schleife. Daher nur int neuronsInLayer benötigt
+			// -> mit layer ermitteln in welchem Layer: output, hidden o input
+			// -> mit neuron an welcher Stelle im Layer
+			// Grenze für Summe über Folgeneuronen
+			
+			// DEBUG
+			System.out.println("int layer = " + hiddenLayers + "; layer >= 0; layer: " + layer + "{");
+			
+			// Outputconnection layer
+			if (layer == hiddenLayers){
+				neuronsInLayer = hiddenNeuron[layer-1].length;
+				neuronsInNextLayer = 1;
+				
+				// Es gibt nur Verbindung(en) vom letztem Hidden Layer zu OutputNeuron(en)
+				
+				// TODO: Abbruchbedingung, ist noch falsch, benötigt allgemein gültigen Ausdruck
+				// Go to next output neuron if all inputs are connected
+				// Funktioniert nur wenn neuron > 0
+				//while ((neuron % (hiddenNeuron[hiddenLayers-1].length/outputNeuron.length)) != 0){}
+				
+				// Im Moment nur eine Verbindung von hidden Neuron zu outputLayer
+				connectionsOfNeuron = 1;
+				
+			/***************************************************************
+			// Connections between last hidden and output layer
+			int inp = 0;
+			int outNeur = -1;
+				
+			// From each hidden neuron...
+			for (int hidNeur = 0; hidNeur < hiddenNeuron[hiddenLayers-1].length; hidNeur++, inp++){
+					
+				// Go to next output neuron if all inputs are connected
+				if ((hidNeur % (hiddenNeuron[hiddenLayers-1].length/outputNeuron.length)) == 0){
+					outNeur++;
+					inp = 0;
+				}
+					
+				// ...to the "nearest" output neuron (if several are available)
+				outputConnection[hidNeur] = new Connection(hiddenNeuron[hiddenLayers-1][hidNeur],
+						outputNeuron[outNeur], inp, outputConnWeights[hidNeur]);
+			}
+			***************************************************************/
+			
+				// TODO: Auch hier allgemeine Formulierungen
+				connWeights = new float [outputConnWeights.length];
+				connWeights = outputConnWeights;
+				
+				connections = new Connection [outputConnection.length];
+				connections = outputConnection;
+			}
+			
+			// InputConnection layer
+			else if (layer == 0){
+				neuronsInLayer = inputNeuron.length;
+				neuronsInNextLayer = hiddenNeuron[0].length;
+				
+				// TODO: Allgemein gültiger Ausdruck
+				// Im Moment nur von jeden inputNeuron zu jedem hiddenNeuron
+				connectionsOfNeuron = hiddenNeuron[0].length;
+				
+			/***************************************************************
+			// Connections between input layer and 1st hidden layer
+			int positionInLayer = 0;
+			
+			// From each input neuron...
+			for (int inp = 0; inp < inputNeuron.length; inp++){
+			
+				// ...to each neuron of the 1st hidden layer
+				for (int conn = 0; conn < hiddenNeuron[0].length; conn++){
+					
+					inputConnection[positionInLayer] = new Connection(inputNeuron[inp],
+							hiddenNeuron[0][conn], inp, inputConnWeights[positionInLayer]);
+					
+					positionInLayer++;
+				}
+			}
+			***************************************************************/
+			
+				connWeights = new float [inputConnWeights.length];
+				connWeights = inputConnWeights;
+
+				connections = new Connection [inputConnection.length];
+				connections = inputConnection;
+						
+			/***************************************************************
+			// Connection weights
+			inputConnWeights = new float[inputNeurons * hiddenNeuronsPerLayer];
+			
+			hiddenConnWeights = new float[hiddenLayers-1][hiddenNeuronsPerLayer * hiddenNeuronsPerLayer];
+
+			outputConnWeights = new float[hiddenNeuronsPerLayer];
+			
+			Struktur siehe Connections weiter oben
+			***************************************************************/
+			}
+			
+			// Hidden Layer
+			else {
+				neuronsInLayer = hiddenNeuron[layer-1].length;
+				neuronsInNextLayer = hiddenNeuron[layer].length;
+				
+				// TODO: Allgemein gültiger Ausdruck
+				// Im Moment nur von jeden hiddenNeuron zu jedem hiddenNeuron im Folgelayer
+				connectionsOfNeuron = hiddenNeuron[layer].length;
+				
+				connWeights = new float [hiddenConnWeights[layer-1].length];
+				connWeights = hiddenConnWeights[layer-1];
+
+				connections = new Connection [hiddenConnection[layer-1].length];
+				connections = hiddenConnection[layer-1];
+			}
+			//DEBUG
+			System.out.println("\tconnWeights.lenght: " + connWeights.length);
+			
+			// ..., über alle Neuronen in dem Layer...
+			for (int neuron = 0; neuron < neuronsInLayer; neuron++){
+				//DEBUG
+				System.out.println("\tfor (int neuron = 0; neuron < "+neuronsInLayer+"; neuron: "+neuron+"{");
+				
+				// Position of 1st connection of this neuron (Is the same
+				// for all neurons in this layer)
+				offset = neuron * connectionsOfNeuron;
+			
+				// ...und nu über alle Verbindungen des Neurons
+				for (int conn = 0; conn < connectionsOfNeuron; conn++){
+					//DEBUG
+					System.out.println("\t\tfor (int conn = 0; conn < "+connectionsOfNeuron+"; conn" +conn+ "{");
+					
+					/*** Notwendig?
+					// pro Inputneuron:
+					// Notwendig? wie sonst inputVector[inp] verwenden?
+					for (int inp = 0; inp < inputNeuron.length; inp++){
+					}// for() pro Inputneuron
+					***/
+					
+					// Beginn der Berechnung
+					// deltaGewichtsvektor_u = Lernfaktor * -> hinter die Summen verschoben
+					// weightDelta = trainingCoefficient * 
+					
+					// DEBUG
+					System.out.println("\t\tneuronsInNextLayer: " + neuronsInNextLayer);
+					
+					// Summe über Folgeneuronen
+					for (int succ = 0; succ < neuronsInNextLayer; succ++){
+						
+						// Summe über Ausgabeneuronen
+						for (int out = 0; out < outputNeuron.length; out++){
+							weightDelta += (
+							// Erwartete Ausgabe_Ausgabeneuron - Ausgabe_Ausgabeneuron
+							(wantedOut[out] - resultOut[out]) *
+							//dAusgabe nach dNetzeingabe
+							resultOut[out] * (1- resultOut[out]));
+						}// for() Summe über Ausgabeneuronen
+						
+						// Bestimmen der Position im Netz um Gewicht_Neuron-FolgeNeuron zu laden
+						// layer und neuron: Position von Neuron im Netz
+						// connectionsOfNeuron: Anzahl der Folgeneuronen von Neuron
+						// succ: x-tes FolgeNeuron von Neuron
+						
+						// * Gewicht_Neuron-FolgeNeuron
+						
+						//DEBUG
+						System.out.println("\t\t\tconnWeights["+ (offset+succ) + "]");
+						
+						weightDelta *= connWeights[offset + succ];
+					}// for() Summe über Folgeneuronen
+					
+					// * Ausgabe_u (1 - Ausgabe_u) * Eingabevektor_u
+					// Ausgabe_u	= getOutput von aktuellem Neuron -> connection[neuron + conn].getNeuronTo.getOutput
+					// Eingabevektor_u	= inputs[] von aktuellem Neuron -> getInputVector() in Neuron implementieren
+					// Eingabevektor_u = netInput, da Verbindungsgewichte schon in inputs integriert
+					outputOfNeuron = connection[neuron + conn].getNeuronTo.getOutput;
+					inputVectorOfNeuron = connection[neuron + conn].getNeuronTo.getNetInput;
+					
+					weightDelta *= (outputOfNeuron * (1 - outputOfNeuron) * inputVectorOfNeuron;
+					
+					// deltaGewichtsvektor_u = Lernfaktor * -> hinter die Summen verschoben
+					weightDelta *= trainingCoefficient;
+					
+					// Add calculated weight difference to connection weight
+					connections[neuron + conn].addWeightDelta(weightDelta);
+				}// for() über alle Verbindungen
+			}// for() über alle Neuronen
+		}// for() über alle (Verbindungs-)Layer
+	}// backpropagation()
+\end{lstlisting}
+% 2.Teil
+\begin{lstlisting}
+	/****************************************************************************************
+	* TODO: Aufraeumen
+	*	
+	* ---------------------------------------------------------------------------------------
+	* Beispiel:	2 Input, 4 Hidden, 2 Hiddenlayer, 2 Output
+	*		Connection each, Oupuzt connection 2 Groups
+	*              ----------------------------------------------------------------
+	*		inputConnection[] | hiddenConnection[][] | outputConnection[]
+	*	0 :	0 >			0 >			0
+	*					1
+	*					2
+	*					3
+	*		1 >			0
+	*					1
+	*					2
+	*					3
+	*		2 >			0
+	*					1 >			0
+	*					2
+	*					3
+	*		3 >			0
+	*					1
+	*					2
+	*					3
+	*	1 :	0 >			0
+	*					1
+	*					2 >			1
+	*					3
+	*		1 >			0
+	*					1
+	*					2
+	*					3
+	*		2 >			0
+	*					1
+	*					2
+	*					3 >			1
+	*		3 >			0
+	*					1
+	*					2
+	*					3
+	*              ----------------------------------------------------------------
+	* ---------------------------------------------------------------------------------------
+	*
+	* Backpropagation allgemein:
+	* deltaGewichtsvektor_u = Lernfaktor (Summe über Folgeneuronen((Summe über Ausgabeneuronen(
+	* (Erwartete Ausgabe - Ausgabe) dAusgabe_Ausgabeneuron nach dNetzeingabe_Folgeneuron))*Gewicht_Neuron-FolgeNeuron)
+	* ) dAusgabe_u nach dNetzeingabe_u * Eingabevektor_u (S.71)
+	*
+	* Für Identiaet als Ausgabefunktion und logistischer Aktivierungsfunktion:
+	* deltaGewichtsvektor_u = Lernfaktor (Summe über Folgeneuronen((Summe über Ausgabeneuronen(
+	* (Erwartete Ausgabe_Ausgabeneuron - Ausgabe_Ausgabeneuron)dAusgabe_Ausgabeneuron nach dNetzeingabe_Folgeneuron))*Gewicht_FolgeNeuron-u)
+	* ) Ausgabe_u (1 - Ausgabe_u) * Eingabevektor_u
+	
+	* -> SCHICHTENWEISE
+	-> Summe über Ausgabeneuronen:
+	* -> Summe über Folgeneuronen: Pfad im Netz muss mathematisch nachgebildet werden
+	* -> Eingabevektor muss angepasst werden, enthaelt Bitmuster
+	* -> bei logistischer Funktion:
+	*	dAusgabe_Ausgabeneuron nach dNetzeingabe_Folgeneuron = Ausgabe_Ausgabeneuron (1 - Ausgabe_Ausgabeneuron)
+	*
+	* Einzelner Gradientenabstieg:
+	* delta Gewichtsvektor_u = Lernfaktor (Erwartete Ausgabe - Ausgabe) Ausgabe (1 - Ausgabe) * Eingabevektor_u
+	* -> pro inputneuron:
+	* delta Gewicht_u = Lernfaktor (Erwartete Ausgabe - Ausgabe) Ausgabe (1 - Ausgabe) * Eingabe_u
+	*
+	* Um deltaGewicht für jede verbindung zu berechnen erst mit for-loop über outputconnection.length
+	* dann for (int i = hiddenLayer-2; i>=0; i++) -> loop über hiddenLayer[i].length
+	* dann for-loop über inputConnection.length
+	*
+	* Um Folgeneuronen zu ermitteln Position in Array benötigt, dann loops über die folgende
+	* Netzstruktur (nicht einfach über die ConnectionArrays)
+	*
+	* Umwandlung des Schwellenwertes in ein Gewicht: Der Schwellenwert wird auf 0 festgelegt, als Ausgleich wird ein zusaetzlicher (imaginaerer)
+	* Eingang (x_0) eingefuehrt, der den festen Wert 1 hat und mit dem negierten Schwellenwert gewichtet wird.(S.32)
+	****************************************************************************************/
+private	void backpropagation(float[] resultOut, float[] wantedOut){
+		// TODO: wofür Variablen, Richtige Reihenfolge
+		float trainingCoefficient = 2;
+		float weightDelta = 0;
+		float succWeights[] = new float[1];
+		Connection connections[] = new Connection[1];
+		int succNeurons = 0;
+		int numberOfThresholds;
+		float outputOfNeuron;
+		float inputOfNeuron;
+		int position;
+		
+		// Um deltaGewicht für jede verbindung zu berechnen erst loop über alle (Verbindungs-)Layer...
+		int connectionLayer = hiddenLayers - 1;
+		
+		for (int layer = connectionLayer; layer >= 0; layer--){
+			
+			// Outputconnection layer
+			if (layer == connectionLayer){
+				connections = new Connection [outputConnections.length];
+				connections = outputConnections;
+				
+				numberOfThresholds = outputNeurons.length;
+			}
+			
+			// InputConnection layer
+			else if (layer == 0){
+				if (connectionLayer > 1){
+					succWeights = new float [hiddenConnWeights[0].length];
+					succWeights = hiddenConnWeights[0];
+					
+					// Number of inputs of neuron in 1st hidden layer = number of
+					// successive neurons
+					succNeurons = hiddenConnWeights[0].length/hiddenNeurons[0].length;
+				}
+				else {
+					succWeights = new float [outputConnWeights.length];
+					succWeights = outputConnWeights;
+					
+					succNeurons = outputConnWeights.length/outputNeurons.length;
+				}
+
+				connections = new Connection [inputConnections.length];
+				connections = inputConnections;
+				
+				numberOfThresholds = inputNeurons.length;
+			}
+			
+			// Hidden Layer
+			else {
+				if (layer == connectionLayer - 1){
+					succWeights = new float [outputConnWeights.length];
+					succWeights = outputConnWeights;
+					
+					// Nur eine Verbingung pro Neuron zum outputLayer
+					succNeurons = 1;
+				}
+
+				else {
+					succWeights = new float [hiddenConnWeights[layer + 1].length];
+					succWeights = hiddenConnWeights[layer + 1];
+				
+					// To each neuron of the following layer
+					succNeurons = hiddenNeurons[layer + 1].length;
+				}
+				
+				connections = new Connection [hiddenConnections[layer].length];
+				connections = hiddenConnections[layer];
+				
+				numberOfThresholds = hiddenNeurons[layer].length;
+			}
+			
+			// ...und nu über alle Verbindungen
+			for (int conn = 0; conn < (connections.length); conn++){
+				
+				// Gradientenabstieg für outputLayer
+				if (layer == connectionLayer){
+					// delta Gewichtsvektor_u = Lernfaktor (Erwartete Ausgabe - Ausgabe) Ausgabe (1 - Ausgabe) * Eingabevektor_u
+					// -> delta Gewichtsvektor_u = Lernfaktor Ausgabe (1 - Ausgabe) * Eingabevektor_u auch in backpropagation (hinter for-loops)
+					// -> nur (Erwartete Ausgabe - Ausgabe) benötigt
+					position = connections[conn].getPositionNeuronTo();
+					
+					weightDelta = wantedOut[position] - resultOut[position];
+				}
+				
+				// Da real backpropagation
+				else {
+					// Beginn der Berechnung
+					// deltaGewichtsvektor_u = Lernfaktor * -> hinter die Summen verschoben
+					// weightDelta = trainingCoefficient * 
+				  
+					// Summe über Folgeneuronen
+					for (int succ = 0; succ < succNeurons; succ++){
+						int sumOutputNeurons = 0;
+						
+						// Summe über Ausgabeneuronen
+						for (int out = 0; out < outputNeurons.length; out++){
+							sumOutputNeurons += (
+							// Erwartete Ausgabe_Ausgabeneuron - Ausgabe_Ausgabeneuron
+							(wantedOut[out] - resultOut[out]) *
+							//dAusgabe nach dNetzeingabe
+							resultOut[out] * (1- resultOut[out]));
+						}// for() Summe über Ausgabeneuronen
+				
+						weightDelta += sumOutputNeurons;
+						
+						// * Gewicht_Neuron-FolgeNeuron
+						position = connections[conn].getPositionNeuronTo();
+						
+						weightDelta *= succWeights[position];
+					}// for() Summe über Folgeneuronen
+				}
+				
+				// * Ausgabe_u (1 - Ausgabe_u) * Eingabevektor_u
+				// Ausgabe_u	= getOutput von aktuellem Neuron -> connection[neuron + conn].getNeuronTo.getOutput
+				// Eingabevektor_u	= inputs[] von aktuellem Neuron -> getInputVector() in Neuron implementieren
+				outputOfNeuron = connections[conn].getNeuronTo().getOutput();
+				inputOfNeuron = connections[conn].getNeuronFrom().getOutput();
+					
+				weightDelta *= (outputOfNeuron * (1 - outputOfNeuron) * inputOfNeuron);
+					
+				// deltaGewichtsvektor_u = Lernfaktor * -> hinter die Summen verschoben
+				weightDelta *= trainingCoefficient;
+					
+				// Add calculated weight difference to connection weight
+				connections[conn].addWeightDelta(weightDelta);
+			}// for() über alle Verbindungen
+			
+			// for über die Thresholds
+			for (int thresh = 0; thresh < numberOfThresholds; thresh++){
+				// TODO: Der Schwellenwert wird auf 0 festgelegt??? noch notwendig?
+				// , als Ausgleich wird ein zusaetzlicher (imaginaerer)
+				// Eingang (x_0) eingeführt, der den festen Wert 1 hat und mit dem negierten Schwellenwert gewichtet wird.(S.32)
+				// Position in Layer = threshold * Anzahl der Verbindungen pro Neuron -> Anzahl der Verbinungen in Layer / Anzahl der Neuronen (Thresholds)
+				int positionInLayer = thresh * (connections.length / numberOfThresholds);
+				float oldThresh = -1 * connections[positionInLayer].getNeuronTo().getThreshold();
+				
+				// Gradientenabstieg für outputLayer
+				if (layer == connectionLayer){
+					// delta Gewichtsvektor_u = Lernfaktor (Erwartete Ausgabe - Ausgabe) Ausgabe (1 - Ausgabe) * Eingabevektor_u
+					// -> delta Gewichtsvektor_u = Lernfaktor Ausgabe (1 - Ausgabe) * Eingabevektor_u auch in backpropagation (hinter for-loops)
+					// -> nur (Erwartete Ausgabe - Ausgabe) benötigt
+					// Erwartete Ausgabe - Ausgabe
+					// Note: Anzahl thresholds entspricht Anzahl, und somit Position, von OutputNeuron
+					weightDelta = wantedOut[thresh] - resultOut[thresh];
+				}
+				
+				// Da real backpropagation
+				else {
+					// Beginn der Berechnung
+					// deltaGewichtsvektor_u = Lernfaktor * -> hinter die Summen verschoben
+					// weightDelta = trainingCoefficient * 
+				  
+					// Summe über Folgeneuronen
+					for (int succ = 0; succ < succNeurons; succ++){
+						int sumOutputNeurons = 0;
+						
+						// Summe über Ausgabeneuronen
+						for (int out = 0; out < outputNeurons.length; out++){
+							sumOutputNeurons += (
+							// Erwartete Ausgabe_Ausgabeneuron - Ausgabe_Ausgabeneuron
+							(wantedOut[out] - resultOut[out]) *
+							//dAusgabe nach dNetzeingabe
+							resultOut[out] * (1- resultOut[out]));
+						}// for() Summe über Ausgabeneuronen
+				
+						weightDelta += sumOutputNeurons;
+						
+						// * Gewicht_Neuron-FolgeNeuron
+						weightDelta *= succWeights[succ];
+					}// for() Summe über Folgeneuronen
+				}
+				
+				// * Ausgabe_u (1 - Ausgabe_u) * Eingabevektor_u
+				// Ausgabe_u	= getOutput von aktuellem Neuron -> connection[neuron + conn].getNeuronTo.getOutput
+				// Eingabevektor_u	= inputs[] von aktuellem Neuron -> getInputVector() in Neuron implementieren				
+				outputOfNeuron = connections[positionInLayer].getNeuronTo().getOutput();
+				// inputVectorOfNeuron nicht benötigt, da nur = 1;
+					
+				weightDelta *= (outputOfNeuron * (1 - outputOfNeuron));
+					
+				// deltaGewichtsvektor_u = Lernfaktor * -> hinter die Summen verschoben
+				weightDelta *= trainingCoefficient;
+					
+				// Add calculated weight difference to old threshold and set new threshold
+				connections[positionInLayer].getNeuronTo().setThreshold(oldThresh + weightDelta);
+			}// for() über thresholds
+		}// for() über alle (Verbindungs-)Layer
+	}// backpropagation()
+\end{lstlisting}

@@ -1,0 +1,108 @@
+\chapter{Prospective Enhancements}
+\section{Execution of multiLayerPerceptron using integer}
+\begin{lstlisting}
+	/****************************************************************************************
+	* Executes the built multi-layer perceptron with given input vector
+	* Returns the output vector as single integer
+	****************************************************************************************/
+	int runInt(int inputVector){
+		int output = 0;
+		float networkInputVector[] = new float[inputNeuron.length];
+		float networkOutputVector[] = new float[outputVector.length];
+		
+		//Set input if corresponding bit is high, unset if low
+		for (int i = 0; i < inputNeuron.length; i++){
+			
+			if ((inputVector & (1 << i)) == (1 << i))
+				networkInputVector[i] = 1;
+			else
+				networkInputVector[i] = 0;
+		}
+		
+		networkOutputVector = run(networkInputVector);
+		
+		for (int i = 0; i < networkOutputVector.length || i < 32; i++){
+			if(networkOutputVector[i] >= 0.5f)
+				output |= (1 << i);
+		}
+		
+		return output;
+	}// runInt()
+\end{lstlisting}
+
+\section{Execution of multiLayerPerceptron using integer, defined threshold}
+\begin{lstlisting}
+	/****************************************************************************************
+	* Executes the built multi-layer perceptron with given input vector
+	* Returns the output vector as single integer
+	* Bit is set if depending output value is > threshold
+	****************************************************************************************/
+	int runInt(int inputVector, float threshold){
+		int output = 0;
+		float networkOutputVector[] = new float[outputVector.length];
+		
+		networkOutputVector = run(inputVector);
+		
+		for (int i = 0; i < networkOutputVector.length || i < 32; i++){
+			if(networkOutputVector[i] >= threshold)
+				output |= (1 << i);
+		}
+		
+		return output;
+	}// runInt()
+\end{lstlisting}
+
+\section{Training for execution using integer}
+\begin{lstlisting}
+Boolean training(int trainigInVector, int trainingOutVector, float errorTolerance)
+\end{lstlisting}
+
+\section{Topology rising}
+\begin{lstlisting}
+case "rising":
+// Number of hidden neurons is increasing with every layer.
+// Start with hiddenNeuronsPerLayer, increasing with + 2 until hiddenLayers
+hiddenConnWeights = new float[hiddenLayers-1][hiddenNeuronsPerLayer + (2 * (hiddenLayers-1))];
+
+for (int i = 0; i < hiddenLayers-1; i++){
+
+	for (int j = 0; j < hiddenConnWeights[i].length; j++)
+		hiddenConnWeights[i][j] = 1;
+}
+
+neededNeuronInputs = 2;
+break;
+\end{lstlisting}
+
+\section{Topology diamond}
+\begin{lstlisting}
+//TODO: case "diamond"
+// rising until hiddenLayers/2, then declining
+\end{lstlisting}
+
+\section{Topology with different numbers of hidden neurons per layer}
+\begin{lstlisting}
+/****************************************************************************************
+* Multi-layer perceptron with different numbers of hidden neurons per layer
+* int[] hiddenNeuronsPerLayer, - int hiddenLayers,
+* hiddenLayers = hiddenNeuronsPerLayer.length;
+****************************************************************************************/
+\end{lstlisting}
+
+\section{Up to 64 inputs/outputs}
+For function int runInt()
+
+\section{Activation function and Output function settable}
+(Into extra classes so class Neuron remains as small as possible)\\
+(siehe ComputaionalIntelligence S.52)\\
+% \begin{tabbing}
+Step function:	if (netInput >= threshold) return netInput; else return 0;\\
+semi-lineare Funktion: if (netInput > threshold + 1/2) return netInput;\\
+else if ((netInput < threshold + 1/2) \&\& (netInput > threshold - 1/2)) output = (netInput - threshold) + 1/2;\\
+else return 0;\\
+Sinus bis Saettigung: if (netInput > threshold + pi/2) return netInput;\\
+else if ((netInput < threshold + pi/2) \&\& (netInput > threshold - pi/2)) output = (sin(netInput - threshold) + 1)/2;\\
+else return 0;\\
+logistische Funktion: output = 1 / (1 + $e^{(-(netInput - threshold))}$) // geht nur von 0 - 1\\
+radiale Basis Funktionen\\
+enum für Funktionen in Klasse über Neuron
