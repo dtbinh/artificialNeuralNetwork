@@ -39,10 +39,6 @@ private
 	static final int INITTHRESH = 0;
 
 public
-	// Test variables
-	static Boolean multiLayerPerceptronTest = false;
-	static Boolean backpropagationTest = false;
-	
 	// Constructors
 	/****************************************************************************************
 	* MultiLayerPerceptron(int nrInputNeurons, int[] nrHiddenNeurons, int nrOutputNeurons,
@@ -298,136 +294,6 @@ public
 					hiddenConnections.add(hiddenLyrConnections);
 				}
 				break;// case "one"
-				
-			// Every neuron will be connected to two neurons of the following layer,
-			// the neuron a position up and the neuron a position down
-			case "cross":
-			
-				for (int lyr = 0; lyr < nrHiddenNeurons.length-1; lyr++){
-
-					if (nrHiddenNeurons[lyr] >= nrHiddenNeurons[lyr+1]){
-						
-						// Needed inputs in next hidden layer
-						neuronInputsLayer = new int[nrHiddenNeurons[lyr+1]];
-
-						// Range of neurons in next layer with one more input
-						// (There are two overlapping ranges)
-						int range = nrHiddenNeurons[lyr] % nrHiddenNeurons[lyr+1];
-						// First neuron in the range
-						int rangeStart  = (nrHiddenNeurons[lyr+1] - ((nrHiddenNeurons[lyr+1] - range) / 2)) - range;
-						int rangeUpperEnd = 0;
-						
-						if ((rangeStart+1) + range >= nrHiddenNeurons[lyr+1])
-							rangeUpperEnd = ((rangeStart+1) + range) - nrHiddenNeurons[lyr+1];
-						
-						// For every neuron in next hidden layer
-						for (int m = 0; m < nrHiddenNeurons[lyr+1]; m++){
-							
-							neuronInputsLayer[m] = 2 * (nrHiddenNeurons[lyr] / nrHiddenNeurons[lyr+1]);
-							
-							// We need more connections
-							if ((nrHiddenNeurons[lyr] % nrHiddenNeurons[lyr+1]) != 0){
-								
-								if ((rangeUpperEnd > 0) && (m < rangeUpperEnd))
-									neuronInputsLayer[m]++;
-									
-								// Lower range of the neurons with one more connection
-								if (m >= (rangeStart-1) && m < ((rangeStart-1) + range))
-									neuronInputsLayer[m]++;
-								
-								// Upper range of the neurons with one more connection
-								if (m >= (rangeStart+1) && m < ((rangeStart+1) + range))
-									neuronInputsLayer[m]++;
-							}// if ((nrHiddenNeurons[lyr] % nrHiddenNeurons[lyr+1]) != 0)
-						}// for (int m = 0; m < nrHiddenNeurons[lyr+1]; m++)
-							
-						hiddenLyrConnections = new Connection[nrHiddenNeurons[lyr] * 2];
-					}// if (nrHiddenNeurons[lyr] >= nrHiddenNeurons[lyr+1])
-						
-					else {
-						
-						// Needed inputs in next hidden layer
-						neuronInputsLayer = new int[nrHiddenNeurons[lyr+1]];
-						
-						// For every neuron in next hidden layer...
-						for (int m = 0; m < nrHiddenNeurons[lyr+1]; m++)
-							
-							// ...we just need two inputs
-							neuronInputsLayer[m] = 2;
-							
-						hiddenLyrConnections = new Connection[nrHiddenNeurons[lyr+1] * 2];
-					}// else (if (nrHiddenNeurons[lyr] >= nrHiddenNeurons[lyr+1]))
-					
-					neuronInputs.add(neuronInputsLayer);
-						
-					hiddenConnections.add(hiddenLyrConnections);
-				}// for (int lyr = 0; lyr < nrHiddenNeurons.length-1; lyr++)
-				break;// case "cross"
-				
-			// Every neuron will be connected to two neurons of the following layer,
-			// the neuron at same position and the neuron a position up
-			case "zigzag":
-				
-				for (int lyr = 0; lyr < nrHiddenNeurons.length-1; lyr++){
-
-					if (nrHiddenNeurons[lyr] >= nrHiddenNeurons[lyr+1]){
-						
-						// Needed inputs in next hidden layer
-						neuronInputsLayer = new int[nrHiddenNeurons[lyr+1]];
-
-						// Range of neurons in next layer with one more input
-						// (There are two overlapping ranges)
-						int range = nrHiddenNeurons[lyr] % nrHiddenNeurons[lyr+1];
-						// First neuron in the range
-						int rangeStart  = (nrHiddenNeurons[lyr+1] - ((nrHiddenNeurons[lyr+1] - range) / 2)) - range;
-						int rangeUpperEnd = 0;
-						
-						if ((rangeStart+1) + range >= nrHiddenNeurons[lyr+1])
-							rangeUpperEnd = ((rangeStart+1) + range) - nrHiddenNeurons[lyr+1];
-						
-						// For every neuron in next hidden layer
-						for (int m = 0; m < nrHiddenNeurons[lyr+1]; m++){
-							
-							neuronInputsLayer[m] = 2 * (nrHiddenNeurons[lyr] / nrHiddenNeurons[lyr+1]);
-							
-							// We need more connections
-							if ((nrHiddenNeurons[lyr] % nrHiddenNeurons[lyr+1]) != 0){
-								
-								if ((rangeUpperEnd > 0) && (m < rangeUpperEnd))
-									neuronInputsLayer[m]++;
-									
-								// Lower range of the neurons with one more connection
-								if (m >= rangeStart && m < (rangeStart + range))
-									neuronInputsLayer[m]++;
-								
-								// Upper range of the neurons with one more connection
-								if (m >= (rangeStart+1) && m < ((rangeStart+1) + range))
-									neuronInputsLayer[m]++;
-							}// if ((nrHiddenNeurons[lyr] % nrHiddenNeurons[lyr+1]) != 0)
-						}// for (int m = 0; m < nrHiddenNeurons[lyr+1]; m++)
-							
-						hiddenLyrConnections = new Connection[nrHiddenNeurons[lyr] * 2];
-					}// if (nrHiddenNeurons[lyr] >= nrHiddenNeurons[lyr+1])
-						
-					else {
-						
-						// Needed inputs in next hidden layer
-						neuronInputsLayer = new int[nrHiddenNeurons[lyr+1]];
-						
-						// For every neuron in next hidden layer...
-						for (int m = 0; m < nrHiddenNeurons[lyr+1]; m++)
-							
-							// ...we just need two inputs
-							neuronInputsLayer[m] = 2;
-							
-						hiddenLyrConnections = new Connection[nrHiddenNeurons[lyr+1] * 2];
-					}// else (if (nrHiddenNeurons[lyr] >= nrHiddenNeurons[lyr+1]))
-					
-					neuronInputs.add(neuronInputsLayer);
-						
-					hiddenConnections.add(hiddenLyrConnections);
-				}// for (int lyr = 0; lyr < nrHiddenNeurons.length-1; lyr++)
-				break;// case "zigzag"
 			
 			// "each": Every neuron of the current layer will be connected to every neuron of the following layer
 			default: 
@@ -596,11 +462,6 @@ public
 		}
 		
 		/*** Connections between input layer and 1st hidden layer ***/
-		
-		// Test output: multilayerPerceptronTest
-		if (multiLayerPerceptronTest)
-			System.out.println("\tinputConnection\t| inputNeuron | hiddenNeuron\tinp|pos");
-		
 		switch (inputTopology){
 		
 		case "one":
@@ -622,10 +483,6 @@ public
 						m++;
 					}
 					 
-					// Test output: multilayerPerceptronTest
-					if (multiLayerPerceptronTest)
-						System.out.println("\t\t["+n+"]\t|\t["+n+"]\t [0]["+m+"]\t\t "+i+" | "+m);
-					
 					// ...to a hidden neuron
 					inputConnections[n] = new Connection(inputNeurons[n], hiddenNeurons.get(0)[m], i, INITWEIGHT, m);
 					
@@ -676,10 +533,6 @@ public
 						c_i = 0;
 					}
 					
-					// Test output: multilayerPerceptronTest
-					if (multiLayerPerceptronTest)
-						System.out.println("\t\t["+m+"]\t|\t["+n+"]\t [0]["+m+"]\t\t 0 | "+m);
-					
 					// ...to a hidden neuron
 					inputConnections[m] = new Connection(inputNeurons[n], hiddenNeurons.get(0)[m], 0, INITWEIGHT, m);
 					
@@ -709,10 +562,6 @@ public
 						
 					for (int m = 0; m < groupLimit; m++){
 						
-						// Test output: multilayerPerceptronTest
-						if (multiLayerPerceptronTest)
-							System.out.println("\t\t["+positionInLayer+"]\t|\t["+n+"]\t [0]["+m+"]\t\t "+n+" | "+m);
-						
 						// Note: The input is selected by the number of the input neuron
 						inputConnections[positionInLayer] = new Connection(inputNeurons[n],
 								hiddenNeurons.get(0)[m], n, INITWEIGHT, m);
@@ -725,10 +574,6 @@ public
 				else {
 					
 					for (int m = groupLimit; m < hiddenNeurons.get(0).length; m++){
-						
-						// Test output: multilayerPerceptronTest
-						if (multiLayerPerceptronTest)
-							System.out.println("\t\t["+positionInLayer+"]\t|\t["+n+"]\t [0]["+m+"]\t\t "+(n-(inputNeurons.length/2))+" | "+m);
 						
 						// Note: The input is select by the number of the input neuron - the half of the input neurons
 						inputConnections[positionInLayer] = new Connection(inputNeurons[n],
@@ -751,10 +596,6 @@ public
 				// ...to each neuron of the 1st hidden layer
 				for (int conn = 0; conn < hiddenNeurons.get(0).length; conn++){
 					
-					// Test output: multilayerPerceptronTest
-					if (multiLayerPerceptronTest)
-						System.out.println("\t\t["+posInLayer+"]\t|\t["+n+"]\t [0]["+conn+"]\t\t "+n+" | "+conn);
-					
 					inputConnections[posInLayer] = new Connection(inputNeurons[n],
 							hiddenNeurons.get(0)[conn], n, INITWEIGHT, conn);
 					
@@ -766,10 +607,6 @@ public
 		/*** Connections between hidden layers ***/
 		if (hiddenNeurons.size() > 1){
 				
-			// Test output: multilayerPerceptronTest
-			if (multiLayerPerceptronTest)
-				System.out.println("\thiddenConnection| hiddenNeuron | hiddenNeuron\tinp|pos");
-			
 			switch (hiddenTopology){
 			
 			case "one":
@@ -794,10 +631,6 @@ public
 								m++;
 							}
 							 
-							// Test output: multilayerPerceptronTest
-							if (multiLayerPerceptronTest)
-								System.out.println("\t\t["+n+"]\t|\t["+l+"]["+n+"]\t ["+(l+1)+"]["+m+"]\t\t "+i+" | "+m);
-							
 							// ...to a hidden neuron (initialise the connection weight with 1)
 							hiddenConnections.get(l)[n] = new Connection(hiddenNeurons.get(l)[n],
 									hiddenNeurons.get(l+1)[m], i, INITWEIGHT, m);
@@ -849,10 +682,6 @@ public
 								c_i = 0;
 							}
 							
-							// Test output: multilayerPerceptronTest
-							if (multiLayerPerceptronTest)
-								System.out.println("\t\t["+m+"]\t|\t["+l+"]["+n+"]\t ["+(l+1)+"]["+m+"]\t\t 0 | "+m);
-							
 							// ...to a hidden neuron (initialise the connection weight with 1)
 							hiddenConnections.get(l)[m] = new Connection(hiddenNeurons.get(l)[n],
 									hiddenNeurons.get(l+1)[m], 0, INITWEIGHT, m);
@@ -863,328 +692,6 @@ public
 					}// else (if (hiddenNeurons.get(l).length >= hiddenNeurons.get(l+1).length))
 				}// for (int l = 0; l < (hiddenNeurons.size() - 1); l++)
 				break;// case "one"
-
-			case "cross":
-				
-				// For each layer
-				for (int l = 0; l < (hiddenNeurons.size() - 1); l++){
-					
-					if (hiddenNeurons.get(l).length >= hiddenNeurons.get(l+1).length){
-
-						// Neuron of the next layer
-						int m = 0;
-						
-						// Input connection is going to
-						int i;
-						
-						// Number of neurons with connection to a neuron in next layer with more inputs
-						int range = hiddenNeurons.get(l).length % hiddenNeurons.get(l+1).length;
-						int rangeStart  = (hiddenNeurons.get(l).length - ((hiddenNeurons.get(l).length - range) / 2))
-											- range;
-						
-						// From each neuron in the current layer...
-						for (int n = 0; n < hiddenNeurons.get(l).length; n++){
-							
-							// We need more connections in the middle
-							if ((hiddenNeurons.get(l).length % hiddenNeurons.get(l+1).length) != 0){
-								
-								// Inside the range of neurons with one more connection
-								// TODO: Pretty sure condition and calculation aren't always correct
-								if (n >= rangeStart)
-									m = n * hiddenNeurons.get(l+1).length / hiddenNeurons.get(l).length;
-								
-								// Outside the range
-								// Note: n.length/m.length=int (eg. 8/7 = 1)! That's why it's working
-								else 
-									m = n / (hiddenNeurons.get(l).length / hiddenNeurons.get(l+1).length);
-							}// if ((hiddenNeurons.get(l).length % hiddenNeurons.get(l+1).length) != 0)
-							
-							// Whole-number ratio
-							else 
-								m = n / (hiddenNeurons.get(l).length / hiddenNeurons.get(l+1).length);
-							
-							// Choose inputs
-							// TODO: Find universal i =
-							if ((n > 0) && (hiddenConnections.get(l)[(n-1)*2].getPositionNeuronTo() == (m-1)))
-								i = 2;
-							else
-								i = 0;
-							
-							// ...to the neuron 1 position down in the next hidden layer...
-							if (m > 0){
-								
-								// Test output: multilayerPerceptronTest
-								if (multiLayerPerceptronTest)
-									System.out.println("\t\t["+(n*2)+"]\t|\t["+(l)+"]["+n+"]\t ["+(l+1)+"]["
-													+(m-1)+"]\t\t "+i+" | "+(m-1));
-
-								hiddenConnections.get(l)[n*2] = new Connection(hiddenNeurons.get(l)[n],
-									hiddenNeurons.get(l+1)[m-1], i, INITWEIGHT, (m-1));
-							}// if (m > 0)
-							
-							else {
-								
-								// Test output: multilayerPerceptronTest
-								if (multiLayerPerceptronTest)
-									System.out.println("\t\t["+(n*2)+"]\t|\t["+(l)+"]["+n+"]\t ["+(l+1)+"]["
-														+(hiddenNeurons.get(l+1).length-1)+"]\t\t "+i+" | "+
-														(hiddenNeurons.get(l+1).length-1));	
-								
-								hiddenConnections.get(l)[n*2] = new Connection(hiddenNeurons.get(l)[n],
-									hiddenNeurons.get(l+1)[hiddenNeurons.get(l+1).length-1], i, INITWEIGHT,
-									hiddenNeurons.get(l+1).length-1);
-							}// else (if (m > 0))
-							
-							// TODO: Ugly hack, we need to find something better
-							if ((n > 0) && (hiddenConnections.get(l)[(n-1)*2].getPositionNeuronTo() == (m-1)))
-								i--;
-							
-							// ...and the neuron 1 position up in the next hidden layer
-							if (m < hiddenNeurons.get(l+1).length - 1){
-								
-								// Test output: multilayerPerceptronTest
-								if (multiLayerPerceptronTest)
-									System.out.println("\t\t["+((n*2)+1)+"]\t|\t["+(l)+"]["+n+"]\t ["+(l+1)+"]["
-													+(m+1)+"]\t\t "+(i+1)+" | "+(m+1));
-					
-								hiddenConnections.get(l)[(n*2)+1] = new Connection(hiddenNeurons.get(l)[n],
-									hiddenNeurons.get(l+1)[m+1], (i+1), INITWEIGHT, (m+1));
-							}// if (m < hiddenNeurons.get(l+1).length - 1)
-							
-							else {
-								
-								// Test output: multilayerPerceptronTest
-								if (multiLayerPerceptronTest)
-									System.out.println("\t\t["+((n*2)+1)+"]\t|\t["+(l)+"]["+n+"]\t ["+(l+1)+"][0]" +
-														"\t\t "+(i+1)+" | 0");	
-								
-								hiddenConnections.get(l)[(n*2)+1] = new Connection(hiddenNeurons.get(l)[n],
-									hiddenNeurons.get(l+1)[0], (i+1), INITWEIGHT, 0);
-							}// else (if (m < hiddenNeurons.get(l+1).length - 1))
-						}// for (int n = 0; n < hiddenNeurons.get(l).length; n++)
-					}// if (hiddenNeurons.get(l).length >= hiddenNeurons.get(l+1).length)
-					
-					else {
-
-						// Neuron in current layer
-						int n = 0;
-						
-						// Number of neurons in next layer with more inputs
-						int range = hiddenNeurons.get(l+1).length % hiddenNeurons.get(l).length;
-						int rangeStart  = (hiddenNeurons.get(l+1).length - ((hiddenNeurons.get(l+1).length - range) / 2))
-											- range;
-						
-						// From each hidden neuron (of the next layer)...
-						for (int m = 0; m < hiddenNeurons.get(l+1).length; m++){
-							
-							// We need more connections in the middle
-							if ((hiddenNeurons.get(l).length % hiddenNeurons.get(l+1).length) != 0){
-								
-								// Inside the range of neurons with one more connection
-								if (m >= rangeStart)
-									n = m * hiddenNeurons.get(l).length / hiddenNeurons.get(l+1).length;
-								
-								// Outside the range
-								else 
-									n= m / (hiddenNeurons.get(l+1).length / hiddenNeurons.get(l).length);
-							}// if ((hiddenNeurons.get(l).length % hiddenNeurons.get(l+1).length) != 0)
-							
-							// Whole-number ratio
-							else 
-								n = m / (hiddenNeurons.get(l+1).length / hiddenNeurons.get(l).length);
-							
-							// ...to the neuron 1 position down...
-							if (n > 0){
-								
-								// Test output: multilayerPerceptronTest
-								if (multiLayerPerceptronTest)
-									System.out.println("\t\t["+(m*2)+"]\t|\t["+(l)+"]["+(n-1)+"]\t ["+(l+1)+"]["
-													+m+"]\t\t 0 | "+m);							
-					
-								hiddenConnections.get(l)[m*2] = new Connection(hiddenNeurons.get(l)[n-1],
-									hiddenNeurons.get(l+1)[m], 0, INITWEIGHT, m);
-							}// if (n > 0)
-							
-							else {
-								
-								// Test output: multilayerPerceptronTest
-								if (multiLayerPerceptronTest)
-									System.out.println("\t\t["+(m*2)+"]\t|\t["+(l)+"]["+(hiddenNeurons.get(l).length-1)
-														+"]\t ["+(l+1)+"]["+m+"]\t\t 0 | "+m);	
-								
-								hiddenConnections.get(l)[m*2] = new Connection(hiddenNeurons.get(l)[hiddenNeurons.get(l).length-1],
-									hiddenNeurons.get(l+1)[m], 0, INITWEIGHT, m);
-							}// else (if (m > 0))
-							
-							// ...and the neuron 1 position up (in the current layer)
-							if (n < hiddenNeurons.get(l).length - 1){
-								
-								// Test output: multilayerPerceptronTest
-								if (multiLayerPerceptronTest)
-									System.out.println("\t\t["+((m*2)+1)+"]\t|\t["+(l)+"]["+(n+1)+"]\t ["+(l+1)+"]["
-													+m+"]\t\t "+1+" | "+m);							
-					
-								hiddenConnections.get(l)[(m*2)+1] = new Connection(hiddenNeurons.get(l)[n+1],
-									hiddenNeurons.get(l+1)[m], 1, INITWEIGHT, m);
-							}// if (m < hiddenNeurons.get(l).length - 1)
-							
-							else {
-								
-								// Test output: multilayerPerceptronTest
-								if (multiLayerPerceptronTest)
-									System.out.println("\t\t["+((m*2)+1)+"]\t|\t["+(l)+"][0]\t ["+(l+1)+"]["
-													+m+"]\t\t "+1+" | "+m);	
-								
-								hiddenConnections.get(l)[(m*2)+1] = new Connection(hiddenNeurons.get(l)[0],
-									hiddenNeurons.get(l+1)[m], 1, INITWEIGHT, m);
-							}// else (if (m < hiddenNeurons.get(l).length - 1))
-						}// for (int m = 0; m < hiddenNeurons.get(l+1).length; m++)
-					}// else (if (hiddenNeurons.get(l).length >= hiddenNeurons.get(l+1).length))
-				}// for (int l = 0; l < (hiddenNeurons.size() - 1); l++)
-				break;// case "cross"
-
-			case "zigzag":
-				
-				// For each layer
-				for (int l = 0; l < (hiddenNeurons.size() - 1); l++){
-					
-					if (hiddenNeurons.get(l).length >= hiddenNeurons.get(l+1).length){
-
-						// Neuron of the next layer
-						int m = 0;
-						
-						// Input connection is going to
-						int i;
-						
-						// Number of neurons with connection to a neuron in next layer with more inputs
-						int range = hiddenNeurons.get(l).length % hiddenNeurons.get(l+1).length;
-						int rangeStart  = (hiddenNeurons.get(l).length - ((hiddenNeurons.get(l).length - range) / 2))
-											- range;
-						
-						// From each neuron in the current layer...
-						for (int n = 0; n < hiddenNeurons.get(l).length; n++){
-							
-							// We need more connections in the middle
-							if ((hiddenNeurons.get(l).length % hiddenNeurons.get(l+1).length) != 0){
-								
-								// Inside the range of neurons with one more connection
-								if (n >= rangeStart)
-									m = n * hiddenNeurons.get(l+1).length / hiddenNeurons.get(l).length;
-								
-								// Outside the range
-								else 
-									m = n / (hiddenNeurons.get(l).length / hiddenNeurons.get(l+1).length);
-							}// if ((hiddenNeurons.get(l).length % hiddenNeurons.get(l+1).length) != 0)
-							
-							// Whole-number ratio
-							else 
-								m = n / (hiddenNeurons.get(l).length / hiddenNeurons.get(l+1).length);
-							
-							// Choose input
-							if ((n > 0) && (hiddenConnections.get(l)[(n-1)*2].getPositionNeuronTo() == m))
-								i = 2;
-							else
-								i = 0;
-			
-							// Test output: multilayerPerceptronTest
-							if (multiLayerPerceptronTest)
-								System.out.println("\t\t["+(n*2)+"]\t|\t["+(l)+"]["+n+"]\t ["+(l+1)+"]["
-												+(m)+"]\t\t "+i+" | "+m);	
-							
-							// ...to the neuron at the same position of the next hidden layer...
-							hiddenConnections.get(l)[n*2] = new Connection(hiddenNeurons.get(l)[n],
-									hiddenNeurons.get(l+1)[m], i, INITWEIGHT, m);
-							
-							// TODO: Not working with test case 10 (eg. outputneuron 3)
-							// Check if same problem (pretty sure) with "cross"
-							if ((n > 0) && (hiddenConnections.get(l)[(n-1)*2].getPositionNeuronTo() == m))
-								i--;
-							
-							// ...and a neuron 1 position up of the next hidden layer
-							if (m < hiddenNeurons.get(l+1).length - 1){
-								
-								// Test output: multilayerPerceptronTest
-								if (multiLayerPerceptronTest)
-									System.out.println("\t\t["+((n*2)+1)+"]\t|\t["+(l)+"]["+n+"]\t ["+(l+1)+"]["
-													+(m+1)+"]\t\t "+(i+1)+" | "+(m+1));	
-								
-								hiddenConnections.get(l)[(n*2)+1] = new Connection(hiddenNeurons.get(l)[n],
-									hiddenNeurons.get(l+1)[m+1], (i+1), INITWEIGHT, (m+1));
-							}// if (m < hiddenNeurons.get(l+1).length - 1)
-							
-							else {
-								// Test output: multilayerPerceptronTest
-								if (multiLayerPerceptronTest)
-									System.out.println("\t\t["+((n*2)+1)+"]\t|\t["+(l)+"]["+n+"]\t ["+(l+1)+"][0]\t\t "+(i+1)+" | 0");	
-								
-								hiddenConnections.get(l)[(n*2)+1] = new Connection(hiddenNeurons.get(l)[n],
-									hiddenNeurons.get(l+1)[0], (i+1), INITWEIGHT, 0);
-							}// else (if (m < hiddenNeurons.get(l+1).length - 1))
-						}// for (int n = 0; n < hiddenNeurons.get(l).length; n++)
-					}// if (hiddenNeurons.get(l).length >= hiddenNeurons.get(l+1).length)
-					
-					else {
-
-						// Neuron in current layer
-						int n = 0;
-						
-						// Number of neurons in next layer with more inputs
-						int range = hiddenNeurons.get(l+1).length % hiddenNeurons.get(l).length;
-						int rangeStart  = (hiddenNeurons.get(l+1).length - ((hiddenNeurons.get(l+1).length - range) / 2))
-											- range;
-						
-						// From each hidden neuron (of the next layer)...
-						for (int m = 0; m < hiddenNeurons.get(l+1).length; m++){
-							
-							// We need more connections in the middle
-							if ((hiddenNeurons.get(l).length % hiddenNeurons.get(l+1).length) != 0){
-								
-								// Inside the range of neurons with one more connection
-								if (m >= rangeStart)
-									n = m * hiddenNeurons.get(l).length / hiddenNeurons.get(l+1).length;
-								
-								// Outside the range
-								else 
-									n= m / (hiddenNeurons.get(l+1).length / hiddenNeurons.get(l).length);
-							}// if ((hiddenNeurons.get(l).length % hiddenNeurons.get(l+1).length) != 0)
-							
-							// Whole-number ratio
-							else 
-								n = m / (hiddenNeurons.get(l+1).length / hiddenNeurons.get(l).length);
-
-							// Test output: multilayerPerceptronTest
-							if (multiLayerPerceptronTest)
-								System.out.println("\t\t["+(m*2)+"]\t|\t["+(l)+"]["+n+"]\t ["+(l+1)+"]["
-												+m+"]\t\t 0 | "+m);	
-							
-							// ...to the neuron at the same position of the next hidden layer...
-							hiddenConnections.get(l)[m*2] = new Connection(hiddenNeurons.get(l)[n],
-									hiddenNeurons.get(l+1)[m], 0, INITWEIGHT, m);
-							
-							// ...and a neuron 1 position up of the next hidden layer
-							if (n < hiddenNeurons.get(l).length - 1){
-								
-								// Test output: multilayerPerceptronTest
-								if (multiLayerPerceptronTest)
-									System.out.println("\t\t["+((m*2)+1)+"]\t|\t["+(l)+"]["+(n+1)+"]\t ["+(l+1)+"]["
-													+m+"]\t\t 1 | "+m);	
-								
-								hiddenConnections.get(l)[(m*2)+1] = new Connection(hiddenNeurons.get(l)[n+1],
-									hiddenNeurons.get(l+1)[m], 1, INITWEIGHT, m);
-							}// if (n < hiddenNeurons.get(l).length - 1)
-							
-							else {
-								// Test output: multilayerPerceptronTest
-								if (multiLayerPerceptronTest)
-									System.out.println("\t\t["+((m*2)+1)+"]\t|\t["+(l)+"][0]\t ["+(l+1)+"]["+m+"]\t\t 1 | "+m);	
-								
-								hiddenConnections.get(l)[(m*2)+1] = new Connection(hiddenNeurons.get(l)[0],
-									hiddenNeurons.get(l+1)[m], 1, INITWEIGHT, m);
-							}// else (if (n < hiddenNeurons.get(l).length - 1))
-						}// for (int m = 0; m < hiddenNeurons.get(l+1).length; m++)
-					}// else (if (hiddenNeurons.get(l).length >= hiddenNeurons.get(l+1).length))
-				}// for (int l = 0; l < (hiddenNeurons.size() - 1); l++)
-				break;// case "zigzag"
 				
 			default: // "each"
 				
@@ -1200,10 +707,6 @@ public
 						// ...to each neuron of the next hidden layer
 						for (int conn = 0; conn < hiddenNeurons.get(layer+1).length; conn++){
 							
-							// Test output: multilayerPerceptronTest
-							if (multiLayerPerceptronTest)
-								System.out.println("\t\t["+positionInLayer+"]\t|\t["+(layer)+"]["+n+"]\t ["+(layer+1)+"]["+conn+"]\t\t "+n+" | "+conn);	
-							
 							hiddenConnections.get(layer)[positionInLayer] = new Connection(hiddenNeurons.get(layer)[n],
 									hiddenNeurons.get(layer+1)[conn], n, INITWEIGHT, conn);
 							
@@ -1215,11 +718,6 @@ public
 		}// if (hiddenNeurons.size() > 1)
 		
 		/*** Connections between last hidden and output layer ***/
-		
-		// Test output: multilayerPerceptronTest
-		if (multiLayerPerceptronTest)
-			System.out.println("\toutputConnection| hiddenNeuron | outputNeuron\tinp|pos");
-						
 		switch (outputTopology){
 		
 		case "one":
@@ -1240,10 +738,6 @@ public
 						m++;
 					}
 					 
-					// Test output: multilayerPerceptronTest
-					if (multiLayerPerceptronTest)
-						System.out.println("\t\t["+n+"]\t|\t["+n+"]\t [0]["+m+"]\t\t "+i+" | "+m);
-					
 					// ...to an output neuron
 					outputConnections[n] = new Connection(hiddenNeurons.get(hiddenNeurons.size() - 1)[n],
 							outputNeurons[m], i, INITWEIGHT, m);
@@ -1295,10 +789,6 @@ public
 						c_i = 0;
 					}
 					
-					// Test output: multilayerPerceptronTest
-					if (multiLayerPerceptronTest)
-						System.out.println("\t\t["+m+"]\t|\t["+n+"]\t [0]["+m+"]\t\t 0 | "+m);
-					
 					// ...to an output neuron
 					outputConnections[m] = new Connection(hiddenNeurons.get(hiddenNeurons.size() - 1)[n],
 															outputNeurons[m], 0, INITWEIGHT, m);
@@ -1329,10 +819,6 @@ public
 						
 					for (int m = 0; m < groupLimit; m++){
 						
-						// Test output: multilayerPerceptronTest
-						if (multiLayerPerceptronTest)
-							System.out.println("\t\t["+posInLayer+"]\t|\t["+n+"]\t [0]["+m+"]\t\t "+n+" | "+m);
-						
 						// Note: The input is selected by the number of the input neuron
 						outputConnections[posInLayer] = new Connection(hiddenNeurons.get(hiddenNeurons.size() - 1)[n],
 								outputNeurons[m], n, INITWEIGHT, m);
@@ -1345,10 +831,6 @@ public
 				else {
 					
 					for (int m = groupLimit; m < outputNeurons.length; m++){
-						
-						// Test output: multilayerPerceptronTest
-						if (multiLayerPerceptronTest)
-							System.out.println("\t\t["+posInLayer+"]\t|\t["+n+"]\t [0]["+m+"]\t\t "+(n-(hiddenNeurons.get(hiddenNeurons.size() - 1).length/2))+" | "+m);
 						
 						// Note: The input is selected by the number of the hidden neuron - the half of the hidden neurons
 						outputConnections[posInLayer] = new Connection(hiddenNeurons.get(hiddenNeurons.size() - 1)[n],
@@ -1369,10 +851,6 @@ public
 			
 				// ...to each output neuron
 				for (int m = 0; m < outputNeurons.length; m++){
-					
-					// Test output: multilayerPerceptronTest
-					if (multiLayerPerceptronTest)
-						System.out.println("\t\t["+positionInLayer+"]\t|\t["+(hiddenNeurons.size()-1)+"]["+n+"]\t ["+m+"]\t\t "+n+" | "+m);	
 					
 					outputConnections[positionInLayer] = new Connection(hiddenNeurons.get(hiddenNeurons.size() - 1)[n],
 							outputNeurons[m], n, INITWEIGHT, m);
@@ -1512,52 +990,6 @@ public
 		// We don't want endless executions
 		int abortTraining = 0;
 		
-		// Test output: backpropagationTest
-		if (backpropagationTest){
-			
-			// Print input connection weights
-			System.out.print("Input layer:\t");
-			
-			for (int n = 0; n < inputConnections.length; n++)
-				System.out.print("\t["+inputConnections[n].getConnectionWeight()+"]");
-			
-			// Print hidden connection weights
-			for (int l = 0; l < hiddenConnections.size(); l++){
-				
-				System.out.print("\nHidden layer "+l+":\t");
-				
-				for (int n = 0; n < hiddenConnections.get(l).length; n++)
-					System.out.print("\t["+hiddenConnections.get(l)[n].getConnectionWeight()+"]");
-			}
-			
-			// Print output connection weights
-			System.out.print("\nOutput layer:\t");
-			
-			for (int n = 0; n < outputConnections.length; n++)
-				System.out.print("\t["+outputConnections[n].getConnectionWeight()+"]");
-
-			// Print input thresholds
-			System.out.print("\nInput thresholds:");
-			
-			for (int n = 0; n < inputNeurons.length; n++)
-				System.out.print("\t["+inputNeurons[n].getThreshold()+"]");
-
-			// Print hidden thresholds
-			for (int l = 0; l < hiddenNeurons.size(); l++){
-				
-				System.out.print("\nHidden thresholds:");
-			
-				for (int n = 0; n < hiddenNeurons.get(l).length; n++)
-					System.out.print("\t["+hiddenNeurons.get(l)[n].getThreshold()+"]");
-			}
-
-			// Print output thresholds
-			System.out.print("\nOutput thresholds:");
-			
-			for (int n = 0; n < outputNeurons.length; n++)
-				System.out.print("\t["+outputNeurons[n].getThreshold()+"]");
-		}
-		
 		while(keepGoing){
 			// Execute perceptron with training input vector
 			outVector = run(trainingInVector);
@@ -1586,69 +1018,7 @@ public
 			// Max number of trials ~2*10^9 (2^31)
 			if (abortTraining >= abort)
 				keepGoing = false;
-			
-			// Test output: backpropagationTest
-//			if (backpropagationTest){
-//				System.out.print(abortTraining+":\tResult Out: ");
-//				for (int i = 0; i < outVector.length; i++)
-//					System.out.print("\t["+ outVector[i] +"]");
-//				System.out.print("\n");
-//			}
 		}// while(keepGoing)
-		
-		// Test output: backpropagationTest
-		if (backpropagationTest){
-			
-			// Print input connection weights
-			System.out.print("\nInput layer:\t");
-			
-			for (int n = 0; n < inputConnections.length; n++)
-				System.out.print("\t["+inputConnections[n].getConnectionWeight()+"]");
-			
-			// Print hidden connection weights
-			for (int l = 0; l < hiddenConnections.size(); l++){
-				
-				System.out.print("\nHidden layer "+l+":\t");
-				
-				for (int n = 0; n < hiddenConnections.get(l).length; n++)
-					System.out.print("\t["+hiddenConnections.get(l)[n].getConnectionWeight()+"]");
-			}
-			
-			// Print output connection weights
-			System.out.print("\nOutput layer:\t");
-			
-			for (int n = 0; n < outputConnections.length; n++)
-				System.out.print("\t["+outputConnections[n].getConnectionWeight()+"]");
-
-			// Print input thresholds
-			System.out.print("\nInput thresholds:");
-			
-			for (int n = 0; n < inputNeurons.length; n++)
-				System.out.print("\t["+inputNeurons[n].getThreshold()+"]");
-
-			// Print hidden thresholds
-			for (int l = 0; l < hiddenNeurons.size(); l++){
-				
-				System.out.print("\nHidden thresholds:");
-			
-				for (int n = 0; n < hiddenNeurons.get(l).length; n++)
-					System.out.print("\t["+hiddenNeurons.get(l)[n].getThreshold()+"]");
-			}
-
-			// Print output thresholds
-			System.out.print("\nOutput thresholds:");
-			
-			for (int n = 0; n < outputNeurons.length; n++)
-				System.out.print("\t["+outputNeurons[n].getThreshold()+"]");
-			
-			// Print final result output vector
-			System.out.print("\n\nResult Out: ");
-			
-			for (int i = 0; i < outVector.length; i++)
-				System.out.print("\t["+ outVector[i] +"]");
-			
-			System.out.print("\n");
-		}
 		
 		return abortTraining;
 	}// training()
@@ -1823,112 +1193,4 @@ private	void backpropagation(float[] resultOut, float[] wantedOut, float trainin
 			}// for (int thresh = 0; thresh < numberOfNeurons; thresh++)
 		}// for (int layer = 0; layer <= (hiddenConnections.size() + 1); layer++)
 	}// backpropagation()
-
-	/****************************************************************************************
-	* String[] findFastest(float[] inputVector, float[] outputVector, float errorTolerance,
-	* 						int abort):
-	*	Finds the topology which needs the fewest trials to find the correct training result.
-	*	Returns the input, hidden, and output topology.
-	****************************************************************************************/
-	String[] findFastest(float[] inputVector, float[] outputVector, float errorTolerance, int abort){
-		MultiLayerPerceptron  perceptron;
-		int[] nrHiddenNeurons;
-		String[] inputTopologies;
-		String[] hiddenTopologies;
-		String[] outputTopologies;
-		String[][] topologies;
-		String[] topoSort;
-		String[] fastestString;
-		int[] trials;
-		int trialPos;
-		int trialsSort;
-		
-		nrHiddenNeurons = new int[hiddenNeurons.size()];
-		
-		for (int i = 0; i < nrHiddenNeurons.length; i++)
-			nrHiddenNeurons[i] = hiddenNeurons.get(i).length;
-		
-		inputTopologies = new String[3];
-		hiddenTopologies = new String[4];
-		outputTopologies = new String[2];
-		
-		fastestString = new String[4];
-		
-		trials = new int[inputTopologies.length * hiddenTopologies.length * outputTopologies.length];
-		trialPos = 0;
-		topologies = new String[trials.length][3];
-		topoSort = new String[3];
-		
-		inputTopologies[0] = hiddenTopologies[0] = outputTopologies[0] = "one";
-		inputTopologies[1] = hiddenTopologies[3] = outputTopologies[1] = "twoGroups";
-		inputTopologies[2] = "each";
-		hiddenTopologies[1] = "cross";
-		hiddenTopologies[2] = "zigzag";
-		
-		for (int inTop = 0; inTop < inputTopologies.length; inTop++){
-			
-			for (int hidTop = 0; hidTop < hiddenTopologies.length; hidTop++){
-				
-				for (int outTop = 0; outTop < outputTopologies.length; outTop++){
-					
-					perceptron = new MultiLayerPerceptron(inputNeurons.length, nrHiddenNeurons, outputNeurons.length
-															, inputTopologies[inTop], hiddenTopologies[hidTop]
-															, outputTopologies[outTop]);
-					
-					topologies[trialPos][0] = inputTopologies[inTop];
-					topologies[trialPos][1] = hiddenTopologies[hidTop];
-					topologies[trialPos][2] = outputTopologies[outTop];
-					
-					trials[trialPos] = perceptron.training(inputVector, outputVector, errorTolerance, abort);
-					
-					trialPos++;
-				}// for (hiddenTopologies)
-			}// for (hiddenTopologies)
-		}// for (inputTopologies)
-		
-		for (int i = 0; i < trials.length; i++){
-			
-			for (int j = (trials.length-1); j > 0; j--){
-				
-				if (trials[j-1] > trials[j]){
-					
-					trialsSort = trials[j];
-					trials[j] = trials[j-1];
-					trials[j-1] = trialsSort;
-					
-					for (int k = 0; k < 3; k++){
-						topoSort[k] = topologies[j][k];
-						topologies[j][k] = topologies[j-1][k];
-						topologies[j-1][k] = topoSort[k];
-					}
-				}// if (trials[j-1] > trials[j])
-			}// for (int j = (trials.length-1); j > 0; j--)
-		}// for (int i = 0; i < trials.length; i++)
-		
-		for (int i = 0; i < 3; i++)
-			fastestString[i] = topologies[0][i];
-		
-		if (trials[0] == abort)
-			fastestString[3] = "ABORTED";
-		else
-			fastestString[3] = Integer.toString(trials[0]);
-		
-		for (int j = 0; j < trials.length; j++){
-			
-			if (trials[j] == trials[0]){
-				
-				System.out.print("\t\t");
-				
-				for (int i = 0; i < 3; i++)
-					System.out.print(topologies[j][i] + ", ");
-				
-				System.out.println("\n\t\tTrials: " + trials[j]);
-				
-			}// if (trials[j] == trials[0])
-		}// for (int j = 0; j < trials.length; j++)
-		
-		trialPos = 0;
-		
-		return fastestString;
-	}// findFastest()
 }// class MultiLayerPerceptron
