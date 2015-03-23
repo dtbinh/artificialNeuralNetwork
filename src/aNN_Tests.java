@@ -268,14 +268,6 @@ public
 *									Even number of nrHiddenNeurons[lyr]
 *									Odd number of nrHiddenNeurons[lyr]
 *									Whole-number ratio
-*						cross:	nrHiddenNeurons[lyr] > nrHiddenNeurons[lyr+1]
-*								nrHiddenNeurons[lyr] = nrHiddenNeurons[lyr+1]
-*								nrHiddenNeurons[lyr] < nrHiddenNeurons[lyr+1]
-*								(nrHiddenNeurons[lyr] % nrHiddenNeurons[lyr+1]) != 0
-*						zigzag:	nrHiddenNeurons[lyr] > nrHiddenNeurons[lyr+1]
-*								nrHiddenNeurons[lyr] = nrHiddenNeurons[lyr+1]
-*								nrHiddenNeurons[lyr] < nrHiddenNeurons[lyr+1]
-*								(nrHiddenNeurons[lyr] % nrHiddenNeurons[lyr+1]) != 0)
 *						each:	nrHiddenNeurons[lyr] > nrHiddenNeurons[lyr+1]
 *								nrHiddenNeurons[lyr] = nrHiddenNeurons[lyr+1]
 *								nrHiddenNeurons[lyr] < nrHiddenNeurons[lyr+1]
@@ -451,7 +443,7 @@ public
 			// Odd number of hidden neurons
 			case 9:
 				numberInputs = 4;
-				hiddenTopology = "cross";
+//				hiddenTopology = "cross";
 				numberHiddenNeurons = new int[5];
 				numberHiddenNeurons[0] = numberHiddenNeurons[3] = 8;
 				numberHiddenNeurons[1] = numberHiddenNeurons[2] = numberHiddenNeurons[4] = 7;
@@ -469,7 +461,7 @@ public
 			// nrHiddenNeurons = nrOutputNeurons
 			case 10:
 				numberInputs = 7;
-				hiddenTopology = "zigzag";
+//				hiddenTopology = "zigzag";
 				numberHiddenNeurons = new int[4];
 				numberHiddenNeurons[0] = numberHiddenNeurons[3] = 8;
 				numberHiddenNeurons[1] = numberHiddenNeurons[2] = 6;
