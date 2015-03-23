@@ -36,6 +36,9 @@ public class aNN_Tests {
 		
 //		findFastestNet findFastestNet = new findFastestNet();
 //		findFastestNet.runTest();
+		
+		saveLoadNet saveLoadNet = new saveLoadNet();
+		saveLoadNet.runTest();
 	}
 }
 
@@ -764,3 +767,83 @@ public
 	}// runTestTrainings()
 */
 }// class backpropagationTest
+
+/**************************** Test for saving and loading networks *********+********************
+* TODO:	Header: Multilayerperceptron trainieren
+*		Gewichte speichern (erstmal Sichtprüfung)
+*		neues Perceptron
+*		Gewichte laden
+*		mit TrainigsInVector ausführen und Ergebnis mit Trainingsoutvector vergleichen
+************************************************************************************************/
+class saveLoadNet {
+private
+	MultiLayerPerceptron[]  perceptron;
+	int[] hiddenNeurons;
+	float[] trainingInVector;
+	float[] trainingOutVector;
+	float[] outVector;
+	int trials;
+	String fileName;
+
+public
+	// Constructor
+	saveLoadNet(){
+		hiddenNeurons = new int[3];
+		hiddenNeurons[0] = 6;
+		hiddenNeurons[1] = 8;
+		hiddenNeurons[2] = 6;
+
+		trainingInVector = new float[4];
+		trainingInVector[0] = 0;
+		trainingInVector[1] = 1;
+		trainingInVector[2] = 0.1f;
+		trainingInVector[3] = 0.9f;
+		
+		trainingOutVector = new float[4];
+		trainingOutVector[0] = 0.9f;
+		trainingOutVector[1] = 0.8f;
+		trainingOutVector[2] = 0.2f;
+		trainingOutVector[3] = 0.1f;
+
+		outVector = new float[4];
+		
+		perceptron = new MultiLayerPerceptron[2];
+		perceptron[0] = new MultiLayerPerceptron(4, hiddenNeurons, 4, "one", "cross", "each");
+		perceptron[1] = new MultiLayerPerceptron(4, hiddenNeurons, 4, "one", "cross", "each");
+		
+		fileName = new String();
+	}
+
+	void runTest(){
+		trials = perceptron[0].training(trainingInVector, trainingOutVector, 0.001f, 1000);
+		
+		System.out.print("trainingOutVector:\n\t");
+		for (int i = 0; i < trainingOutVector.length; i++)
+			System.out.print("["+trainingOutVector[i]+"]");
+		System.out.print("\n");
+		
+		System.out.println("Needed trials for training: " + trials);
+		
+		outVector = perceptron[0].run(trainingInVector);
+		
+		System.out.print("outVector before saving:\n\t");
+		for (int i = 0; i < outVector.length; i++)
+			System.out.print("["+outVector[i]+"]");
+		System.out.print("\n");
+		
+		fileName = perceptron[0].savePerceptron(null);
+		
+		System.out.println("file name: " + fileName);
+		
+		perceptron[1].loadPerceptron(fileName);
+		
+		outVector = perceptron[1].run(trainingInVector);
+		
+		System.out.print("outVector after saving:\n\t");
+		for (int i = 0; i < outVector.length; i++)
+			System.out.print("["+outVector[i]+"]");
+		System.out.print("\n");
+		
+		perceptron[1].savePerceptron("perceptron2");
+	}
+}// class saveLoadNet
