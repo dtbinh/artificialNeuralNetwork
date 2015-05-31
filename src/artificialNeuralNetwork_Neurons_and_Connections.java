@@ -1,6 +1,7 @@
 /********************************** Artificial neural network ***********************************
 * Description:	This file contains the basic classes neuron and connection for the artificial
-* 				neural network. The network itself is built with the class MultiLayerPerceptron.
+* 				neural network. The network itself is built with the class
+*				MultiLayerPerceptron.
 * 
 * Author:		Giso Pillar
 * 
