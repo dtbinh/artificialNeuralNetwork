@@ -24,15 +24,15 @@ public class aNN_Tests {
 		
 		// Test for whole network, needs debug prints, look at commit when passed, in class
 		// otherwise you'll just see the output vector
-//		multilayerPerceptronTest multilayerPerceptronTest = new multilayerPerceptronTest();
-//		multilayerPerceptronTest.runTest();
+		multilayerPerceptronTest multilayerPerceptronTest = new multilayerPerceptronTest();
+		multilayerPerceptronTest.runTest();
 		
 		// Erst weiter, wenn multiLayerPerceptronTest komplett fertig!
 		// Test for training using backpropagation
 		// TODO:	System.out.print mit trial = 1 für weight delta berechnung um nachzuvollziehen ob nur thresholds berechnet werden
 		//			Tests mit beiden training() (mit und ohne coefficient)
-		backpropagationTest backpropagationTest = new backpropagationTest();
-		backpropagationTest.runTest();
+//		backpropagationTest backpropagationTest = new backpropagationTest();
+//		backpropagationTest.runTest();
 		
 //		findFastestNet findFastestNet = new findFastestNet();
 //		findFastestNet.runTest();
@@ -268,6 +268,12 @@ public
 *									Even number of nrHiddenNeurons[lyr]
 *									Odd number of nrHiddenNeurons[lyr]
 *									Whole-number ratio
+*						twoGroups:		nrHiddenNeurons[lyr] = 1;
+*									nrHiddenNeurons[lyr+1] = 1;
+*									(nrHiddenNeurons[lyr+1] % 2) != 0)
+*									Even number nrHiddenNeurons[lyr]
+*									Odd number nrHiddenNeurons[lyr]
+*									nrHiddenNeurons[lyr] >=< nrHiddenNeurons[lyr+1]
 *						cross:	nrHiddenNeurons[lyr] > nrHiddenNeurons[lyr+1]
 *								nrHiddenNeurons[lyr] = nrHiddenNeurons[lyr+1]
 *								nrHiddenNeurons[lyr] < nrHiddenNeurons[lyr+1]
@@ -478,24 +484,34 @@ public
 				
 			// (nrHiddenNeurons[0] % nrInputNeurons) = even
 			// Even number of hidden neurons
+			// Hidden topology: twoGroups
+			// nrHiddenNeurons[lyr] = 1;
+			// nrHiddenNeurons[lyr+1] = 1;
 			// nrHiddenNeurons < nrOutputNeurons
 			// nrOutputNeurons % nrHiddenNeurons = 0  (Whole-number ratio)
 			// Even number of output neurons
 			case 11:
 				numberInputs = 6;
-				numberHiddenNeurons = new int[2];
+				hiddenTopology = "twoGroups";
+				numberHiddenNeurons = new int[4];
 				numberHiddenNeurons[0] = 8;
-				numberHiddenNeurons[1] = 4;
+				numberHiddenNeurons[1] = numberHiddenNeurons[2] = 1;
+				numberHiddenNeurons[3] = 4;
 				break;
 
 			// (nrHiddenNeurons[0] % nrInputNeurons) = even
 			// Odd number of hidden neurons
+			// (nrHiddenNeurons[lyr+1] % 2) != 0)
+			// Even number nrHiddenNeurons[lyr]
+			// Odd number nrHiddenNeurons[lyr]
 			// nrOutputNeurons % nrHiddenNeurons != 0,
 			// (nrOutputNeurons % nrHiddenNeurons)/2 < 1
 			case 12:
 				numberInputs = 5;
+				numberHiddenNeurons = new int[3];
 				numberHiddenNeurons[0] = 9;
-				numberHiddenNeurons[1] = 5;
+				numberHiddenNeurons[1] = 4;
+				numberHiddenNeurons[2] = 5;
 				numberOutputs = 6;
 				break;
 					
@@ -505,6 +521,8 @@ public
 			// Even number of output neurons
 			case 13:
 				numberInputs = 6;
+				numberHiddenNeurons = new int[2];
+				numberHiddenNeurons[0] = 9;
 				numberHiddenNeurons[1] = 4;
 				break;
 					

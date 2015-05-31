@@ -1,5 +1,6 @@
 /********************************** Artificial neural network ***********************************
 * Description:	This file contains the MultiLayerPerceptron class which builds the artificial
+*		neural network
 * 
 * Author:		Giso Pillar
 * 
@@ -12,6 +13,8 @@ import java.util.ArrayList;
 * 	Automatically builds a multi-layer perceptron, using neurons with logistic function, see
 * 	description of constructors for more details.
 * 	Max. number of neurons per layer: 32
+*	Input range:	0.0 ... 1.0
+*	Output range:	0.0 ... 1.0
 ************************************************************************************************/
 class MultiLayerPerceptron
 {
@@ -50,7 +53,7 @@ public
 	* 	Multi-layer perceptron where number of input neurons, number of hidden neurons per
 	* 	each layer, and number of output neurons can (has to) be defined.
 	* 	The type of connection between the layers has to be defined.
-	* 	There must be at least 1 hidden layer
+	* 	There must be at least 1 hidden layer (will be built automatically if not > 0)
 	****************************************************************************************/
 	MultiLayerPerceptron(int nrInputNeurons, int[] nrHiddenNeurons, int nrOutputNeurons,
 							String inputTopology, String hiddenTopology, String outputTopology){
@@ -230,12 +233,6 @@ public
 			
 		else {
 			
-			for (int lyr = 0; lyr < nrHiddenNeurons.length; lyr++){
-				hiddenLayer = new Neuron[nrHiddenNeurons[lyr]];
-
-				hiddenNeurons.add(hiddenLayer);
-			}// for (int lyr = 0; lyr < nrHiddenNeurons.length; lyr++)
-			
 			// Creation of hidden connections and 
 			// calculation of needed inputs in next layer
 			switch (hiddenTopology){
@@ -299,6 +296,55 @@ public
 				}
 				break;// case "one"
 				
+			// The hidden neurons will be split into two groups
+			// Every input neuron will be connected to every neuron of the nearest group
+			case "twoGroups":
+				
+				// For every layer
+				for (int lyr = 0; lyr < nrHiddenNeurons.length-1; lyr++){
+				
+					// Prevent wrong usage
+					if (nrHiddenNeurons[lyr] == 1)
+						nrHiddenNeurons[lyr]++;
+					
+					if (nrHiddenNeurons[lyr+1] == 1)
+						nrHiddenNeurons[lyr+1]++;
+					
+					int neededConnections = (nrHiddenNeurons[lyr+1]/2) * nrHiddenNeurons[lyr];
+					
+					// The upper group will have one more neuron
+					if (nrHiddenNeurons[lyr+1] % 2 != 0){
+						
+						// Neurons of current layer will be split at in the middle
+						if (nrHiddenNeurons[lyr] % 2 == 0)
+							neededConnections += nrHiddenNeurons[lyr]/2;
+						else
+							neededConnections += (nrHiddenNeurons[lyr]/2) + 1;
+					}// if (nrHiddenNeurons[lyr] % 2 != 0)
+						
+					hiddenLyrConnections = new Connection[neededConnections];
+					
+					// Needed inputs in next layer
+					neuronInputsLayer = new int[nrHiddenNeurons[lyr+1]];
+					
+					// For every neuron in next layer
+					for (int m = 0; m < nrHiddenNeurons[lyr+1]; m++){
+						
+						// The upper group has one input more if there
+						// is an odd amount of input neurons
+						if (((nrHiddenNeurons[lyr] % 2) != 0 ) && (m >= (nrHiddenNeurons[lyr+1]/ 2)))
+							neuronInputsLayer[m] = (nrHiddenNeurons[lyr]/2) + 1;
+						
+						else
+							neuronInputsLayer[m] = nrHiddenNeurons[lyr]/2;
+					}// for (int m = 0; m < nrHiddenNeurons[lyr+1]; m++)
+					
+					neuronInputs.add(neuronInputsLayer);
+					
+				hiddenConnections.add(hiddenLyrConnections);
+				}
+				break;// case "twoGroups":
+			
 			// Every neuron will be connected to two neurons of the following layer,
 			// the neuron a position up and the neuron a position down
 			case "cross":
@@ -448,6 +494,12 @@ public
 					neuronInputs.add(neuronInputsLayer);
 				}// for (int lyr = 0; lyr < nrHiddenNeurons.length-1; lyr++)
 			}// switch (hiddenTopology)
+			
+			for (int lyr = 0; lyr < nrHiddenNeurons.length; lyr++){
+				hiddenLayer = new Neuron[nrHiddenNeurons[lyr]];
+
+				hiddenNeurons.add(hiddenLayer);
+			}// for (int lyr = 0; lyr < nrHiddenNeurons.length; lyr++)
 		}// else if (nrHiddenNeurons.length == 1)
 					
 		// Set number of inputs; resp. number of connections
@@ -863,6 +915,61 @@ public
 					}// else (if (hiddenNeurons.get(l).length >= hiddenNeurons.get(l+1).length))
 				}// for (int l = 0; l < (hiddenNeurons.size() - 1); l++)
 				break;// case "one"
+			
+			case "twoGroups":
+				
+				// For each layer
+				for (int l = 0; l < (hiddenNeurons.size() - 1); l++){
+				
+					// Split the groups here
+					int groupLimit;
+					
+					int positionInLayer = 0;
+					
+					// We don't need to differentiate between odd and even number of neurons here
+					// the neuron more is in the upper group
+					groupLimit = hiddenNeurons.get(l+1).length/2;
+					
+					// From each neuron in current layer...
+					for (int n = 0; n < hiddenNeurons.get(l).length; n++){
+						
+						// ...to each neuron in the nearest group
+						// Lower group
+						if (n < (hiddenNeurons.get(l).length/2)){
+								
+							for (int m = 0; m < groupLimit; m++){
+								
+								// Test output: multilayerPerceptronTest
+								if (multiLayerPerceptronTest)
+									System.out.println("\t\t["+positionInLayer+"]\t|\t["+(l)+"]["+n+"]\t ["+(l+1)+"]["+m+"]\t\t "+n+" | "+m);
+								
+								// Note: The input is selected by the number of the input neuron
+								hiddenConnections.get(l)[positionInLayer] = new Connection(hiddenNeurons.get(l)[n],
+										hiddenNeurons.get(l+1)[m], n, INITWEIGHT, m);
+								
+								positionInLayer++;
+							}// for (int m = 0; m < groupLimit; m++)
+						}// if (n < (hiddenNeurons.get(l).length/2))
+						
+						// Upper group
+						else {
+							
+							for (int m = groupLimit; m < hiddenNeurons.get(l+1).length; m++){
+								
+								// Test output: multilayerPerceptronTest
+								if (multiLayerPerceptronTest)
+									System.out.println("\t\t["+positionInLayer+"]\t|\t["+(l)+"]["+n+"]\t ["+(l+1)+"]["+m+"]\t\t "+(n-(hiddenNeurons.get(l).length/2))+" | "+m);
+								
+								// Note: The input is select by the number of the input neuron - the half of the input neurons
+								hiddenConnections.get(l)[positionInLayer] = new Connection(hiddenNeurons.get(l)[n],
+										hiddenNeurons.get(l+1)[m], (n-(hiddenNeurons.get(l).length/2)), INITWEIGHT, m);
+								
+								positionInLayer++;
+							}// for (int m = groupLimit; m < hiddenNeurons.get(l+1).length; m++)
+						}// else (if (n < (hiddenNeurons.get(l).length/2)))
+					}// for (int n = 0; n < hiddenNeurons.get(l).length; n++)
+				}// for (int l = 0; l < (hiddenNeurons.size() - 1); l++)
+				break;// case "twoGroups"
 
 			case "cross":
 				
@@ -1392,7 +1499,7 @@ public
 	* 	Multi-layer perceptron where number of input neurons, number of hidden neurons per
 	* 	each layer, and number of output neurons can (has to) be defined.
 	* 	Each neuron will be connected to each neuron of the following layer.
-	* 	There must be at least 1 hidden layer
+	* 	There must be at least 1 hidden layer (will be built automatically if not > 0)
 	****************************************************************************************/
 	MultiLayerPerceptron(int nrInputNeurons, int[] nrHiddenNeurons, int nrOutputNeurons){
 		this(nrInputNeurons, nrHiddenNeurons, nrOutputNeurons, "each", "each", "each");
@@ -1404,7 +1511,7 @@ public
 	* 	Multi-layer perceptron where number of input neurons, number of hidden neurons per
 	* 	layer, number of layers and number of output neurons can (has to) be defined.
 	* 	Each neuron will be connected to each neuron of the following layer.
-	* 	There must be at least 1 hidden layer
+	* 	There must be at least 1 hidden layer (will be built automatically if not > 0)
 	****************************************************************************************/
 	MultiLayerPerceptron(int nrInputNeurons, int nrHiddenNeuronsPerLayer, int numberHiddenLayers,
 			int nrOutputNeurons){
