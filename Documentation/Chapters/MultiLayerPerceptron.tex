@@ -1,69 +1,60 @@
-\chapter{class MultiLayerPerceptron}
-Automatically builds a multi-layer perceptron. The number of input neurons and output neurons can be set in any case, more possibilities depends on the constructors.\\
-The maximum number of neurons for one layer is 32.
+\chapter{Neural Network}
 
-\section{Attributes}
-\subsection{Neuron inputNeuron[]}
-Input layer, size depends on definition.
+\section{MultiLayerPerceptron} \label{refPositionNeuronTo}
+The artificial neural network is built by the MultiLayerPerceptron-class. The class arranges a specified number of neurons into several layers. At least the input layer, the output layer, and one hidden layer will be built.
 
-\subsection{Neuron hiddenNeuron[][]}
-Hidden layer(s), dimension 1 depends on how many hidden layers are defined (or calculated). Dimension 2 depends on how many hidden neurons are defined (or calculated).
+\subsection{Constructors}
+The following constructors are available:
+\begin{itemize}
+	\item \texttt{MultiLayerPerceptron(int nrInputNeurons, int[] nrHiddenNeurons, int nrOutputNeurons)}\\
+	\item \texttt{MultiLayerPerceptron(int nrInputNeurons, int nrHiddenNeuronsPerLayer, int numberHiddenLayers, int nrOutputNeurons)}\\
+	\item \texttt{MultiLayerPerceptron(int nrInputNeurons, int[] nrHiddenNeurons, int nrOutputNeurons, String inputTopology, String hiddenTopology, String outputTopology)}\\
+\end{itemize}
+The two more simple constructors call the third constructor and set the missing values to default values.\\
+The fist constructor ust needs the number of neurons for the input, output, and each hidden layer. The topologies for the interconnection between the layers are set to ``each''. (Topologies are explained further down.)
+\\ The second constructor can be use if all hidden layers shall have the same number of neurons. While the other two constructors set the number of hidden layers by the size of the \texttt{nrHiddenNeurons}-integer-array, this constructor has a dedicated variable for the number of hidden layers. as well as the constructor befor this construcor sets  the topologies to ``each''.\\
+The last constructor basically consists of two parts. The first part prepares the neurons, the second part builts the connections.
 
-\subsection{Neuron outputNeuron[]}
-Output layer, size depends on definition.
+\subsection{Topologies}
+As can be seen from the construcor there are three different areas for topologies. The connections between the input layer and the first hidden layer, the connections between the hidden layers, and the connections between the last hidden layer and the output layer. For each of these three areas there are the following three types of interconnection possible:
+\begin{itemize}
+	\item one: Each neuron of the preceding layer will be connected to just one neuron of the following layer. In case there are more neurons in the following layer than in the preceding layer, neurons in the middle of the smaller layer will be connected to two ore more neurons. In case there are less neurons in the following layer, neurons in the middle from the following layer will be connected to two or more neurons from the preceding layer.\\
+	\item two groups: Both layers are split in the middle. Each neuron of one group in the preceding layer will be connected to each neuron of the same group in the following layer.
+	\item each: Each neuron of the preceding layer will be connected to each neuron of the preceeding layer.\\
+\end{itemize}
 
-\subsection{int hiddenLayers}
-Size of 1st dimension of array \texttt{hiddenNeuron}. Depending on the constructor this value may be settable or be calculated in the constructor.
+\subsection{Building the neurons}
+While the calculation itself varies depending on the chosen topology, the steps itself are similar. In a special variable the needed inputs for the each neuron of the following layer are stored. In case of the topology ``one'' this value is 1, if the amount of neurons in both layers are equal. If there are more neurons in the preceding layer a range around the middle of the following layer is calculated where one more input is needed. Using the topology ``two groups'' the number of inputs is neurons of the preceding layer divided by two. In case of topology ``each'' the number of inputs is equal to the amount of the neurons of the preceding layer. In case of the input layer each input neuron is implemented with one input.\\
+The threshold of each neuron is initialised with 0.
 
-\subsection{float inputConnWeights[]}
-Weights of the connections between input layer and 1st hidden layer.
+\subsection{Building the connections}
+Each layer area is stored in a dedicated array. Since there might be more than 1 hidden layer the hidden layers are stored in an array-list.\\
+Depending on the chosen topology the connections are built. For each neuron at least one following neuron, depending on the topology, is calulated.\\
+In case of the topology ``one'' 
+% und cross und zigzag
+there is an differentation if the current layer is larger than the next one. This can be seen as choosing a starting point. In case the current layer is smaller the calculation uses the neurons of this layer, noted as n in sourcecode, as starting point. Is the current layer is larger, than the neurons of the following layer, notes as m, are used.\\
+The weights of all connections is initialised with 1.
 
-\subsection{float hiddenConnWeights[][]}
-Weights of the connections between the hidden layers (if more than 1 is defined or calculated). The size of the 1st dimension of this array is set by \texttt{hiddenLayers}.
+%Vorüberlegungen in case one, Inputlayer ca. l.100
+%\begin{lstlisting}
+%/***
+%* 		O
+%* 		I -> rangeStart
+%* 		I
+%* 		I -> rangeStart + range
+%* 		O -> n.length-1
+%* 
+%* 		-> m.length - range = Anzahl Neuronen ohne extra Input
+%* 		-> (m.length - range) / 2 = Anzahl Neuronen ohne extra Input unter-/überhalb range
+%* 		=> rangeStart  = (m.length - ((m.length-range) / 2)) - range
+%*/
+%\end{lstlisting}
 
-\subsection{float outputConnWeights[]}
-Weights of the connections between the last hidden layer and the output layer.
+\subsection{Executing the network}
+To execute the built network the method \texttt{float[] run(float[] inputVector)} has to be called. The given input vector is passed to the input neurons by calling their \texttt{setInput}-method. In three consecutive loops, on for each layer area, the connections of each layer are executed one after another by calling their \texttt{run()}-methods. The last step is to get the result vector by calling the \texttt{getOutput}-method of the output neurons.
 
-\subsection{float outputVector[]}
-The result of the multi layer perceptron, is returned by the method \texttt{run()}. The size of the array depends on the number of output neurons.
+\subsection{Training of the network}
 
-\subsection{Connection inputConnection[]}
-Connections between input layer and 1st hidden layer.
-
-\subsection{Connection hiddenConnection[][]}
-Connections between the hidden layers (if more than 1 is defined or calculated). The size of the 1st dimension of this array is set by \texttt{hiddenLayers}.
-
-\subsection{Connection outputConnection[]}
-Connections between the last hidden layer and the output layer.
-
-\section{Constructors}
-\subsection{MultiLayerPerceptron(int inputNeurons, int hiddenNeuronsPerLayer, int hiddenLayers, int outputNeurons)}
-The constructor creates a multi-layer perceptron with the given number of input neurons, number of hidden neurons per layer, number of hidden layers and number of output neurons.\\
-Each input neuron is implemented with one input. All neurons will be connected automatically to each neuron of the following layer, except of the output layer. So the number of inputs for the hidden neurons is calculated by the number of input neurons for the first layer and by the number of hidden neurons for all hidden layers and, in case of just one output neuron, for the output layer. If there are more than one output neuron the outputs of the last hidden layer are split to the output neurons, the lower hidden neurons to the lower output neurons etc., so the number of inputs will be calculated by dividing the number of hidden neurons by the number of output neurons. Therefore it is not possible to have more output neurons than hidden neurons and there must be at least one hidden layer. In case the division has a remainder one more input is added to each output neuron.\\
-The weights and the thresholds of all neurons and the weights of all connections will be initialised with 1.\\
-The constructor calculates the amount of weights for each layer, stored in the corresponding arrays and then sets the connections.\\
-The output vector is set to 0.\\
-Vorüberlegungen in case one, Inputlayer ca. l.100
-\begin{lstlisting}
-/***
-* TODO: In Doku
-* 		O
-* 		I -> rangeStart
-* 		I
-* 		I -> rangeStart + range
-* 		O -> n.length-1
-* 
-* 		-> m.length - range = Anzahl Neuronen ohne extra Input
-* 		-> (m.length - range) / 2 = Anzahl Neuronen ohne extra Input unter-/überhalb range
-* 		=> rangeStart  = (m.length - ((m.length-range) / 2)) - range
-*/
-\end{lstlisting}
-
-\section{Methods}
-\subsection{float[] run(int inputVector)}
-The method just executes the built multi-layer perceptron. The inputs of the input neurons are set with the given input vector. Than the connections of the different layers are executed one after another, starting with the first connection of the input layer, by calling the \texttt{run()}-methods of the connections. Finally, the \texttt{getOutput()}-methods of the output-neurons are called and the output vector returned.
-
-\subsection{void backpropagation(float[] resultOut, float[] wantedOut)}
 %!!! Vorüberlegungen sichern!!! Richtiger Source Code geändert!\\
 % 1. Teil
 \begin{lstlisting}
@@ -610,3 +601,7 @@ private	void backpropagation(float[] resultOut, float[] wantedOut){
 		}// for() über alle (Verbindungs-)Layer
 	}// backpropagation()
 \end{lstlisting}
+
+%Training mit training coefficient is defined as 0.2.
+
+\subsection{Finding the fastest network}

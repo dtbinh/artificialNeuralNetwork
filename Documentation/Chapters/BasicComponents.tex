@@ -1,64 +1,19 @@
-\chapter{class Neuron}
-Uses step function for calculating the output.
+\chapter{Basic Components}
+The basic components of the network are neurons and connections. The neurons can be basically seen as switches, even though they generate values between 0 and 1 and not just ``On'' and ``Off'', which are connected to each other. The output of a neuron can be increased or decreased by a multiplier in the connection, the connection weight.
 
-\section{Attributes}
-\subsection{float[] inputs}
-For each input one float variable is used, which stores the value given by the \texttt{setInput()}-Method.
+\section{Neuron}
+By calling the constructor \texttt{Neuron(int nrInputs)} the number of inputs has to be defined. Up to 32 inputs are possible, a call of an empty constructor is not possible.\\
+During the program the input can be set by calling the method \texttt{Boolean setInput(int nrInput, float value)}. For writing saver programs the method returns true if the specifed input exists and got set. The specified input can be unset by calling the method and set \texttt{value} to 0.\\
+The threshold is used to controll at which value of the summed up inputs the output will be at 0.5. It can be set and changed anytime during the program by calling the method \texttt{void setThreshold(float threshold)}.\\
+To get the result of the neuron the method \texttt{float getOutput()} has to be called. This method calculates result of the net input function $f_{net}$ which is the sum of the inputs. Since as output function itself the identity is used. The output of the neuron is calculated by the following activation function $f_{act}$:
+\begin{equation}
+\label{Actiovation function, resp. output function of a neuron}
+output = \frac{1}{{1 + e^-(netInput - threshold)}
+\end{equation}
+The neuron-class offers a possibilty to get to know the settings of the neuron, the number of inputs and the value of the threshold, by calling the methods \texttt{int getNumberOfInputs()} and \texttt{float getThreshold()}.
 
-\subsection{float netInput}
-The result of the net input function, respectively the sum of all inputs.
-
-\subsection{float threshold}
-The value when the output will be 0.5.
-
-\subsection{float output}
-So far, since the output function is the identity, the variable contains the result of the the activation function.
-
-\section{Constructor}
-\subsection{Neuron(int nrInputs)}
-Creates \texttt{inputs} by the given value \texttt{nrInputs} and initialzes \texttt{inputs}, \texttt{netInput}, \texttt{output} to 0, and \texttt{threshold} to max ($0x7fffffff$).
-
-\section{Methods}
-\subsection{Boolean setInput(int nrInput, float value)}
-Sets given input to the given value.\\
-Returns true if input was set, respectively if \texttt{nrInput} is smaller than the length of the \texttt{inputs}-array.
-	
-\subsection{int getNumberOfInputs()}
-Returns the length of the \texttt{inputs}-array.
-
-\subsection{float getThreshold()}
-Returns the value of \texttt{threshold}.
-
-\subsection{void setThreshold(float threshold)}
-Sets \texttt{threshold} to the given value.
-
-\subsection{float getOutput()}
-Calculates and returns the \texttt{output}. First \texttt{netInput} is calculated by summing up all inputs. Since the output function is just the identity the \texttt{output} is calculated by using the activation function, which is a logistic function: $output = 1 / (1 + e^{(-(netInput - threshold))})$.
-
-\chapter{class Connection}
-Connects the output of a neuron to an input of another neuron. The weight of the following input is the output value times the weight of the connection.
-
-\section{Attributes}
-\subsection{Neuron neuronFrom}
-Neuron the output is taken from.
-
-\subsection{Neuron neuronTo}
-Neuron the input is set.
-
-\subsection{int input}
-Input of \texttt{neuronTo} which is set.
-
-\subsection{float connWeight}
-Weight of the connection.
-
-\subsection{float weightToSet}
-Weight set in \texttt{neuronTo}. Output of \texttt{neuronFrom} $*$ weight of connection.
-
-\section{Constructors}
-\subsection{Connection(Neuron neuronFrom, Neuron neuronTo, int input, float connWeight)}
-Just sets \texttt{neuronFrom}, \texttt{neuronTo}, \texttt{input}, and \texttt{connWeight}.
-
-\section{Methods}
-\subsection{void run()}
-Calculates the weight for \texttt{neuronTo}. The weight, which is set, is calculated by \texttt{getOutput()} from \texttt{neuronFrom} $*$ the weight of the connection.for \texttt{neuronTo}. The calculated weight is set to the given input.\\
-The method uses \texttt{getActivation()} from \texttt{neuronFrom} to set or unset the given input of \texttt{neuronTo}.
+\section{Connection}
+To build a network the neurons are connected by the connection-class. By calling the constructor \texttt{Connection(Neuron neuronFrom, Neuron neuronTo, int input, float connectionWeight, int positionNeuronTo)} it is possible to define which neuron is connected to which neuron. It has to be defined in the constructor to which input of the following neuron the output of the neuron, the connection is starting, is going to. Also the weight of the connection has to be defined. The last value of the constructor is the position of the neuron the connection is going to in a network layer. This value is descibed more detailed in the section \ref{refPositionNeuronTo}.\\
+The connection weight can be changed during the program by calling the method \texttt{void addWeightDelta(float weightDelta)}.\\
+During the program the method \texttt{void run()} has to be called. This method calls the \texttt{float getOutput()}-method from the neuron the connection is comming from and multiplies the output with the connection weight. The resulting value is given to the following neuron by calling the \texttt{Boolean setInput(int nrInput, float value)}-method.\\
+To get to know the settings of the connection the methods \texttt{float getConnectionWeight()}, \texttt{Neuron getNeuronFrom()}, \texttt{Neuron getNeuronTo()}, and \texttt{int getPositionNeuronTo()} can be used.
